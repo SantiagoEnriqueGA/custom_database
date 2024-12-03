@@ -24,3 +24,13 @@ class Database:
         self.tables = state.tables
         self.name = state.name
         return self
+    
+    def create_table_from_csv(self, dir, table_name, headers=True):
+        import csv
+        with open(dir, 'r') as file:
+            reader = csv.reader(file)
+            headers = next(reader) if headers else None
+            self.create_table(table_name, headers)
+            for row in reader:
+                self.tables[table_name].insert(dict(zip(headers, row)))
+        

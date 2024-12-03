@@ -39,6 +39,25 @@ class Table:
     def select(self, condition):
         return [record for record in self.records if condition(record)]
     
-    def print_table(self):
+    def print_table(self, limit=None, pretty=False):
+        if pretty: 
+            self.print_table_pretty(limit)
+            return
+        
+        count = 0
         for record in self.records:
+            if limit is not None and count >= limit:
+                break
             print(f"Record ID: {record.id}, Data: {record.data}")
+            count += 1
+            
+    def print_table_pretty(self, limit=None):
+        from tabulate import tabulate
+        table = []
+        count = 0
+        for record in self.records:
+            if limit is not None and count >= limit:
+                break
+            table.append([record.id, record.data])
+            count += 1
+        print(tabulate(table, headers=["ID", "Data"]))

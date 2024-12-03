@@ -1,5 +1,4 @@
-from segadb import Database, Storage
-from segadb.transaction import Transaction
+from segadb import Database, Storage, Transaction
 
 # Create a new database
 db = Database("MyTestDB")
