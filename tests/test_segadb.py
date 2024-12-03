@@ -147,32 +147,37 @@ class TestTransaction(unittest.TestCase):
     """
     Unit tests for the Transaction class.
     Methods:
-    - setUp: Initializes a new instance of the Transaction class before each test method is run.
-    - test_add_operation: Tests adding an operation to the transaction.
-    - test_commit: Tests committing the transaction and executing the operation.
-    - test_rollback: Tests rolling back the transaction and undoing the operation.
+    - setUp: Initializes a new instance of the Database and Transaction classes before each test method is run.
+    - test_begin: Tests the begin method of the Transaction class.
+    - test_commit: Tests the commit method of the Transaction class.
+    - test_rollback: Tests the rollback method of the Transaction class.
     """
     def setUp(self):
-        self.transaction = Transaction()
+        self.db = Database("TestDB")
+        self.db.create_table("Users", ["id", "name", "email"])
+        self.transaction = Transaction(self.db)
 
-    def test_add_operation(self):
-        operation = Mock()
-        self.transaction.add_operation(operation)
-        self.assertIn(operation, self.transaction.operations)
+    def test_begin(self):
+        self.transaction.begin()
+        self.assertIsNotNone(self.db.shadow_copy)
 
     def test_commit(self):
-        operation = Mock()
-        self.transaction.add_operation(operation)
+        self.transaction.begin()
+        self.db.get_table("Users").insert({"name": "John Doe", "email": "john@example.com"})
+        self.transaction.add_operation(lambda: self.db.get_table("Users").insert({"name": "Jane Doe", "email": "jane@example.com"}))
         self.transaction.commit()
-        operation.execute.assert_called_once()
+        self.assertIsNone(self.db.shadow_copy)
+        self.assertEqual(len(self.db.get_table("Users").records), 2)
 
     def test_rollback(self):
-        operation = Mock()
-        self.transaction.add_operation(operation)
+        self.db.get_table("Users").insert({"name": "John Doe", "email": "john@example.com"})
+        self.transaction.begin()
+        self.transaction.add_operation(lambda: self.db.get_table("Users").insert({"name": "Jane Doe2", "email": "jane@example.com"}))
         self.transaction.rollback()
-        operation.undo.assert_called_once()
+        self.assertIsNone(self.db.shadow_copy)
+        self.assertEqual(len(self.db.get_table("Users").records), 1)
+
 
 if __name__ == '__main__':
     unittest.main()
-    
-    
+
