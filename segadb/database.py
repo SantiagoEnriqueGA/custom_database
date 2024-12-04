@@ -80,4 +80,19 @@ class Database:
             self.create_table(table_name, headers)
             for row in reader:
                 self.tables[table_name].insert(dict(zip(headers, row)))
-        
+
+    def add_constraint(self, table_name, column, constraint):
+        """
+        Adds a constraint to a specified column in a table.
+        Args:
+            table_name (str): The name of the table to which the constraint will be added.
+            column (str): The name of the column to which the constraint will be applied.
+            constraint (str): The constraint to be added to the column.
+        Raises:
+            ValueError: If the specified table does not exist.
+        """
+        table = self.get_table(table_name)
+        if table:
+            table.add_constraint(column, constraint)
+        else:
+            raise ValueError(f"Table {table_name} does not exist.")
