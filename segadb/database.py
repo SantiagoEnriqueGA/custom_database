@@ -76,7 +76,7 @@ class Database:
         import csv
         with open(dir, 'r') as file:
             reader = csv.reader(file)
-            headers = next(reader) if headers else None
+            headers = next(reader) if headers else [f"column{i}" for i in range(len(next(reader)))]
             self.create_table(table_name, headers)
             for row in reader:
                 self.tables[table_name].insert(dict(zip(headers, row)))

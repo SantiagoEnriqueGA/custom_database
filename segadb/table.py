@@ -25,12 +25,19 @@ class Table:
         Adds a constraint to a specified column in the table.
         Args:
             column (str): The name of the column to which the constraint will be added.
-            constraint (str): The constraint to be added to the column.
+            constraint (str): The constraint to be added to the column.  
+                              This should be a function that takes a value as input and returns 
+                              True if the value satisfies the constraint, False otherwise.
         Raises:
             ValueError: If the specified column does not exist in the table.
         """
         if column in self.constraints:
-            self.constraints[column].append(constraint)
+            if constraint == 'UNIQUE':
+                def unique_constraint(value):
+                    return all(record.data.get(column) != value for record in self.records)
+                self.constraints[column].append(unique_constraint)
+            else:
+                self.constraints[column].append(constraint)
         else:
             raise ValueError(f"Column {column} does not exist in the table.")
 
@@ -49,23 +56,31 @@ class Table:
 
     def insert(self, data, transaction=None):
         """
-        Inserts a new record into the table.
+        Inserts a new record into the table.  
+        If a transaction is provided, the operation is added to the transaction.  
+        If the data contains an "id" field, it is used as the record ID; otherwise, the next available ID is used.  
         Args:
             data (dict): The data to be inserted as a new record.
             transaction (Transaction, optional): An optional transaction object. If provided, the operation will be added to the transaction.
         Raises:
             ConstraintError: If the data violates any table constraints.
+            ValueError: If the ID is already in use.
         Returns:
             None
         """
         self._check_constraints(data)
-        record = Record(self.next_id, data)
+        record_id = int(data.get("id", self.next_id))
+        if any(record.id == record_id for record in self.records):
+            raise ValueError(f"ID {record_id} is already in use.")
+        if "id" in data:
+            del data["id"]
+        record = Record(record_id, data)
         if transaction:
             self.records.append(record)
             transaction.add_operation(lambda: self.records.append(record))
         else:
             self.records.append(record)
-        self.next_id += 1
+        self.next_id = max(self.next_id, record_id + 1)
         
     def try_insert(self, data, transaction=None):
         """

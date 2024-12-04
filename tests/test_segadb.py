@@ -138,6 +138,14 @@ class TestTable(unittest.TestCase):
         self.assertEqual(len(self.table.records), 1)
         self.table.try_insert({"name": "Jane Doe", "email": "janeexample.com"})
         self.assertEqual(len(self.table.records), 1)  # Should not insert due to constraint violation
+    
+    def test_add_constraint2(self):
+        self.table.add_constraint("email", 'UNIQUE')
+        self.assertIn("email", self.table.constraints)
+        self.table.try_insert({"name": "John Doe", "email": "john@example.com"})
+        self.assertEqual(len(self.table.records), 1)
+        self.table.try_insert({"name": "Jane Doe", "email": "john@example.com"})
+        self.assertEqual(len(self.table.records), 1)  # Should not insert due to UNIQUE constraint violation
 
 class TestIndex(unittest.TestCase):
     """
