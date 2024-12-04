@@ -1,4 +1,4 @@
-from segadb import Database, Storage, Transaction, Record, VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord
+from segadb import *
 
 # Create a new database
 db = Database("MyTestDB")

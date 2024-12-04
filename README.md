@@ -29,6 +29,13 @@ The project directory structure is as follows:
 - **main.py**: Example usage of the segadb library.
 - **setup.py**: Setup script for packaging the segadb library.
 
+## Examples
+- [example_csv.py](example_csv.py): Demonstrates how to create a table from a CSV file.
+- [example_constraints.py](example_constraints.py): Demonstrates how to add and enforce constraints on table columns.
+- [example_transactions.py](example_transactions.py): Demonstrates how to use transactions for commit and rollback operations.
+- [example_change_ids.py](example_change_ids.py): Demonstrates how to change record IDs.
+- [example_recordTypes.py](example_recordTypes.py): Demonstrates how to use different record types (VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord).
+
 ## Usage
 ```python
 from segadb import Database, Storage, Transaction 
