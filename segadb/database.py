@@ -99,3 +99,52 @@ class Database:
             table.add_constraint(column, constraint, reference_table, reference_column)
         else:
             raise ValueError(f"Table {table_name} does not exist.")
+
+    def join_tables(self, table_name1, table_name2, on_column, other_column):
+        """
+        Perform an inner join between two tables on specified columns.
+        Args:
+            table_name1 (str): The name of the first table.
+            table_name2 (str): The name of the second table.
+            on_column (str): The column in the first table to join on.
+            other_column (str): The column in the second table to join on.
+        Returns:
+            Table: A new table containing the joined records.
+        """
+        table1 = self.get_table(table_name1)
+        table2 = self.get_table(table_name2)
+        if table1 and table2:
+            return table1.join(table2, on_column, other_column)
+        else:
+            raise ValueError("One or both tables do not exist.")
+
+    def aggregate_table(self, table_name, column, agg_func):
+        """
+        Perform an aggregation on a specified column in a table using the provided aggregation function.
+        Args:
+            table_name (str): The name of the table.
+            column (str): The column to aggregate.
+            agg_func (str): The aggregation function to apply. Supported values are 'MIN', 'MAX', 'COUNT', 'SUM', 'AVG', 'COUNT_DISTINCT'.
+        Returns:
+            Table: A new table containing the result of the aggregation.
+        """
+        table = self.get_table(table_name)
+        if table:
+            return table.aggregate(column, agg_func)
+        else:
+            raise ValueError(f"Table {table_name} does not exist.")
+
+    def filter_table(self, table_name, condition):
+        """
+        Filter records in a table based on a condition.
+        Args:
+            table_name (str): The name of the table.
+            condition (function): A function that takes a record as input and returns True if the record satisfies the condition, False otherwise.
+        Returns:
+            Table: A new table containing the filtered records.
+        """
+        table = self.get_table(table_name)
+        if table:
+            return table.filter(condition)
+        else:
+            raise ValueError(f"Table {table_name} does not exist.")

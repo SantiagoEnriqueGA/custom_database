@@ -186,3 +186,70 @@ class Table:
             table.append([record.id, record.data])
             count += 1
         print(tabulate(table, headers=["ID", "Data"]))
+
+    def join(self, other_table, on_column, other_column):
+        """
+        Perform an inner join with another table on specified columns.
+        Args:
+            other_table (Table): The table to join with.
+            on_column (str): The column in the current table to join on.
+            other_column (str): The column in the other table to join on.
+        Returns:
+            Table: A new table containing the joined records.
+        """
+        joined_records = []
+        for record in self.records:
+            for other_record in other_table.records:
+                if record.data.get(on_column) == other_record.data.get(other_column):
+                    joined_record = {**record.data, **other_record.data}
+                    joined_records.append(joined_record)
+        
+        joined_columns = list(set(self.columns + other_table.columns))
+        joined_table = Table(f"{self.name}_join_{other_table.name}", joined_columns)
+        for record in joined_records:
+            joined_table.insert(record)
+        return joined_table
+
+    def aggregate(self, column, agg_func):
+        """
+        Perform an aggregation on a specified column using the provided aggregation function.
+        Args:
+            column (str): The column to aggregate.
+            agg_func (str): The aggregation function to apply. Supported values are 'MIN', 'MAX', 'COUNT', 'SUM', 'AVG', 'COUNT_DISTINCT'.
+        Returns:
+            Table: A new table containing the result of the aggregation.
+        """
+        values = [record.data.get(column) for record in self.records if record.data.get(column) is not None]
+        
+        if agg_func == 'MIN':
+            result = min(values)
+        elif agg_func == 'MAX':
+            result = max(values)
+        elif agg_func == 'COUNT':
+            result = len(values)
+        elif agg_func == 'SUM':
+            result = sum(values)
+        elif agg_func == 'AVG':
+            result = sum(values) / len(values) if values else 0
+        elif agg_func == 'COUNT_DISTINCT':
+            result = len(set(values))
+        else:
+            raise ValueError(f"Unsupported aggregation function: {agg_func}")
+
+        agg_table = Table(f"{self.name}_agg_{column}_{agg_func}", [column])
+        agg_table.insert({column: result})
+        return agg_table
+
+    def filter(self, condition):
+        """
+        Filter records based on a condition.
+        Args:
+            condition (function): A function that takes a record as input and returns True if the record satisfies the condition, False otherwise.
+        Returns:
+            Table: A new table containing the filtered records.
+        """
+        filtered_records = [record for record in self.records if condition(record)]
+        filtered_table = Table(f"{self.name}_filtered", self.columns)
+        for record in filtered_records:
+            filtered_table.insert(record.data)
+        return filtered_table

@@ -22,6 +22,14 @@ class TestDatabase(unittest.TestCase):
     - test_create_table: Tests the creation of a table in the database.
     - test_drop_table: Tests the deletion of a table from the database.
     - test_get_table: Tests retrieving a table from the database.
+    - test_copy: Tests copying the database.
+    - test_restore: Tests restoring the database from a copy.
+    - test_create_table_from_csv: Tests creating a table from a CSV file.
+    - test_add_constraint: Tests adding a constraint to a table.
+    - test_add_foreign_key_constraint: Tests adding a foreign key constraint to a table.
+    - test_join_tables: Tests joining two tables.
+    - test_aggregate_table: Tests aggregating data in a table.
+    - test_filter_table: Tests filtering data in a table.
     """
     def test_create_table(self):
         db = Database("TestDB")
@@ -100,6 +108,65 @@ class TestDatabase(unittest.TestCase):
         with self.assertRaises(ValueError):
             db.get_table("Orders").insert({"order_id": 3, "user_id": 3, "product": "Tablet"})
 
+    def test_join_tables(self):
+        db = Database("TestDB")
+        db.create_table("Users", ["user_id", "name"])
+        db.create_table("Orders", ["order_id", "user_id", "product"])
+        
+        db.get_table("Users").insert({"user_id": 1, "name": "Alice"})
+        db.get_table("Users").insert({"user_id": 2, "name": "Bob"})
+        
+        db.get_table("Orders").insert({"order_id": 1, "user_id": 1, "product": "Laptop"})
+        db.get_table("Orders").insert({"order_id": 2, "user_id": 2, "product": "Phone"})
+        
+        joined_table = db.join_tables("Users", "Orders", "user_id", "user_id")
+        self.assertEqual(len(joined_table.records), 2)
+        self.assertEqual(joined_table.records[0].data["name"], "Alice")
+        self.assertEqual(joined_table.records[1].data["name"], "Bob")
+
+    def test_aggregate_table(self):
+        db = Database("TestDB")
+        db.create_table("Orders", ["order_id", "user_id", "product"])
+        
+        db.get_table("Orders").insert({"order_id": 1, "user_id": 1, "product": "Laptop"})
+        db.get_table("Orders").insert({"order_id": 2, "user_id": 2, "product": "Phone"})
+        db.get_table("Orders").insert({"order_id": 3, "user_id": 2, "product": "Tablet"})
+        
+        count_table = db.aggregate_table("Orders", "user_id", "COUNT")
+        self.assertEqual(count_table.records[0].data["user_id"], 3)
+        
+        count_distinct_table = db.aggregate_table("Orders", "user_id", "COUNT_DISTINCT")
+        self.assertEqual(count_distinct_table.records[0].data["user_id"], 2)
+        
+        min_table = db.aggregate_table("Orders", "user_id", "MIN")
+        self.assertEqual(min_table.records[0].data["user_id"], 1)
+        
+        max_table = db.aggregate_table("Orders", "user_id", "MAX")
+        self.assertEqual(max_table.records[0].data["user_id"], 2)
+        
+        sum_table = db.aggregate_table("Orders", "user_id", "SUM")
+        self.assertEqual(sum_table.records[0].data["user_id"], 5)
+        
+        avg_table = db.aggregate_table("Orders", "user_id", "AVG")
+        self.assertEqual(avg_table.records[0].data["user_id"], 1.6666666666666667)
+
+    def test_filter_table(self):
+        db = Database("TestDB")
+        db.create_table("Orders", ["order_id", "user_id", "product"])
+        
+        db.get_table("Orders").insert({"order_id": 1, "user_id": 1, "product": "Laptop"})
+        db.get_table("Orders").insert({"order_id": 2, "user_id": 2, "product": "Phone"})
+        db.get_table("Orders").insert({"order_id": 3, "user_id": 2, "product": "Tablet"})
+        
+        filtered_table = db.filter_table("Orders", lambda record: record.data["product"] == "Laptop")
+        self.assertEqual(len(filtered_table.records), 1)
+        self.assertEqual(filtered_table.records[0].data["product"], "Laptop")
+
+        filtered_table = db.filter_table("Orders", lambda record: record.data["user_id"] == 2)
+        self.assertEqual(len(filtered_table.records), 2)
+        self.assertEqual(filtered_table.records[0].data["user_id"], 2)
+        self.assertEqual(filtered_table.records[1].data["user_id"], 2)
+
 class TestTable(unittest.TestCase):
     """
     Unit tests for the Table class.
@@ -109,6 +176,10 @@ class TestTable(unittest.TestCase):
     - test_delete: Tests that a record can be deleted from the table and verifies the deletion.
     - test_update: Tests that a record can be updated in the table and verifies the updated data.
     - test_select: Tests that records can be selected from the table based on a condition and verifies the selected data.
+    - test_try_insert: Tests that a record can be inserted into the table with constraints and verifies the inserted data.
+    - test_print_table: Tests that the table can be printed with a limit and pretty format.
+    - test_add_constraint1: Tests that a constraint can be added to a column and verifies the constraint.
+    - test_add_constraint2: Tests that a UNIQUE constraint can be added to a column and verifies the constraint.
     """
     def setUp(self):
         self.table = Table("Users", ["id", "name", "email"])
