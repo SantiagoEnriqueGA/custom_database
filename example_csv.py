@@ -1,4 +1,3 @@
-from sympy import limit
 from segadb import Database, Storage, Transaction
 
 # Create a new database
@@ -11,5 +10,4 @@ db.create_table_from_csv("example_datasets/pima-indians-diabetes.csv", "WBP", he
 db.get_table("WBP").print_table(limit=5)
 print("\n")
 db.get_table("WBP").print_table(limit=5, pretty=True)
-
 
