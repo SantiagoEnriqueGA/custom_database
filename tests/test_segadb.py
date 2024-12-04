@@ -41,6 +41,47 @@ class TestDatabase(unittest.TestCase):
         self.assertIsNotNone(table)
         self.assertEqual(table.name, "Users")
         self.assertEqual(table.columns, ["id", "name", "email"])
+
+    def test_copy(self):
+        db = Database("TestDB")
+        db.create_table("Users", ["id", "name", "email"])
+        db_copy = db.copy()
+        self.assertEqual(db.name, db_copy.name)
+        self.assertEqual(db.tables.keys(), db_copy.tables.keys())
+
+    def test_restore(self):
+        db = Database("TestDB")
+        db.create_table("Users", ["id", "name", "email"])
+        db_copy = db.copy()
+        db.create_table("Orders", ["id", "user_id", "total"])
+        db.restore(db_copy)
+        self.assertNotIn("Orders", db.tables)
+        self.assertIn("Users", db.tables)
+
+    def test_create_table_from_csv(self):
+        import tempfile
+        import csv
+
+        db = Database("TestDB")
+        with tempfile.NamedTemporaryFile(delete=False, mode='w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(["id", "name", "email"])
+            writer.writerow([1, "John Doe", "john@example.com"])
+            writer.writerow([2, "Jane Doe", "jane@example.com"])
+            csvfile_path = csvfile.name
+
+        db.create_table_from_csv(csvfile_path, "Users")
+        table = db.get_table("Users")
+        self.assertIsNotNone(table)
+        self.assertEqual(len(table.records), 2)
+        os.remove(csvfile_path)
+
+    def test_add_constraint(self):
+        db = Database("TestDB")
+        db.create_table("Users", ["id", "name", "email"])
+        db.add_constraint("Users", "email", lambda x: "@" in x)
+        table = db.get_table("Users")
+        self.assertIn("email", table.constraints)
         
 class TestTable(unittest.TestCase):
     """
@@ -76,6 +117,27 @@ class TestTable(unittest.TestCase):
         results = self.table.select(lambda record: record.data["name"] == "Jane Doe")
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].data["name"], "Jane Doe")
+
+    def test_try_insert(self):
+        self.table.add_constraint("email", lambda x: "@" in x)
+        self.table.try_insert({"name": "John Doe", "email": "john@example.com"})
+        self.assertEqual(len(self.table.records), 1)
+        self.table.try_insert({"name": "Jane Doe", "email": "janeexample.com"})
+        self.assertEqual(len(self.table.records), 1)  # Should not insert due to constraint violation
+
+    def test_print_table(self):
+        self.table.insert({"name": "John Doe", "email": "john@example.com"})
+        self.table.insert({"name": "Jane Doe", "email": "jane@example.com"})
+        self.table.print_table(limit=1)
+        self.table.print_table(pretty=True)
+        
+    def test_add_constraint1(self):
+        self.table.add_constraint("email", lambda x: "@" in x)
+        self.assertIn("email", self.table.constraints)
+        self.table.try_insert({"name": "John Doe", "email": "john@example.com"})
+        self.assertEqual(len(self.table.records), 1)
+        self.table.try_insert({"name": "Jane Doe", "email": "janeexample.com"})
+        self.assertEqual(len(self.table.records), 1)  # Should not insert due to constraint violation
 
 class TestIndex(unittest.TestCase):
     """
