@@ -18,7 +18,7 @@ transaction = Transaction(db)
 transaction.begin()
 
 # Insert a record within a transaction
-users_table.insert({"name": "Jane Doe2", "email": "jane@example.com"}, transaction)
+users_table.insert({"name": "Jane Doe2", "email": "jane@example.com"}, transaction=transaction)
 
 print("\nAfter insert transaction:")
 users_table.print_table()

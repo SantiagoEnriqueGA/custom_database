@@ -54,7 +54,7 @@ class Table:
                 if not constraint(data.get(column)):
                     raise ValueError(f"Constraint violation on column {column} for value {data.get(column)}")
 
-    def insert(self, data, transaction=None):
+    def insert(self, data, record_type=Record, transaction=None):
         """
         Inserts a new record into the table.  
         If a transaction is provided, the operation is added to the transaction.  
@@ -74,15 +74,14 @@ class Table:
             raise ValueError(f"ID {record_id} is already in use.")
         if "id" in data:
             del data["id"]
-        record = Record(record_id, data)
+        record = record_type(record_id, data)
         if transaction:
-            self.records.append(record)
             transaction.add_operation(lambda: self.records.append(record))
         else:
             self.records.append(record)
         self.next_id = max(self.next_id, record_id + 1)
         
-    def try_insert(self, data, transaction=None):
+    def try_insert(self, data, record_type=Record, transaction=None):
         """
         Attempts to insert data into the table. If an error occurs during the insertion,it catches the ValueError and prints an error message.
         Args:
@@ -92,7 +91,7 @@ class Table:
             ValueError: If there is an issue with the data insertion.
         """
         try:
-            self.insert(data, transaction)
+            self.insert(data, record_type, transaction)
         except ValueError as e:
             print(f"Error on insert: {e}")
 

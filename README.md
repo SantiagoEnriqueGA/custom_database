@@ -4,12 +4,12 @@ segadb is a simple database library for Python.
 This project is primarily educational. It is designed to help understand the workings of a simple database system by building it from scratch. The implementations focus on fundamental concepts first and then on optimizing for speed or robustness, using basic Python data structures and custom transaction handling for specific tasks.
 
 ## Features
-- **Database Management**: Create, drop, and manage tables within a database. See [`Database`](segadb/database.py).
+- **Database Management**: Create, create from .csv, drop, copy, restore, and add constraints to database. See [`Database`](segadb/database.py).
 - **Table Operations**: Insert, update, delete, and select records in a table. See [`Table`](segadb/table.py).
 - **Transaction Handling**: Support for transactions with commit and rollback functionality. See [`Transaction`](segadb/transaction.py).
 - **Indexing**: Create and manage indexes for efficient data retrieval. See [`Index`](segadb/index.py).
 - **Storage**: Save and load the database to and from a file. See [`Storage`](segadb/storage.py).
-- **Record Management**: Manage individual records with unique IDs and data. See [`Record`](segadb/record.py).
+- **Record Management**: Manage individual records with unique IDs and data. Support for vector records, time series records, image records, text records. See [`Record`](segadb/record.py).
 
 ## File Structure
 The project directory structure is as follows:
