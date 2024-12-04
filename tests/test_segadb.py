@@ -83,6 +83,23 @@ class TestDatabase(unittest.TestCase):
         table = db.get_table("Users")
         self.assertIn("email", table.constraints)
         
+    def test_add_foreign_key_constraint(self):
+        db = Database("TestDB")
+        db.create_table("Users", ["user_id", "name"])
+        db.create_table("Orders", ["order_id", "user_id", "product"])
+        
+        db.add_constraint("Users", "user_id", "UNIQUE")
+        db.add_constraint("Orders", "user_id", "FOREIGN_KEY", reference_table_name="Users", reference_column="user_id")
+        
+        db.get_table("Users").insert({"user_id": 1, "name": "Alice"})
+        db.get_table("Users").insert({"user_id": 2, "name": "Bob"})
+        
+        db.get_table("Orders").insert({"order_id": 1, "user_id": 1, "product": "Laptop"})
+        db.get_table("Orders").insert({"order_id": 2, "user_id": 2, "product": "Phone"})
+        
+        with self.assertRaises(ValueError):
+            db.get_table("Orders").insert({"order_id": 3, "user_id": 3, "product": "Tablet"})
+
 class TestTable(unittest.TestCase):
     """
     Unit tests for the Table class.

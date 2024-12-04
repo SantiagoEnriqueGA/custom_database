@@ -20,14 +20,14 @@ class Table:
         self.next_id = 1
         self.constraints = {column: [] for column in columns}
 
-    def add_constraint(self, column, constraint):
+    def add_constraint(self, column, constraint, reference_table=None, reference_column=None):
         """
         Adds a constraint to a specified column in the table.
         Args:
             column (str): The name of the column to which the constraint will be added.
-            constraint (str): The constraint to be added to the column.  
-                              This should be a function that takes a value as input and returns 
-                              True if the value satisfies the constraint, False otherwise.
+            constraint (str): The constraint to be added to the column.
+            reference_table (Table, optional): The table that the foreign key references. Required for foreign key constraints.
+            reference_column (str, optional): The column in the reference table that the foreign key references. Required for foreign key constraints.
         Raises:
             ValueError: If the specified column does not exist in the table.
         """
@@ -36,6 +36,12 @@ class Table:
                 def unique_constraint(value):
                     return all(record.data.get(column) != value for record in self.records)
                 self.constraints[column].append(unique_constraint)
+            elif constraint == 'FOREIGN_KEY':
+                if not reference_table or not reference_column:
+                    raise ValueError("Foreign key constraints require a reference table and column.")
+                def foreign_key_constraint(value):
+                    return any(record.data.get(reference_column) == value for record in reference_table.records)
+                self.constraints[column].append(foreign_key_constraint)
             else:
                 self.constraints[column].append(constraint)
         else:
@@ -52,6 +58,7 @@ class Table:
         for column, constraints in self.constraints.items():
             for constraint in constraints:
                 if not constraint(data.get(column)):
+                    print(f"Constraint violation on column {column} for value {data.get(column)}")
                     raise ValueError(f"Constraint violation on column {column} for value {data.get(column)}")
 
     def insert(self, data, record_type=Record, transaction=None):
