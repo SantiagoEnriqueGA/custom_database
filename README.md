@@ -26,7 +26,7 @@ The project directory structure is as follows:
 - **tests/**: Contains unit and performance tests for the database library.
   - [`test_segadb.py`](tests/test_segadb.py): Unit tests for the segadb package.
   - [`test_segadb_performance.py`](tests/test_segadb_performance.py): Performance tests for the segadb package.
-- **main.py**: Example usage of the segadb library.
+- **example_*.py**: Example usages of the segadb library.
 - **setup.py**: Setup script for packaging the segadb library.
 
 ## Examples
