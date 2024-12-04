@@ -41,7 +41,7 @@ class Table:
     
     def print_table(self, limit=None, pretty=False):
         if pretty: 
-            self.print_table_pretty(limit)
+            self._print_table_pretty(limit)
             return
         
         count = 0
@@ -51,7 +51,7 @@ class Table:
             print(f"Record ID: {record.id}, Data: {record.data}")
             count += 1
             
-    def print_table_pretty(self, limit=None):
+    def _print_table_pretty(self, limit=None):
         from tabulate import tabulate
         table = []
         count = 0
