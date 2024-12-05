@@ -29,9 +29,3 @@ users_table = db.get_table("Users")
 
 print("\nAfter rollback:")
 users_table.print_table()
-
-# Save the database to a file
-Storage.save(db, "database.json")
-
-# Load the database from a file
-loaded_db = Storage.load("database.json")
