@@ -54,7 +54,7 @@ count = db.get_table("orders").aggregate("user_id", "COUNT")
 count.print_table(pretty=True)
 
 # Aggregate get the count of distinct user_ids
-print("\nAggregation - COUNT:")
+print("\nAggregation - COUNT_DISTINCT:")
 count = db.get_table("orders").aggregate("user_id", "COUNT_DISTINCT")
 count.print_table(pretty=True)
 

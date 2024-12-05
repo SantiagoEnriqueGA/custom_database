@@ -35,6 +35,7 @@ The project directory structure is as follows:
 - [example_transactions.py](example_transactions.py): Demonstrates how to use transactions for commit and rollback operations.
 - [example_change_ids.py](example_change_ids.py): Demonstrates how to change record IDs.
 - [example_recordTypes.py](example_recordTypes.py): Demonstrates how to use different record types (VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord).
+- [example_queries.py](example_queries.py): Demonstrates how to create tables, add constraints, insert data, perform joins, aggregations, and filtering operations.
 
 ## Usage
 ```python
