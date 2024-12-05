@@ -40,7 +40,7 @@ The project directory structure is as follows:
 
 ## Usage
 ```python
-from segadb import Database, Storage, Transaction 
+from segadb import *
 
 # Create a new database
 db = Database("MyTestDB")
