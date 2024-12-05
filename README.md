@@ -74,3 +74,25 @@ users_table.print_table()
 # Save the database to a file
 Storage.save(db, "database.json")
 ```
+
+## Tests
+To run the tests, use the following command:
+```sh
+python -m unittest discover -s tests
+```
+
+### Test Files and Cases
+
+- **`test_segadb.py`**: Contains unit tests for the core functionality of the segadb package.
+  - **TestDatabase**: Tests for the `Database` class, including table creation, deletion, retrieval, copying, restoring, and constraints.
+  - **TestTable**: Tests for the `Table` class, including record insertion, deletion, updating, selection, constraints, and printing.
+  - **TestIndex**: Tests for the `Index` class, including adding, finding, and removing items.
+  - **TestRecord**: Tests for the `Record` class, including record creation.
+  - **TestStorage**: Tests for the `Storage` class, including saving, loading, and deleting the database.
+  - **TestTransaction**: Tests for the `Transaction` class, including beginning, committing, and rolling back transactions.
+
+- **`test_segadb_performance.py`**: Contains performance tests for the segadb package.
+  - **TestDatabasePerformance**: Tests for the performance of the `Database` class, including inserting, selecting, updating, deleting, saving, loading, and restoring a large number of records.
+
+- **`test_examples.py`**: Contains tests for the example scripts.
+  - **TestExamples**: Dynamically generated test cases for each example file to ensure they run without errors.

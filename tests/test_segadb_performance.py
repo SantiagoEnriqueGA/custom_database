@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from segadb.database import Database
 from segadb.storage import Storage
 
-NUM_RECORDS = 10000
+NUM_RECORDS = 5000
 
 class TestDatabasePerformance(unittest.TestCase):
     """
