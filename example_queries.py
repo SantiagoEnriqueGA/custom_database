@@ -1,4 +1,4 @@
-from segadb.database import Database
+from segadb import *
 
 # Create a new database
 db = Database("ExampleDB")
