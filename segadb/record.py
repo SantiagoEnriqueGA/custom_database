@@ -1,3 +1,5 @@
+from .index import Index
+
 class Record:
     def __init__(self, record_id, data):
         """
@@ -8,6 +10,21 @@ class Record:
         """
         self.id = record_id
         self.data = data
+        self._index = Index()
+        
+    @property
+    def index(self):
+        """
+        Returns the index of the record. 
+        @property decorator is used to make the method behave like an attribute. (Read-only)
+        """
+        return self._index
+
+    def add_to_index(self, key):
+        self._index.add(key, self)
+
+    def remove_from_index(self, key):
+        self._index.remove(key, self)
         
 class VectorRecord(Record):
     def __init__(self, record_id, vector):

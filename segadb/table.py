@@ -1,5 +1,4 @@
 from .record import Record
-from .index import Index
 
 class Table:
     def __init__(self, name, columns):
@@ -20,6 +19,7 @@ class Table:
         self.records = []
         self.next_id = 1
         self.constraints = {column: [] for column in columns}
+        self.index_cnt = 0
 
     def add_constraint(self, column, constraint, reference_table=None, reference_column=None):
         """
@@ -90,12 +90,17 @@ class Table:
         if "id" in data:
             del data["id"]
         record = record_type(record_id, data)
+        record.add_to_index(self.index_cnt)
+        self.index_cnt += 1
         if transaction:
-            transaction.add_operation(lambda: self.records.append(record))
+            transaction.add_operation(lambda: self._insert(record))
         else:
-            self.records.append(record)
+            self._insert(record)
         self.next_id = max(self.next_id, record_id + 1)
-        
+
+    def _insert(self, record):
+        self.records.append(record)
+
     def try_insert(self, data, record_type=Record, transaction=None):
         """
         Attempts to insert data into the table. If an error occurs during the insertion,it catches the ValueError and prints an error message.
@@ -128,7 +133,10 @@ class Table:
         Args:
             record_id (int): The ID of the record to be deleted.
         """
-        self.records = [record for record in self.records if record.id != record_id]
+        record = next((r for r in self.records if r.id == record_id), None)
+        if record:
+            self.records.remove(record)
+            record.remove_from_index(record_id)
 
     def update(self, record_id, data, transaction=None):
         """
@@ -147,9 +155,12 @@ class Table:
             self._update(record_id, data)
 
     def _update(self, record_id, data):
-        for record in self.records:
-            if record.id == record_id:
-                record.data = data
+        record = next((r for r in self.records if r.id == record_id), None)
+        if record:
+            record.remove_from_index(record.id)
+            record.data = data
+            record.add_to_index(self.index_cnt)
+            self.index_cnt += 1
 
     def select(self, condition):
         """
@@ -161,7 +172,7 @@ class Table:
         """
         return [record for record in self.records if condition(record)]
     
-    def print_table(self, limit=None, pretty=False):
+    def print_table(self, limit=None, pretty=False, index=False):
         """
         Prints the records in the table.
         Args:
@@ -169,7 +180,7 @@ class Table:
             pretty (bool, optional): If True, prints the table in a pretty format using the tabulate library. Defaults to False.
         """
         if pretty: 
-            self._print_table_pretty(limit)
+            self._print_table_pretty(limit, index)
             return
         
         count = 0
@@ -179,7 +190,7 @@ class Table:
             print(f"Record ID: {record.id}, Data: {record.data}")
             count += 1
             
-    def _print_table_pretty(self, limit=None):
+    def _print_table_pretty(self, limit=None, index=False):
         """
         Prints the records in the table in a pretty format using the tabulate library.
         Args:
@@ -191,9 +202,17 @@ class Table:
         for record in self.records:
             if limit is not None and count >= limit:
                 break
-            table.append([record.id, record.data])
+            
+            if index:
+                table.append([record.index.__str__(), record.id, record.data])
+            else:
+                table.append([record.id, record.data])
             count += 1
-        print(tabulate(table, headers=["ID", "Data"]))
+        
+        if index:
+            print(tabulate(table, headers=["Index", "ID", "Data"]))
+        else:
+            print(tabulate(table, headers=["ID", "Data"]))
 
     def join(self, other_table, on_column, other_column):
         """

@@ -5,27 +5,27 @@ class Index:
         """
         self.index = {}
 
-    def add(self, key, record_id):
+    def add(self, key, record):
         """
-        Adds a record ID to the index under the specified key.  
+        Adds a record to the index under the specified key.  
         If the key does not exist in the index, it will be created.
         Args:
-            key (str): The key under which the record ID will be added.
-            record_id (int): The ID of the record to be added to the index.
+            key (str): The key under which the record will be added.
+            record (Any): The record to be added to the index.
         """
         if key not in self.index:
             self.index[key] = []
-        self.index[key].append(record_id)
+        self.index[key].append(record)
 
-    def remove(self, key, record_id):
+    def remove(self, key, record):
         """
-        Remove a record ID from the index for a given key.
+        Remove a record from the index for a given key.
         Args:
-            key (str): The key from which the record ID should be removed.
-            record_id (Any): The record ID to be removed from the index.
+            key (str): The key from which the record should be removed.
+            record (Any): The record to be removed from the index.
         """
         if key in self.index:
-            self.index[key].remove(record_id)
+            self.index[key].remove(record)
             if not self.index[key]:
                 del self.index[key]
 
@@ -38,3 +38,11 @@ class Index:
             The value associated with the key if found, otherwise an empty list.
         """
         return self.index.get(key, [])
+    
+    def __str__(self):
+        """
+        Returns a string representation of the index.
+        Returns:
+            str: A string representation of the index.
+        """
+        return str(f"Index Object: {self.index}")
