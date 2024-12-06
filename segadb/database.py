@@ -148,3 +148,22 @@ class Database:
             return table.filter(condition)
         else:
             raise ValueError(f"Table {table_name} does not exist.")
+
+    def print_db(self):
+        """
+        Print the database tables, including their names, columns, constraints, and records.
+        """
+        print(f"Database: {self.name}")
+        for table_name, table in self.tables.items():
+            print(f"\nTable: {table_name}")
+            print(f"Columns: {table.columns}")
+            
+            consts = []
+            for constraint in table.constraints:
+                if len(table.constraints[constraint]) == 1:
+                    consts.append(f"{constraint}: {table.constraints[constraint][0].__name__}")
+                
+            print(f"Constraints: {consts}")
+                
+            
+            table.print_table(pretty=True)

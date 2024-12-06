@@ -31,14 +31,12 @@ db.get_table("orders").insert({"user_id": 4, "product": "Smartwatch", "order_id"
 # Print the tables before saving
 print("Before Saving:")
 print("--------------------------------------------------------------------------------")
-print("Users Table:")
-db.get_table("users").print_table(pretty=True)
+db.print_db()
 
-print("\nOrders Table:")
-db.get_table("orders").print_table(pretty=True)
 
 # Save the database to a file
-print("\nSaving to database.json:")
+print("\n--------------------------------------------------------------------------------")
+print("Saving to database.json:")
 print("--------------------------------------------------------------------------------")
 Storage.save(db, "database.json")
 
