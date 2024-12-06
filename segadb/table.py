@@ -35,13 +35,20 @@ class Table:
             if constraint == 'UNIQUE':
                 def unique_constraint(value):
                     return all(record.data.get(column) != value for record in self.records)
+                unique_constraint.__name__ = "unique_constraint"
                 self.constraints[column].append(unique_constraint)
+            
             elif constraint == 'FOREIGN_KEY':
                 if not reference_table or not reference_column:
                     raise ValueError("Foreign key constraints require a reference table and column.")
+                
                 def foreign_key_constraint(value):
                     return any(record.data.get(reference_column) == value for record in reference_table.records)
+                foreign_key_constraint.__name__ = "foreign_key_constraint"
+                foreign_key_constraint.reference_table = reference_table.name
+                foreign_key_constraint.reference_column = reference_column
                 self.constraints[column].append(foreign_key_constraint)
+            
             else:
                 self.constraints[column].append(constraint)
         else:

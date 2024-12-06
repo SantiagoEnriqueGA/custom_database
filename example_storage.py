@@ -45,7 +45,20 @@ loaded_db = Storage.load("database.json")
 
 
 # Print the tables after loading
-# TODO: Fix this
 print("\nAfter Loading:")
 print("--------------------------------------------------------------------------------")
-print(loaded_db)
+# print(loaded_db)
+loaded_db.print_db()
+
+
+# Check constraints
+print("\nCheck constraints - Unique constraint violation:")
+print("--------------------------------------------------------------------------------")
+print("\nTry to insert order with non-existent user_id in orders table:")
+loaded_db.get_table("users").try_insert({"user_id": 1, "name": "Alice", "email": "alice@abc.com"})
+
+print("\nCheck constraints - Foreign key constraint violation:")
+print("--------------------------------------------------------------------------------")
+print("Try to insert order with non-existent user_id in orders table:")
+loaded_db.get_table("orders").try_insert({"user_id": 5, "product": "Smartwatch", "order_id": 5, "order_date": "2021-01-05"})
+

@@ -1,4 +1,5 @@
 from .table import Table
+from .record import Record
 
 class Database:
     def __init__(self, name):
@@ -20,7 +21,16 @@ class Database:
             None
         """
         self.tables[table_name] = Table(table_name, columns)
-
+    
+    def _create_table_from_dict(self, table_data):
+        """
+        Creates a new table in the database from a dictionary.
+        """
+        table = Table(table_data['name'], table_data['columns'])
+        table.records = [Record(record['id'], record['data']) for record in table_data['records']]
+        table.constraints = table_data['constraints']
+        self.tables[table_data['name']] = table
+        
     def drop_table(self, table_name):
         """
         Drops a table from the database.

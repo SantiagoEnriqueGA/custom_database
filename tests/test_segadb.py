@@ -292,8 +292,12 @@ class TestStorage(unittest.TestCase):
     def test_load(self):
         Storage.save(self.db, self.filename)
         loaded_db = Storage.load(self.filename)
-        self.assertEqual(loaded_db["name"], "TestDB")
-        self.assertIn("Users", loaded_db["tables"])
+        self.assertEqual(loaded_db.name, "TestDB")
+        self.assertEqual(loaded_db.tables.keys(), self.db.tables.keys())
+        self.assertEqual(loaded_db.get_table("Users").columns, self.db.get_table("Users").columns)
+        self.assertEqual(len(loaded_db.get_table("Users").records), len(self.db.get_table("Users").records))
+        self.assertEqual(loaded_db.get_table("Users").next_id, self.db.get_table("Users").next_id)
+        self.assertEqual(loaded_db.get_table("Users").constraints, self.db.get_table("Users").constraints)
 
     def test_delete(self):
         Storage.save(self.db, self.filename)
