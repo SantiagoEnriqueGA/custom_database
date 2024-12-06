@@ -37,6 +37,7 @@ The project directory structure is as follows:
 - [example_change_ids.py](example_change_ids.py): Demonstrates how to change record IDs.
 - [example_recordTypes.py](example_recordTypes.py): Demonstrates how to use different record types (VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord).
 - [example_queries.py](example_queries.py): Demonstrates how to create tables, add constraints, insert data, perform joins, aggregations, and filtering operations.
+- [example_storage.py](example_storage.py): Demonstrates how to save and load the database, and check constraints.
 
 ## Usage
 ```python
