@@ -1,4 +1,5 @@
 from .record import Record
+from .index import Index
 
 class Table:
     def __init__(self, name, columns):
