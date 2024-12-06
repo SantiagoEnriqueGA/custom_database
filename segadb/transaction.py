@@ -52,3 +52,26 @@ class Transaction:
             operation: The operation to be added to the list.
         """
         self.operations.append(operation)
+        
+    def copy(self):
+        """
+        Copies a transaction object.
+        """
+        import copy
+        return copy.deepcopy(self)
+
+    def preview(self):
+        """
+        Previews the operations in the current transaction without committing or rolling back.
+        """
+        for operation in self.operations:
+            operation()
+            
+        # Add preview to DB name
+        self.database.name = self.database.name + "_preview"
+            
+        self.database.print_db()
+        
+        # Reset DB name
+        self.database.name = self.database.name[:-8]
+        

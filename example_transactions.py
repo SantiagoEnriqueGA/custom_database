@@ -20,12 +20,22 @@ transaction.begin()
 # Insert a record within a transaction
 users_table.insert({"name": "Jane Doe2", "email": "jane@example.com"}, transaction=transaction)
 
-print("\nAfter insert transaction:")
-users_table.print_table()
+# Preview the transaction
+print("\nPreview transaction:")
+transaction.preview()
 
 # Rollback the transaction
 transaction.rollback()
 users_table = db.get_table("Users")
 
 print("\nAfter rollback:")
+users_table.print_table()
+
+# Insert a record within a transaction
+users_table.insert({"name": "Jane Doe2", "email": "jane@example.com"}, transaction=transaction)
+
+# Commit the transaction
+transaction.commit()
+
+print("\nAfter commit:")
 users_table.print_table()
