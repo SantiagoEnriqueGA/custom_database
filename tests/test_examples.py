@@ -21,7 +21,7 @@ def load_tests(loader, tests, pattern):
     Dynamically load test cases for each example file.
     """
     # Find all example files in the examples directory. (Files starting with 'example_')
-    example_files = glob.glob(os.path.join(os.path.dirname(__file__), '../example_*.py'))
+    example_files = glob.glob(os.path.join(os.path.dirname(__file__), '..\\examples\\example_*.py'))
     
     # Raise an error if no example files are found.
     if not example_files:
