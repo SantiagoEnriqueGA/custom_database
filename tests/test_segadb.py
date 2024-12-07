@@ -11,9 +11,33 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from segadb.database import Database
 from segadb.table import Table
 from segadb.index import Index
-from segadb.record import Record
+from segadb.record import Record, VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord
 from segadb.storage import Storage
 from segadb.transaction import Transaction
+
+from contextlib import contextmanager
+
+@contextmanager
+def suppress_print():
+    """
+    Context manager to suppress standard output (stdout).  
+    This function redirects the standard output to os.devnull, silencing any print statements or other output to the console within the context.   
+    Once the context is exited, the standard output is restored to its original state.  
+
+    Usage:
+        with suppress_print():
+            # Code that produces output
+            print("This will not be printed")
+    Yields:
+        None
+    """
+    with open(os.devnull, 'w') as devnull:
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+        try:
+            yield
+        finally:
+            sys.stdout = old_stdout
 
 class TestDatabase(unittest.TestCase):
     """
@@ -31,6 +55,10 @@ class TestDatabase(unittest.TestCase):
     - test_aggregate_table: Tests aggregating data in a table.
     - test_filter_table: Tests filtering data in a table.
     """
+    @classmethod
+    def setUpClass(cls):
+        print("Testing Database Class")
+
     def test_create_table(self):
         db = Database("TestDB")
         db.create_table("Users", ["id", "name", "email"])
@@ -105,8 +133,9 @@ class TestDatabase(unittest.TestCase):
         db.get_table("Orders").insert({"order_id": 1, "user_id": 1, "product": "Laptop"})
         db.get_table("Orders").insert({"order_id": 2, "user_id": 2, "product": "Phone"})
         
-        with self.assertRaises(ValueError):
-            db.get_table("Orders").insert({"order_id": 3, "user_id": 3, "product": "Tablet"})
+        with suppress_print():
+            with self.assertRaises(ValueError):
+                db.get_table("Orders").insert({"order_id": 3, "user_id": 3, "product": "Tablet"})
 
     def test_join_tables(self):
         db = Database("TestDB")
@@ -181,6 +210,10 @@ class TestTable(unittest.TestCase):
     - test_add_constraint1: Tests that a constraint can be added to a column and verifies the constraint.
     - test_add_constraint2: Tests that a UNIQUE constraint can be added to a column and verifies the constraint.
     """
+    @classmethod
+    def setUpClass(cls):
+        print("Testing Table Class")
+
     def setUp(self):
         self.table = Table("Users", ["id", "name", "email"])
 
@@ -207,33 +240,37 @@ class TestTable(unittest.TestCase):
         self.assertEqual(results[0].data["name"], "Jane Doe")
 
     def test_try_insert(self):
-        self.table.add_constraint("email", lambda x: "@" in x)
-        self.table.try_insert({"name": "John Doe", "email": "john@example.com"})
-        self.assertEqual(len(self.table.records), 1)
-        self.table.try_insert({"name": "Jane Doe", "email": "janeexample.com"})
-        self.assertEqual(len(self.table.records), 1)  # Should not insert due to constraint violation
+        with suppress_print():
+            self.table.add_constraint("email", lambda x: "@" in x)
+            self.table.try_insert({"name": "John Doe", "email": "john@example.com"})
+            self.assertEqual(len(self.table.records), 1)
+            self.table.try_insert({"name": "Jane Doe", "email": "janeexample.com"})
+            self.assertEqual(len(self.table.records), 1)  # Should not insert due to constraint violation
 
     def test_print_table(self):
         self.table.insert({"name": "John Doe", "email": "john@example.com"})
         self.table.insert({"name": "Jane Doe", "email": "jane@example.com"})
-        self.table.print_table(limit=1)
-        self.table.print_table(pretty=True)
+        with suppress_print():
+            self.table.print_table(limit=1)
+            self.table.print_table(pretty=True)
         
     def test_add_constraint1(self):
-        self.table.add_constraint("email", lambda x: "@" in x)
-        self.assertIn("email", self.table.constraints)
-        self.table.try_insert({"name": "John Doe", "email": "john@example.com"})
-        self.assertEqual(len(self.table.records), 1)
-        self.table.try_insert({"name": "Jane Doe", "email": "janeexample.com"})
-        self.assertEqual(len(self.table.records), 1)  # Should not insert due to constraint violation
+        with suppress_print():    
+            self.table.add_constraint("email", lambda x: "@" in x)
+            self.assertIn("email", self.table.constraints)
+            self.table.try_insert({"name": "John Doe", "email": "john@example.com"})
+            self.assertEqual(len(self.table.records), 1)
+            self.table.try_insert({"name": "Jane Doe", "email": "janeexample.com"})
+            self.assertEqual(len(self.table.records), 1)  # Should not insert due to constraint violation
     
     def test_add_constraint2(self):
-        self.table.add_constraint("email", 'UNIQUE')
-        self.assertIn("email", self.table.constraints)
-        self.table.try_insert({"name": "John Doe", "email": "john@example.com"})
-        self.assertEqual(len(self.table.records), 1)
-        self.table.try_insert({"name": "Jane Doe", "email": "john@example.com"})
-        self.assertEqual(len(self.table.records), 1)  # Should not insert due to UNIQUE constraint violation
+        with suppress_print():    
+            self.table.add_constraint("email", 'UNIQUE')
+            self.assertIn("email", self.table.constraints)
+            self.table.try_insert({"name": "John Doe", "email": "john@example.com"})
+            self.assertEqual(len(self.table.records), 1)
+            self.table.try_insert({"name": "Jane Doe", "email": "john@example.com"})
+            self.assertEqual(len(self.table.records), 1)  # Should not insert due to UNIQUE constraint violation
 
 class TestIndex(unittest.TestCase):
     """
@@ -243,6 +280,10 @@ class TestIndex(unittest.TestCase):
     - test_add_and_find: Tests that an item can be added to the index and subsequently found.
     - test_remove: Tests that an item can be removed from the index and is no longer found.
     """
+    @classmethod
+    def setUpClass(cls):
+        print("Testing Index Class")
+
     def setUp(self):
         self.index = Index()
 
@@ -260,11 +301,52 @@ class TestRecord(unittest.TestCase):
     Unit tests for the Record class.
     Methods:
     - test_record_creation: Tests the creation of a record with an ID and data.
+    - test_vector_record: Tests the VectorRecord class and its methods.
+    - test_time_series_record: Tests the TimeSeriesRecord class and its methods.
+    - test_image_record: Tests the ImageRecord class and its methods.
+    - test_text_record: Tests the TextRecord class and its
     """
+    @classmethod
+    def setUpClass(cls):
+        print("Testing Record Class")
+
     def test_record_creation(self):
         record = Record(1, {"name": "John Doe"})
         self.assertEqual(record.id, 1)
         self.assertEqual(record.data["name"], "John Doe")
+
+    def test_vector_record(self):
+        import math
+        
+        vector_record = VectorRecord(1, {"vector": [1, 2, 3]})
+        self.assertEqual(vector_record.magnitude(), math.sqrt(14))
+        self.assertEqual(vector_record.normalize(), [1/math.sqrt(14), 2/math.sqrt(14), 3/math.sqrt(14)])
+        self.assertEqual(vector_record.dot_product([4, 5, 6]), 32)
+
+    def test_time_series_record(self):
+        time_series_record = TimeSeriesRecord(1, {"time_series": [1, 2, 3, 4, 5]})
+        self.assertEqual(time_series_record.moving_average(3), [2.0, 3.0, 4.0])
+
+    def test_image_record(self):
+        import tempfile
+        from PIL import Image
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as temp_image:
+            image = Image.new("RGB", (100, 100), color="red")
+            image.save(temp_image, format="PNG")
+            temp_image_path = temp_image.name
+
+        image_record = ImageRecord(1, {"image_data": temp_image_path})
+        self.assertEqual(image_record.image_size, os.path.getsize(temp_image_path))
+        resized_image = image_record.resize(0.5)
+        self.assertEqual(resized_image.size, (50, 50))
+        os.remove(temp_image_path)
+
+    def test_text_record(self):
+        text_record = TextRecord(1, {"text": "Hello World"})
+        self.assertEqual(text_record.word_count(), 2)
+        self.assertEqual(text_record.to_uppercase(), "HELLO WORLD")
+        self.assertEqual(text_record.to_lowercase(), "hello world")
 
 class TestStorage(unittest.TestCase):
     """
@@ -276,6 +358,10 @@ class TestStorage(unittest.TestCase):
     - test_load: Tests loading the database from a file.
     - test_delete: Tests deleting the file after saving the
     """
+    @classmethod
+    def setUpClass(cls):
+        print("Testing Storage Class")
+
     def setUp(self):
         self.db = Database("TestDB")
         self.db.create_table("Users", ["id", "name", "email"])
@@ -314,6 +400,10 @@ class TestTransaction(unittest.TestCase):
     - test_commit: Tests the commit method of the Transaction class.
     - test_rollback: Tests the rollback method of the Transaction class.
     """
+    @classmethod
+    def setUpClass(cls):
+        print("Testing Transaction Class")
+
     def setUp(self):
         self.db = Database("TestDB")
         self.db.create_table("Users", ["id", "name", "email"])

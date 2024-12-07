@@ -190,11 +190,13 @@ class Table:
             print(f"Record ID: {record.id}, Data: {record.data}")
             count += 1
             
-    def _print_table_pretty(self, limit=None, index=False):
+    def _print_table_pretty(self, limit=None, index=False, max_data_length=25):
         """
         Prints the records in the table in a pretty format using the tabulate library.
         Args:
             limit (int, optional): The maximum number of records to print. If None, all records are printed. Defaults to None.
+            index (bool, optional): If True, includes the index in the printed table. Defaults to False.
+            max_data_length (int, optional): The maximum length of the data to be printed. If None, the full data is printed. Defaults to None.
         """
         from tabulate import tabulate
         table = []
@@ -203,10 +205,14 @@ class Table:
             if limit is not None and count >= limit:
                 break
             
+            data = record.data    
+            if max_data_length is not None:
+                data = {k: (str(v)[:max_data_length] + '...' if len(str(v)) > max_data_length else v) for k, v in data.items()}
+            
             if index:
-                table.append([record.index.__str__(), record.id, record.data])
+                table.append([record.index.__str__(), record.id, data])
             else:
-                table.append([record.id, record.data])
+                table.append([record.id, data])
             count += 1
         
         if index:
