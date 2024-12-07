@@ -14,6 +14,7 @@ This project is primarily educational. It is designed to help understand the wor
 ## File Structure
 The project directory structure is as follows:
 
+- **setup.py**: Setup script for packaging the segadb library. ~TBD~
 - **segadb/**: Contains the main database library code.
   - [`__init__.py`](segadb/__init__.py): Initializes the segadb package.
   - [`database.py`](segadb/database.py): Implements the `Database` class for managing tables.
@@ -24,20 +25,23 @@ The project directory structure is as follows:
   - [`table.py`](segadb/table.py): Implements the `Table` class for table operations.
   - [`transaction.py`](segadb/transaction.py): Implements the `Transaction` class for transaction handling.
 - **tests/**: Contains unit and performance tests for the database library.
-  - [`test_segadb.py`](tests/test_segadb.py): Unit tests for the segadb package.
+  - [`test_database.py`](tests/test_database.py): Unit tests for the `Database` class.
+  - [`test_table.py`](tests/test_table.py): Unit tests for the `Table` class.
+  - [`test_index.py`](tests/test_index.py): Unit tests for the `Index` class.
+  - [`test_record.py`](tests/test_record.py): Unit tests for the `Record` class.
+  - [`test_storage.py`](tests/test_storage.py): Unit tests for the `Storage` class.
+  - [`test_transaction.py`](tests/test_transaction.py): Unit tests for the `Transaction` class.
+  - [`test_utils.py`](tests/test_utils.py): Utility functions for tests.
   - [`test_segadb_performance.py`](tests/test_segadb_performance.py): Performance tests for the segadb package.
   - [`test_examples.py`](tests/test_examples.py): Contains tests for the example scripts.
-- **example_*.py**: Example usages of the segadb library.
-- **setup.py**: Setup script for packaging the segadb library.
-
-## Examples
-- [example_csv.py](example_csv.py): Demonstrates how to create a table from a CSV file.
-- [example_constraints.py](example_constraints.py): Demonstrates how to add and enforce constraints on table columns.
-- [example_transactions.py](example_transactions.py): Demonstrates how to use transactions for commit and rollback operations.
-- [example_change_ids.py](example_change_ids.py): Demonstrates how to change record IDs.
-- [example_recordTypes.py](example_recordTypes.py): Demonstrates how to use different record types (VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord).
-- [example_queries.py](example_queries.py): Demonstrates how to create tables, add constraints, insert data, perform joins, aggregations, and filtering operations.
-- [example_storage.py](example_storage.py): Demonstrates how to save and load the database, and check constraints.
+- **Examples/**: Example usages of the segadb library.
+  - [example_csv.py](examples/example_csv.py): Demonstrates how to create a table from a CSV file.
+  - [example_constraints.py](examples/example_constraints.py): Demonstrates how to add and enforce constraints on table columns.
+  - [example_transactions.py](examples/example_transactions.py): Demonstrates how to use transactions for commit and rollback operations.
+  - [example_change_ids.py](examples/example_change_ids.py): Demonstrates how to change record IDs, diffrence between IDs and Index.
+  - [example_recordTypes.py](examples/example_recordTypes.py): Demonstrates how to use different record types (VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord).
+  - [example_queries.py](examples/example_queries.py): Demonstrates how to create tables, add constraints, insert data, perform joins, aggregations, and filtering operations.
+  - [example_storage.py](examples/example_storage.py): Demonstrates how to save and load the database, and check constraints.
 
 ## Usage
 ```python
@@ -47,34 +51,57 @@ from segadb import *
 db = Database("MyTestDB")
 
 # Create a new table
-db.create_table("Users", ["id", "name", "email"])
+db.create_table("Users", ["name", "email"])
 
 # Insert a record
 users_table = db.get_table("Users")
 users_table.insert({"name": "John Doe", "email": "john@example.com"})
 
-print("Before transaction:")
+print("Before Insert:")
 users_table.print_table()
 
-# Start a transaction
-transaction = Transaction(db)
-transaction.begin()
+# Add a constraint to the table
+users_table.add_constraint("email", lambda x: "@" in x)
+print("\n--Constraint added to the table: email must contain '@'")
 
-# Insert a record within a transaction
-users_table.insert({"name": "Jane Doe2", "email": "jane@example.com"}, transaction)
+users_table.try_insert({"name": "Jane Doe", "email": "janeexample.com"})    # violates the constraint
+users_table.insert({"name": "Jane Doe", "email": "jane@example.com"})       # satisfies the constraint
 
-print("\nAfter insert transaction:")
+print("\nAfter Insert:")
 users_table.print_table()
 
-# Rollback the transaction
-transaction.rollback()
-users_table = db.get_table("Users")
 
-print("\nAfter rollback:")
+# Add constraint for unique email
+users_table.add_constraint("email", "UNIQUE")
+print("\n--Constraint added to the table: email must be unique")
+
+# Try to insert a record with a duplicate email
+users_table.try_insert({"name": "John Doe", "email": "john@example.com"})     # violates the constraint
+users_table.try_insert({"name": "James Doe", "email": "james@example.com"})   # satisfies the constraint
+
+print("\nAfter Insert:")
 users_table.print_table()
+```
+```
+Before Insert:
+Record ID: 1, Data: {'name': 'John Doe', 'email': 'john@example.com'}
 
-# Save the database to a file
-Storage.save(db, "database.json")
+--Constraint added to the table: email must contain '@'
+Constraint violation on column email for value janeexample.com
+Error on insert: Constraint violation on column email for value janeexample.com
+
+After Insert:
+Record ID: 1, Data: {'name': 'John Doe', 'email': 'john@example.com'}
+Record ID: 2, Data: {'name': 'Jane Doe', 'email': 'jane@example.com'}
+
+--Constraint added to the table: email must be unique
+Constraint violation on column email for value john@example.com
+Error on insert: Constraint violation on column email for value john@example.com
+
+After Insert:
+Record ID: 1, Data: {'name': 'John Doe', 'email': 'john@example.com'}
+Record ID: 2, Data: {'name': 'Jane Doe', 'email': 'jane@example.com'}
+Record ID: 3, Data: {'name': 'James Doe', 'email': 'james@example.com'}
 ```
 
 ## Tests
@@ -85,16 +112,12 @@ python -m unittest discover -s tests
 
 ### Test Files and Cases
 
-- **`test_segadb.py`**: Contains unit tests for the core functionality of the segadb package.
-  - **TestDatabase**: Tests for the `Database` class, including table creation, deletion, retrieval, copying, restoring, and constraints.
-  - **TestTable**: Tests for the `Table` class, including record insertion, deletion, updating, selection, constraints, and printing.
-  - **TestIndex**: Tests for the `Index` class, including adding, finding, and removing items.
-  - **TestRecord**: Tests for the `Record` class, including record creation.
-  - **TestStorage**: Tests for the `Storage` class, including saving, loading, and deleting the database.
-  - **TestTransaction**: Tests for the `Transaction` class, including beginning, committing, and rolling back transactions.
-
-- **`test_segadb_performance.py`**: Contains performance tests for the segadb package.
-  - **TestDatabasePerformance**: Tests for the performance of the `Database` class, including inserting, selecting, updating, deleting, saving, loading, and restoring a large number of records.
-
+- **`test_database.py`**: Unit tests for the `Database` class.
+- **`test_table.py`**: Unit tests for the `Table` class.
+- **`test_index.py`**: Unit tests for the `Index` class.
+- **`test_record.py`**: Unit tests for the `Record` class.
+- **`test_storage.py`**: Unit tests for the `Storage` class.
+- **`test_transaction.py`**: Unit tests for the `Transaction` class.
+- **`test_utils.py`**: Utility functions for tests.
+- **`test_segadb_performance.py`**: Performance tests for the segadb package.
 - **`test_examples.py`**: Contains tests for the example scripts.
-  - **TestExamples**: Dynamically generated test cases for each example file to ensure they run without errors.
