@@ -24,8 +24,13 @@ class TestDatabasePerformance(unittest.TestCase):
         self.db = Database("PerformanceTestDB")
         self.db.create_table("Users", ["id", "name", "email"])
         self.users_table = self.db.get_table("Users")
+        for i in range(NUM_RECORDS):
+            self.users_table.insert({"id": i, "name": f"User{i}", "email": f"user{i}@example.com"})
 
     def test_insert_performance(self):
+        # Delete all records before testing insert performance
+        for i in range(NUM_RECORDS):
+            self.users_table.delete(i)
         start_time = time.time()
         for i in range(NUM_RECORDS):
             self.users_table.insert({"id": i, "name": f"User{i}", "email": f"user{i}@example.com"})
@@ -33,8 +38,6 @@ class TestDatabasePerformance(unittest.TestCase):
         print(f"Insert performance for {NUM_RECORDS} [id, name, email] records: {(end_time - start_time):.2} seconds.")
 
     def test_select_performance(self):
-        for i in range(NUM_RECORDS):
-            self.users_table.insert({"id": i, "name": f"User{i}", "email": f"user{i}@example.com"})
         start_time = time.time()
         results = self.users_table.select(lambda record: record.data["name"] == f"User{NUM_RECORDS - 1}")
         end_time = time.time()
@@ -42,8 +45,6 @@ class TestDatabasePerformance(unittest.TestCase):
         self.assertEqual(len(results), 1)
 
     def test_update_performance(self):
-        for i in range(NUM_RECORDS):
-            self.users_table.insert({"id": i, "name": f"User{i}", "email": f"user{i}@example.com"})
         start_time = time.time()
         for i in range(NUM_RECORDS):
             self.users_table.update(i, {"name": f"UpdatedUser{i}", "email": f"updateduser{i}@example.com"})
@@ -51,8 +52,6 @@ class TestDatabasePerformance(unittest.TestCase):
         print(f"Update performance on {NUM_RECORDS} [id, name, email] records: {(end_time - start_time):.2} seconds.")
 
     def test_delete_performance(self):
-        for i in range(NUM_RECORDS):
-            self.users_table.insert({"id": i, "name": f"User{i}", "email": f"user{i}@example.com"})
         start_time = time.time()
         for i in range(NUM_RECORDS):
             self.users_table.delete(i)
@@ -60,9 +59,6 @@ class TestDatabasePerformance(unittest.TestCase):
         print(f"Delete performance on {NUM_RECORDS} [id, name, email] records: {(end_time - start_time):.2} seconds.")
         
     def test_save_performance(self):
-        for i in range(NUM_RECORDS):
-            self.users_table.insert({"id": i, "name": f"User{i}", "email": f"user{i}@example.com"})
-        
         # Measure save performance
         start_time = time.time()
         Storage.save(self.db, "test_db.json")
@@ -73,22 +69,16 @@ class TestDatabasePerformance(unittest.TestCase):
         Storage.delete("test_db.json")
         
     def test_load_performance(self):
-        for i in range(NUM_RECORDS):
-            self.users_table.insert({"id": i, "name": f"User{i}", "email": f"user{i}@example.com"})
-        
         # Save the database to a file
         Storage.save(self.db, "test_db.json")
         
         # Measure load performance
         start_time = time.time()
-        laoded_db = Storage.load("test_db.json")
+        loaded_db = Storage.load("test_db.json")
         end_time = time.time()
         print(f"Load performance for {NUM_RECORDS} records: {(end_time - start_time):.2} seconds.")
         
     def test_restore_performance(self):
-        for i in range(NUM_RECORDS):
-            self.users_table.insert({"id": i, "name": f"User{i}", "email": f"user{i}@example.com"})
-            
         # Create a shadow copy of the database
         db_copy = self.db.copy()
         
