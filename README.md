@@ -1,6 +1,6 @@
 # SEGADB
 
-segadb is a simple database library for Python.
+SEGADB is a simple database library for Python.
 This project is primarily educational. It is designed to help understand the workings of a simple database system by building it from scratch. The implementations focus on fundamental concepts first and then on optimizing for speed or robustness, using basic Python data structures and custom transaction handling for specific tasks.
 
 ## Features
