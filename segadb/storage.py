@@ -152,3 +152,67 @@ class Storage:
                 
             }
         return data
+    
+    @staticmethod
+    def save_table(table, filename, format='csv'):
+        """
+        Save the table to a file in the specified format.
+        Args:
+            table (Table): The table object to be saved.
+            filename (str): The path to the file where the table will be saved.
+            format (str): The format in which the table will be saved. Default is 'csv'.
+        """
+        if format == 'csv':
+            Storage._table_to_csv(table, filename)
+        elif format == 'json':
+            Storage._table_to_json(table, filename)
+        elif format == 'sqlite':
+            Storage._table_to_sqlite(table, filename)
+        else:
+            raise ValueError(f"Unsupported format: {format}")
+
+    def _table_to_csv(table, filename):
+        """
+        Save the table to a CSV file.
+        Args:
+            table (Table): The table object to be saved.
+            filename (str): The path to the file where the table will be saved.
+        """
+        import csv
+        with open(filename, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(table.columns)
+            for record in table.records:
+                writer.writerow([record.data[column] for column in table.columns])
+                
+    def _table_to_json(table, filename):
+        """
+        Save the table to a JSON file.
+        Args:
+            table (Table): The table object to be saved.
+            filename (str): The path to the file where the table will be saved.
+        """
+        data = {
+            "columns": table.columns,
+            "records": [record.data for record in table.records]
+        }
+        with open(filename, 'w') as f:
+            json.dump(data, f, indent=4)
+            
+    def _table_to_sqlite(table, filename):
+        """
+        Save the table to a SQLite database file.
+        Args:
+            table (Table): The table object to be saved.
+            filename (str): The path to the file where the table will be saved.
+        """
+        import sqlite3
+        conn = sqlite3.connect(filename)
+        c = conn.cursor()
+        c.execute(f"CREATE TABLE {table.name} ({', '.join([f'{column} TEXT' for column in table.columns])})")
+        for record in table.records:
+            c.execute(f"INSERT INTO {table.name} VALUES ({', '.join([f'"{record.data[column]}"' for column in table.columns])})")
+        conn.commit()
+        conn.close()
+        
+        

@@ -43,12 +43,12 @@ db.print_db(index=True)
 
 # Save the database to a file
 print("\n--------------------------------------------------------------------------------")
-print("Saving to database.json:")
+print("Saving to example_storage/database.json:")
 print("--------------------------------------------------------------------------------")
-Storage.save(db, "database.json")
+Storage.save(db, "example_storage/database.json")
 
 # Load the database from a file
-loaded_db = Storage.load("database.json")
+loaded_db = Storage.load("example_storage/database.json")
 
 
 # Print the tables after loading
@@ -73,20 +73,20 @@ loaded_db.get_table("orders").try_insert({"user_id": 5, "product": "Smartwatch",
 
 # Save the database to an encrypted file
 print("\n--------------------------------------------------------------------------------")
-print("Saving to database_encrypted.json:")
+print("Saving to example_storage/database_encrypted.json:")
 print("--------------------------------------------------------------------------------")
 
 # Generate a random encryption key and save the database to an encrypted file
 key = Storage.generate_key()
 print(f"Encryption Key: {key}")
-Storage.save(db, "database_encrypted.json", key=key)
+Storage.save(db, "example_storage/database_encrypted.json", key=key)
 
 # Show a preview of encrypted file
-with open("database_encrypted.json", "r") as f:
+with open("example_storage/database_encrypted.json", "r") as f:
     print(f"Encrypted File Preview: {f.read(100)}")
 
 # Load the database from an encrypted file
-loaded_e_db = Storage.load("database_encrypted.json", key=key)
+loaded_e_db = Storage.load("example_storage/database_encrypted.json", key=key)
 
 
 # Print the tables after loading
