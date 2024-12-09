@@ -46,3 +46,11 @@ class Index:
             str: A string representation of the index.
         """
         return str(f"Index Object: {self.index}")
+    
+    def to_dict(self):
+        """
+        Returns a dictionary representation of the index.
+        Returns:
+            dict: A dictionary representation of the index.
+        """
+        return {key: [record.id for record in records] for key, records in self.index.items()}

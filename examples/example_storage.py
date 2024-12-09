@@ -1,3 +1,4 @@
+from json import load
 import sys
 import os
 
@@ -37,7 +38,7 @@ db.get_table("orders").insert({"user_id": 4, "product": "Smartwatch", "order_id"
 # Print the tables before saving
 print("Before Saving:")
 print("--------------------------------------------------------------------------------")
-db.print_db()
+db.print_db(index=True)
 
 
 # Save the database to a file
@@ -54,7 +55,7 @@ loaded_db = Storage.load("database.json")
 print("\nAfter Loading:")
 print("--------------------------------------------------------------------------------")
 # print(loaded_db)
-loaded_db.print_db()
+loaded_db.print_db(index=True)
 
 
 # Check constraints

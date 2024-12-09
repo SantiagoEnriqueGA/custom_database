@@ -1,6 +1,7 @@
 import json
 from .database import Database
 from .record import Record
+from .index import Index
 
 # Note: these are static methods, so they don't need to be instantiated
 class Storage:
@@ -23,7 +24,11 @@ class Storage:
             data["tables"][table_name] = {
                 "name": table.name,
                 "columns": table.columns,
-                "records": [{"id": record.id, "data": record.data} for record in table.records],
+                "records": [{
+                    "id": record.id, 
+                    "data": record.data,
+                    "index": record.index.to_dict(),
+                } for record in table.records],
                 "next_id": table.next_id,
                 "constraints": {
                     column: [
@@ -58,6 +63,7 @@ class Storage:
             table.next_id = table_data["next_id"]
             for record in table_data["records"]:
                 table.insert(record["data"], record_type=Record)
+                table.records[-1].id = record["id"]
             for column, constraints in table_data["constraints"].items():
                 for constraint in constraints:
                     if constraint["name"] == "unique_constraint":
@@ -80,4 +86,39 @@ class Storage:
         """
         import os
         os.remove(filename)
-        
+    
+    @staticmethod
+    def db_to_dict(db):
+        """
+        Convert a database object to a dictionary.
+        Args:
+            db (Database): The database object to be converted.
+        Returns:
+            dict: A dictionary representation of the database object
+        """
+        data = {
+            "name": db.name,
+            "tables": {}
+        }
+        for table_name, table in db.tables.items():
+            data["tables"][table_name] = {
+                "name": table.name,
+                "columns": table.columns,
+                "records": [{
+                    "id": record.id, 
+                    "data": record.data,
+                    "index": record.index.to_dict(),
+                } for record in table.records],
+                "next_id": table.next_id,
+                "constraints": {
+                    column: [
+                        {
+                            "name": constraint.__name__,
+                            "reference_table": getattr(constraint, "reference_table", None),
+                            "reference_column": getattr(constraint, "reference_column", None)
+                        } for constraint in constraints
+                    ] for column, constraints in table.constraints.items()
+                },
+                
+            }
+        return data

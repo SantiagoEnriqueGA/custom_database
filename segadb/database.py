@@ -161,9 +161,11 @@ class Database:
         else:
             raise ValueError(f"Table {table_name} does not exist.")
 
-    def print_db(self):
+    def print_db(self, index=False):
         """
         Print the database tables, including their names, columns, constraints, and records.
+        Args:
+            index (bool, optional): Whether to print the index of each record. Defaults to False.
         """
         print(f"Database: {self.name}")
         for table_name, table in self.tables.items():
@@ -177,4 +179,4 @@ class Database:
                 
             print(f"Constraints: {consts}")
                 
-            table.print_table(pretty=True)
+            table.print_table(pretty=True, index=index)
