@@ -69,3 +69,41 @@ print("-------------------------------------------------------------------------
 print("Try to insert order with non-existent user_id in orders table:")
 loaded_db.get_table("orders").try_insert({"user_id": 5, "product": "Smartwatch", "order_id": 5, "order_date": "2021-01-05"})
 
+
+
+# Save the database to an encrypted file
+print("\n--------------------------------------------------------------------------------")
+print("Saving to database_encrypted.json:")
+print("--------------------------------------------------------------------------------")
+
+# Generate a random encryption key and save the database to an encrypted file
+key = Storage.generate_key()
+print(f"Encryption Key: {key}")
+Storage.save(db, "database_encrypted.json", key=key)
+
+# Show a preview of encrypted file
+with open("database_encrypted.json", "r") as f:
+    print(f"Encrypted File Preview: {f.read(100)}")
+
+# Load the database from an encrypted file
+loaded_e_db = Storage.load("database_encrypted.json", key=key)
+
+
+# Print the tables after loading
+print("\nAfter Loading:")
+print("--------------------------------------------------------------------------------")
+# print(loaded_db)
+loaded_e_db.print_db(index=True)
+
+
+# Check constraints
+print("\nCheck constraints - Unique constraint violation:")
+print("--------------------------------------------------------------------------------")
+print("\nTry to insert order with non-existent user_id in orders table:")
+loaded_e_db.get_table("users").try_insert({"user_id": 1, "name": "Alice", "email": "alice@abc.com"})
+
+print("\nCheck constraints - Foreign key constraint violation:")
+print("--------------------------------------------------------------------------------")
+print("Try to insert order with non-existent user_id in orders table:")
+loaded_e_db.get_table("orders").try_insert({"user_id": 5, "product": "Smartwatch", "order_id": 5, "order_date": "2021-01-05"})
+

@@ -1,4 +1,6 @@
 import json
+from cryptography.fernet import Fernet
+
 from .database import Database
 from .record import Record
 from .index import Index
@@ -6,8 +8,26 @@ from .index import Index
 # Note: these are static methods, so they don't need to be instantiated
 class Storage:
     """A utility class for saving, loading, and deleting database files."""
+    
     @staticmethod
-    def save(db, filename):
+    def generate_key():
+        """Generate a key for encryption."""
+        return Fernet.generate_key()
+
+    @staticmethod
+    def encrypt(data, key):
+        """Encrypt the data using the provided key."""
+        fernet = Fernet(key)
+        return fernet.encrypt(data.encode())
+
+    @staticmethod
+    def decrypt(data, key):
+        """Decrypt the data using the provided key."""
+        fernet = Fernet(key)
+        return fernet.decrypt(data).decode()
+    
+    @staticmethod
+    def save(db, filename, key=None):
         """
         Save the database object to a JSON file.  
         The database object is serialized into a JSON format and written to the specified file.  
@@ -15,6 +35,7 @@ class Storage:
         Args:
             db (Database): The database object to be saved.
             filename (str): The path to the file where the database will be saved.
+            key (bytes, optional): The encryption key. If provided, the data will be encrypted before saving.
         """
         data = {
             "name": db.name,
@@ -41,20 +62,29 @@ class Storage:
                 },
                 
             }
-        with open(filename, 'w') as f:
-            json.dump(data, f, indent=4)
+        with open(filename, 'wb' if key else 'w') as f:
+            json_data = json.dumps(data, indent=4)
+            if key:
+                json_data = Storage.encrypt(json_data, key)
+                f.write(json_data)
+            else:
+                f.write(json_data)
 
     @staticmethod
-    def load(filename):
+    def load(filename, key=None):
         """
         Load a database from a JSON file.
         Args:
             filename (str): The path to the JSON file containing the database data.
+            key (bytes, optional): The encryption key. If provided, the data will be decrypted after loading.
         Returns:
             Database: An instance of the Database class populated with the data from the JSON file.
         """
         with open(filename, 'r') as f:
-            data = json.load(f)
+            json_data = f.read()
+            if key:
+                json_data = Storage.decrypt(json_data, key)
+            data = json.loads(json_data)
         
         db = Database(data["name"])
         for table_name, table_data in data["tables"].items():
