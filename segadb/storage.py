@@ -201,18 +201,24 @@ class Storage:
             
     def _table_to_sqlite(table, filename):
         """
-        Save the table to a SQLite database file.
+        Save the table to a SQLite database file.  
+        If the database file already exists, it will be overwritten.
         Args:
             table (Table): The table object to be saved.
             filename (str): The path to the file where the table will be saved.
         """
         import sqlite3
+        import os
+
+        # Delete the file if it already exists
+        if os.path.exists(filename):
+            os.remove(filename)
+
         conn = sqlite3.connect(filename)
         c = conn.cursor()
         c.execute(f"CREATE TABLE {table.name} ({', '.join([f'{column} TEXT' for column in table.columns])})")
         for record in table.records:
-            c.execute(f"INSERT INTO {table.name} VALUES ({', '.join([f'"{record.data[column]}"' for column in table.columns])})")
+            c.execute(f"INSERT INTO {table.name} VALUES ({', '.join([f'\"{record.data[column]}\"' for column in table.columns])})")
         conn.commit()
         conn.close()
-        
-        
+
