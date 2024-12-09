@@ -24,7 +24,8 @@ class Database:
     
     def _create_table_from_dict(self, table_data):
         """
-        Creates a new table in the database from a dictionary.
+        Creates a new table in the database from a dictionary.  
+        Dictionary must contain the following keys: 'name', 'columns', 'records', and 'constraints'.
         """
         table = Table(table_data['name'], table_data['columns'])
         table.records = [Record(record['id'], record['data']) for record in table_data['records']]
@@ -150,6 +151,7 @@ class Database:
         Args:
             table_name (str): The name of the table.
             condition (function): A function that takes a record as input and returns True if the record satisfies the condition, False otherwise.
+                                  Example: lambda record: record.data["product"] == "Laptop"
         Returns:
             Table: A new table containing the filtered records.
         """
@@ -175,5 +177,4 @@ class Database:
                 
             print(f"Constraints: {consts}")
                 
-            
             table.print_table(pretty=True)

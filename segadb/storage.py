@@ -4,8 +4,17 @@ from .record import Record
 
 # Note: these are static methods, so they don't need to be instantiated
 class Storage:
+    """A utility class for saving, loading, and deleting database files."""
     @staticmethod
     def save(db, filename):
+        """
+        Save the database object to a JSON file.  
+        The database object is serialized into a JSON format and written to the specified file.  
+        The JSON structure includes the database name, tables, columns, records, next_id, and constraints.  
+        Args:
+            db (Database): The database object to be saved.
+            filename (str): The path to the file where the database will be saved.
+        """
         data = {
             "name": db.name,
             "tables": {}
@@ -32,6 +41,13 @@ class Storage:
 
     @staticmethod
     def load(filename):
+        """
+        Load a database from a JSON file.
+        Args:
+            filename (str): The path to the JSON file containing the database data.
+        Returns:
+            Database: An instance of the Database class populated with the data from the JSON file.
+        """
         with open(filename, 'r') as f:
             data = json.load(f)
         
