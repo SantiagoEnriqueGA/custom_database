@@ -1,0 +1,79 @@
+{
+    "columns": [
+        "user_id",
+        "name",
+        "email"
+    ],
+    "records": [
+        {
+            "user_id": 322086,
+            "name": "Alice",
+            "email": "alice@abc.com"
+        },
+        {
+            "user_id": 104982,
+            "name": "Bob",
+            "email": "bob@abc.com"
+        },
+        {
+            "user_id": 578834,
+            "name": "Charlie",
+            "email": "charlie@abc.com"
+        },
+        {
+            "user_id": 189030,
+            "name": "David",
+            "email": "david@abc.com"
+        },
+        {
+            "user_id": 535359,
+            "name": "Eve",
+            "email": "eve@abc.com"
+        },
+        {
+            "user_id": 986647,
+            "name": "Frank",
+            "email": "frank@abc.com"
+        },
+        {
+            "user_id": 990925,
+            "name": "Grace",
+            "email": "grace@abc.com"
+        },
+        {
+            "user_id": 255659,
+            "name": "Hank",
+            "email": "hank@abc.com"
+        },
+        {
+            "user_id": 385155,
+            "name": "Ivy",
+            "email": "ivy@abc.com"
+        },
+        {
+            "user_id": 460384,
+            "name": "Jack",
+            "email": "jack@abc.com"
+        },
+        {
+            "user_id": 572630,
+            "name": "Karen",
+            "email": "karen@abc.com"
+        },
+        {
+            "user_id": 426674,
+            "name": "Leo",
+            "email": "leo@abc.com"
+        },
+        {
+            "user_id": 615579,
+            "name": "Mona",
+            "email": "mona@abc.com"
+        },
+        {
+            "user_id": 312286,
+            "name": "Nina",
+            "email": "nina@abc.com"
+        }
+    ]
+}

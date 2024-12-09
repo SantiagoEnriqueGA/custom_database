@@ -57,8 +57,8 @@ The project directory structure is as follows:
   - [example_queries.py](examples/example_queries.py): Demonstrates how to create tables, add constraints, insert data, perform joins, aggregations, and filtering operations.
   - [example_storage.py](examples/example_storage.py): Demonstrates how to save and load the database, and check constraints.
 - **example_storage/**: Example storage and exports from the segadb library.
-  - database.json: database saved in json format
-  - database_encrypted.json: database saved in json format, encrypted with fernet key. (base64-encoded 32-byte key)
+  - database.segadb: database saved in custom json format
+  - database_encrypted.segadb: database saved in custom json format, encrypted with fernet key. (base64-encoded 32-byte key)
   - users.json: User table experted to .json
   - users.csv: User table experted to .csv
   - users.db: User table experted to SQLite database file

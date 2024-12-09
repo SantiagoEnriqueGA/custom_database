@@ -61,20 +61,20 @@ class TestDatabasePerformance(unittest.TestCase):
     def test_save_performance(self):
         # Measure save performance
         start_time = time.time()
-        Storage.save(self.db, "test_db.json")
+        Storage.save(self.db, "test_db.segadb")
         end_time = time.time()
         print(f"Save performance for {NUM_RECORDS} records: {(end_time - start_time):.2} seconds.")
                 
         # Clean up
-        Storage.delete("test_db.json")
+        Storage.delete("test_db.segadb")
         
     def test_load_performance(self):
         # Save the database to a file
-        Storage.save(self.db, "test_db.json")
+        Storage.save(self.db, "test_db.segadb")
         
         # Measure load performance
         start_time = time.time()
-        loaded_db = Storage.load("test_db.json")
+        loaded_db = Storage.load("test_db.segadb")
         end_time = time.time()
         print(f"Load performance for {NUM_RECORDS} records: {(end_time - start_time):.2} seconds.")
         

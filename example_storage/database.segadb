@@ -1,0 +1,201 @@
+{
+    "name": "ExampleDB",
+    "tables": {
+        "users": {
+            "name": "users",
+            "columns": [
+                "user_id",
+                "name",
+                "email"
+            ],
+            "records": [
+                {
+                    "id": 1,
+                    "data": {
+                        "user_id": 1,
+                        "name": "Alice",
+                        "email": "alice@abc.com"
+                    },
+                    "index": {
+                        "0": [
+                            1
+                        ]
+                    }
+                },
+                {
+                    "id": 2,
+                    "data": {
+                        "user_id": 2,
+                        "name": "Bob",
+                        "email": "bob@abc.com"
+                    },
+                    "index": {
+                        "1": [
+                            2
+                        ]
+                    }
+                },
+                {
+                    "id": 3,
+                    "data": {
+                        "user_id": 3,
+                        "name": "Charlie",
+                        "email": "charlie@abc.com"
+                    },
+                    "index": {
+                        "2": [
+                            3
+                        ]
+                    }
+                },
+                {
+                    "id": 4,
+                    "data": {
+                        "user_id": 4,
+                        "name": "David",
+                        "email": "david@abc.com"
+                    },
+                    "index": {
+                        "3": [
+                            4
+                        ]
+                    }
+                }
+            ],
+            "next_id": 5,
+            "constraints": {
+                "user_id": [
+                    {
+                        "name": "unique_constraint",
+                        "reference_table": null,
+                        "reference_column": null
+                    }
+                ],
+                "name": [],
+                "email": []
+            }
+        },
+        "orders": {
+            "name": "orders",
+            "columns": [
+                "user_id",
+                "product",
+                "order_id",
+                "order_date"
+            ],
+            "records": [
+                {
+                    "id": 1,
+                    "data": {
+                        "user_id": 1,
+                        "product": "Laptop",
+                        "order_id": 1,
+                        "order_date": "2021-01-01"
+                    },
+                    "index": {
+                        "0": [
+                            1
+                        ]
+                    }
+                },
+                {
+                    "id": 2,
+                    "data": {
+                        "user_id": 2,
+                        "product": "Phone",
+                        "order_id": 2,
+                        "order_date": "2021-01-02"
+                    },
+                    "index": {
+                        "1": [
+                            2
+                        ]
+                    }
+                },
+                {
+                    "id": 3,
+                    "data": {
+                        "user_id": 2,
+                        "product": "Laptop",
+                        "order_id": 2,
+                        "order_date": "2021-01-02"
+                    },
+                    "index": {
+                        "2": [
+                            3
+                        ]
+                    }
+                },
+                {
+                    "id": 4,
+                    "data": {
+                        "user_id": 2,
+                        "product": "Smartwatch",
+                        "order_id": 2,
+                        "order_date": "2021-01-02"
+                    },
+                    "index": {
+                        "3": [
+                            4
+                        ]
+                    }
+                },
+                {
+                    "id": 5,
+                    "data": {
+                        "user_id": 3,
+                        "product": "Tablet",
+                        "order_id": 3,
+                        "order_date": "2021-01-03"
+                    },
+                    "index": {
+                        "4": [
+                            5
+                        ]
+                    }
+                },
+                {
+                    "id": 6,
+                    "data": {
+                        "user_id": 3,
+                        "product": "Tablet",
+                        "order_id": 3,
+                        "order_date": "2021-01-03"
+                    },
+                    "index": {
+                        "5": [
+                            6
+                        ]
+                    }
+                },
+                {
+                    "id": 7,
+                    "data": {
+                        "user_id": 4,
+                        "product": "Smartwatch",
+                        "order_id": 4,
+                        "order_date": "2021-01-04"
+                    },
+                    "index": {
+                        "6": [
+                            7
+                        ]
+                    }
+                }
+            ],
+            "next_id": 8,
+            "constraints": {
+                "user_id": [
+                    {
+                        "name": "foreign_key_constraint",
+                        "reference_table": "users",
+                        "reference_column": "user_id"
+                    }
+                ],
+                "product": [],
+                "order_id": [],
+                "order_date": []
+            }
+        }
+    }
+}

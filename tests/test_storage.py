@@ -31,7 +31,7 @@ class TestStorage(unittest.TestCase):
     def setUp(self):
         self.db = Database("TestDB")
         self.db.create_table("Users", ["id", "name", "email"])
-        self.filename = "test_db.json"
+        self.filename = "test_db.segadb"
 
     def tearDown(self):
         if os.path.exists(self.filename):
