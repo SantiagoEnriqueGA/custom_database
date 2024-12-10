@@ -30,11 +30,11 @@ db.get_table("users").insert({"user_id": 4, "name": "David", "email": "david@abc
 print("\nInserting into orders table")
 db.get_table("orders").insert({"user_id": 1, "product": "Laptop", "order_id": 1, "order_date": "2021-01-01"})
 db.get_table("orders").insert({"user_id": 2, "product": "Phone", "order_id": 2, "order_date": "2021-01-02"})
-db.get_table("orders").insert({"user_id": 2, "product": "Laptop", "order_id": 2, "order_date": "2021-01-02"})
+db.get_table("orders").insert({"user_id": 2, "product": "Laptop", "order_id": 9, "order_date": "2021-01-02"})
 db.get_table("orders").insert({"user_id": 2, "product": "Smartwatch", "order_id": 2, "order_date": "2021-01-02"})
 db.get_table("orders").insert({"user_id": 3, "product": "Tablet", "order_id": 3, "order_date": "2021-01-03"})
-db.get_table("orders").insert({"user_id": 3, "product": "Tablet", "order_id": 3, "order_date": "2021-01-03"})
-db.get_table("orders").insert({"user_id": 4, "product": "Smartwatch", "order_id": 4, "order_date": "2021-01-04"})
+db.get_table("orders").insert({"user_id": 3, "product": "Tablet", "order_id": 12, "order_date": "2021-01-03"})
+db.get_table("orders").insert({"user_id": 4, "product": "Smartwatch", "order_id": 8, "order_date": "2021-01-04"})
 
 # Print the tables
 print("Users Table:")
@@ -56,32 +56,32 @@ joined.print_table(pretty=True)
 # ----------------------------------------------------------------------------------
 # Aggregate get the count of user_ids
 print("\nAggregation - COUNT:")
-count = db.get_table("orders").aggregate("user_id", "COUNT")
+count = db.get_table("orders").aggregate("user_id", "order_id", "COUNT")
 count.print_table(pretty=True)
 
 # Aggregate get the count of distinct user_ids
 print("\nAggregation - COUNT_DISTINCT:")
-count = db.get_table("orders").aggregate("user_id", "COUNT_DISTINCT")
+count = db.get_table("orders").aggregate("user_id", "order_id", "COUNT_DISTINCT")
 count.print_table(pretty=True)
 
 # Aggregate get the minimum user_id
 print("\nAggregation - MIN:")
-min_order_id = db.get_table("orders").aggregate("user_id", "MIN")
+min_order_id = db.get_table("orders").aggregate("user_id", "order_id", "MIN")
 min_order_id.print_table(pretty=True)
 
 # Aggregate get the maximum user_id
 print("\nAggregation - MAX:")
-max_order_id = db.get_table("orders").aggregate("user_id", "MAX")
+max_order_id = db.get_table("orders").aggregate("user_id", "order_id", "MAX")
 max_order_id.print_table(pretty=True)
 
 # Aggregate get the sum of user_id
 print("\nAggregation - SUM:")
-sum_order_id = db.get_table("orders").aggregate("user_id", "SUM")
+sum_order_id = db.get_table("orders").aggregate("user_id", "order_id", "SUM")
 sum_order_id.print_table(pretty=True)
 
 # Aggregate get the average user_id
 print("\nAggregation - AVG:")
-avg_order_id = db.get_table("orders").aggregate("user_id", "AVG")
+avg_order_id = db.get_table("orders").aggregate("user_id", "order_id", "AVG")
 avg_order_id.print_table(pretty=True)
 
 # ----------------------------------------------------------------------------------
