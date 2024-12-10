@@ -209,6 +209,9 @@ class Table:
             if max_data_length is not None:
                 data = {k: (str(v)[:max_data_length] + '...' if len(str(v)) > max_data_length else v) for k, v in data.items()}
             
+            # Format numerical values to 2 decimal places
+            data = {k: (f"{v:.2f}" if isinstance(v, (int, float)) else v) for k, v in data.items()}
+            
             if index:
                 table.append([record.index.__str__(), record.id, data])
             else:
@@ -298,3 +301,18 @@ class Table:
         for record in filtered_records:
             filtered_table.insert(record.data)
         return filtered_table
+    
+    def sort(self, column, ascending=True):
+        """
+        Sorts the records in the table based on the specified column.
+        Args:
+            column (str): The column to sort by.
+            ascending (bool, optional): If True, sorts in ascending order. Defaults to True.
+        Returns:
+            Table: A new table containing the sorted records.
+        """
+        sorted_records = sorted(self.records, key=lambda record: record.data.get(column), reverse=not ascending)
+        new_table = Table(f"{self.name}_sorted", self.columns)
+        for record in sorted_records:
+            new_table.insert(record.data)
+        return new_table

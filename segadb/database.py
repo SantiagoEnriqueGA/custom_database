@@ -1,5 +1,11 @@
 from .table import Table
 from .record import Record
+import multiprocessing
+
+def process_row(row, headers, col_types):
+    if col_types:
+        row = [col_type(value) for col_type, value in zip(col_types, row)]
+    return dict(zip(headers, row))
 
 class Database:
     def __init__(self, name):
@@ -74,7 +80,7 @@ class Database:
         self.name = state.name
         return self
     
-    def create_table_from_csv(self, dir, table_name, headers=True, delim=',', column_names=None):
+    def create_table_from_csv(self, dir, table_name, headers=True, delim=',', column_names=None, col_types=None, progress=True):
         """
         Creates a table in the database from a CSV file.
         Args:
@@ -83,19 +89,59 @@ class Database:
             headers (bool, optional): Indicates whether the CSV file contains headers. Defaults to True.
             delim (str, optional): The delimiter used in the CSV file. Defaults to ','.
             column_names (list, optional): List of column names to use if headers is False. Defaults to None.
+            col_types (list, optional): List of types to cast the columns to. Defaults to None.
+            progress (bool, optional): If True, displays a progress bar. Defaults to False.
         Example:
-            db.create_table_from_csv('/path/to/file.csv', 'my_table', headers=True, delim=';', column_names=['col1', 'col2'])
+            db.create_table_from_csv('/path/to/file.csv', 'my_table', headers=True, delim=';', column_names=['col1', 'col2'], col_types=[str, int], progress=True)
         """
         import csv
+        from tqdm import tqdm
+    
         with open(dir, 'r') as file:
             reader = csv.reader(file, delimiter=delim)
             if headers:
                 headers = next(reader)
             else:
                 headers = column_names if column_names else [f"column{i}" for i in range(len(next(reader)))]
+    
             self.create_table(table_name, headers)
+    
+            if progress:
+                reader = tqdm(reader, desc="Processing rows")
+    
             for row in reader:
+                if col_types:
+                    row = [col_type(value) for col_type, value in zip(col_types, row)]
                 self.tables[table_name].insert(dict(zip(headers, row)))
+
+    def create_table_from_csv_multiprocessing(self, dir, table_name, headers=True, delim=',', column_names=None, col_types=None):
+        """
+        Creates a table in the database from a CSV file using multiprocessing.
+        Args:
+            dir (str): The directory path to the CSV file.
+            table_name (str): The name of the table to be created.
+            headers (bool, optional): Indicates whether the CSV file contains headers. Defaults to True.
+            delim (str, optional): The delimiter used in the CSV file. Defaults to ','.
+            column_names (list, optional): List of column names to use if headers is False. Defaults to None.
+            col_types (list, optional): List of types to cast the columns to. Defaults to None.
+        """
+        import csv
+
+        with open(dir, 'r') as file:
+            reader = csv.reader(file, delimiter=delim)
+            if headers:
+                headers = next(reader)
+            else:
+                headers = column_names if column_names else [f"column{i}" for i in range(len(next(reader)))]
+    
+            self.create_table(table_name, headers)
+    
+            reader = list(reader)
+
+            with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
+                rows = pool.starmap(process_row, [(row, headers, col_types) for row in reader])
+                for row in rows:
+                    self.tables[table_name].insert(row)
                 
     def add_constraint(self, table_name, column, constraint, reference_table_name=None, reference_column=None):
         """
