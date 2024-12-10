@@ -39,6 +39,7 @@ The project directory structure is as follows:
   - [`table.py`](segadb/table.py): Implements the `Table` class for table operations.
   - [`transaction.py`](segadb/transaction.py): Implements the `Transaction` class for transaction handling.
 - **tests/**: Contains unit and performance tests for the database library.
+  - [`run_all_tests.py`](tests/run_all_tests.py): Runs all available tests.
   - [`test_database.py`](tests/test_database.py): Unit tests for the `Database` class.
   - [`test_table.py`](tests/test_table.py): Unit tests for the `Table` class.
   - [`test_index.py`](tests/test_index.py): Unit tests for the `Index` class.
