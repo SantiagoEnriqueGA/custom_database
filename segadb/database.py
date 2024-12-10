@@ -74,24 +74,29 @@ class Database:
         self.name = state.name
         return self
     
-    def create_table_from_csv(self, dir, table_name, headers=True):
+    def create_table_from_csv(self, dir, table_name, headers=True, delim=',', column_names=None):
         """
         Creates a table in the database from a CSV file.
         Args:
             dir (str): The directory path to the CSV file.
             table_name (str): The name of the table to be created.
             headers (bool, optional): Indicates whether the CSV file contains headers. Defaults to True.
+            delim (str, optional): The delimiter used in the CSV file. Defaults to ','.
+            column_names (list, optional): List of column names to use if headers is False. Defaults to None.
         Example:
-            db.create_table_from_csv('/path/to/file.csv', 'my_table', headers=True)
+            db.create_table_from_csv('/path/to/file.csv', 'my_table', headers=True, delim=';', column_names=['col1', 'col2'])
         """
         import csv
         with open(dir, 'r') as file:
-            reader = csv.reader(file)
-            headers = next(reader) if headers else [f"column{i}" for i in range(len(next(reader)))]
+            reader = csv.reader(file, delimiter=delim)
+            if headers:
+                headers = next(reader)
+            else:
+                headers = column_names if column_names else [f"column{i}" for i in range(len(next(reader)))]
             self.create_table(table_name, headers)
             for row in reader:
                 self.tables[table_name].insert(dict(zip(headers, row)))
-
+                
     def add_constraint(self, table_name, column, constraint, reference_table_name=None, reference_column=None):
         """
         Adds a constraint to a specified column in a table.
@@ -129,19 +134,20 @@ class Database:
         else:
             raise ValueError("One or both tables do not exist.")
 
-    def aggregate_table(self, table_name, column, agg_func):
+    def aggregate_table(self, table_name, group_column,  agg_column, agg_func):
         """
         Perform an aggregation on a specified column in a table using the provided aggregation function.
         Args:
             table_name (str): The name of the table.
-            column (str): The column to aggregate.
+            group_column (str): The column to group by.
+            agg_column (str): The column to aggregate.
             agg_func (str): The aggregation function to apply. Supported values are 'MIN', 'MAX', 'COUNT', 'SUM', 'AVG', 'COUNT_DISTINCT'.
         Returns:
             Table: A new table containing the result of the aggregation.
         """
         table = self.get_table(table_name)
         if table:
-            return table.aggregate(column, agg_func)
+            return table.aggregate(group_column,  agg_column, agg_func)
         else:
             raise ValueError(f"Table {table_name} does not exist.")
 

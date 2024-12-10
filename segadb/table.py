@@ -243,34 +243,46 @@ class Table:
             joined_table.insert(record)
         return joined_table
 
-    def aggregate(self, column, agg_func):
+    def aggregate(self, group_column, agg_column, agg_func):
         """
         Perform an aggregation on a specified column using the provided aggregation function.
         Args:
-            column (str): The column to aggregate.
+            group_column (str): The column to group by.
+            agg_column (str): The column to aggregate.
             agg_func (str): The aggregation function to apply. Supported values are 'MIN', 'MAX', 'COUNT', 'SUM', 'AVG', 'COUNT_DISTINCT'.
         Returns:
             Table: A new table containing the result of the aggregation.
         """
-        values = [record.data.get(column) for record in self.records if record.data.get(column) is not None]
-        
-        if agg_func == 'MIN':
-            result = min(values)
-        elif agg_func == 'MAX':
-            result = max(values)
-        elif agg_func == 'COUNT':
-            result = len(values)
-        elif agg_func == 'SUM':
-            result = sum(values)
-        elif agg_func == 'AVG':
-            result = sum(values) / len(values) if values else 0
-        elif agg_func == 'COUNT_DISTINCT':
-            result = len(set(values))
-        else:
-            raise ValueError(f"Unsupported aggregation function: {agg_func}")
+        grouped_data = {}
+        for record in self.records:
+            group_value = record.data.get(group_column)
+            agg_value = record.data.get(agg_column)
+            if group_value not in grouped_data:
+                grouped_data[group_value] = []
+            if agg_value is not None:
+                grouped_data[group_value].append(agg_value)
 
-        agg_table = Table(f"{self.name}_agg_{column}_{agg_func}", [column])
-        agg_table.insert({column: result})
+        result_data = []
+        for group_value, values in grouped_data.items():
+            if agg_func == 'MIN':
+                result = min(values)
+            elif agg_func == 'MAX':
+                result = max(values)
+            elif agg_func == 'COUNT':
+                result = len(values)
+            elif agg_func == 'SUM':
+                result = sum(values)
+            elif agg_func == 'AVG':
+                result = sum(values) / len(values) if values else 0
+            elif agg_func == 'COUNT_DISTINCT':
+                result = len(set(values))
+            else:
+                raise ValueError(f"Unsupported aggregation function: {agg_func}")
+            result_data.append({group_column: group_value, agg_column: result})
+
+        agg_table = Table(f"{self.name}_agg_{group_column}_{agg_column}_{agg_func}", [group_column, agg_column])
+        for record in result_data:
+            agg_table.insert(record)
         return agg_table
 
     def filter(self, condition):
