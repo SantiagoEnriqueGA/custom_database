@@ -1,11 +1,50 @@
+from joblib import cpu_count
 from .table import Table
 from .record import Record
-import multiprocessing
+import multiprocessing as mp
+import os
+import csv
+from tqdm import tqdm
 
-def process_row(row, headers, col_types):
-    if col_types:
-        row = [col_type(value) for col_type, value in zip(col_types, row)]
-    return dict(zip(headers, row))
+def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_names=None, col_types=None, progress=False, headers=False):
+    """
+    Process each file chunk in a different process.  
+    IDs count up from chunk_start.  
+    Args:
+        file_name (str): The name of the file to process.
+        chunk_start (int): The start position of the chunk in the file.
+        chunk_end (int): The end position of the chunk in the file.
+        delim (str, optional): The delimiter used in the CSV file. Defaults to ','.
+        column_names (list, optional): List of column names to use if headers is False. Defaults to None.
+        col_types (list, optional): List of types to cast the columns to. Defaults to None.
+        progress (bool, optional): If True, displays a progress bar. Defaults to False.
+        headers (bool, optional): Indicates whether the CSV file contains headers. Defaults to False.
+    Returns:
+        rows (list): A list of Record objects representing the rows in the chunk.
+    """
+    rows = []
+    with open(file_name, 'r') as file:
+        file.seek(chunk_start)
+        if headers and file.tell() == 0:
+            file.readline()  # Skip the header row
+        if progress:
+            total_lines = chunk_end - chunk_start
+            pbar = tqdm(total=total_lines, desc="Processing chunk", unit="line")
+        
+        while file.tell() < chunk_end:
+            line = file.readline().strip()
+            if line:
+                row_data = line.split(delim)
+                if col_types:
+                    row_data = [col_type(value) for col_type, value in zip(col_types, row_data)]
+                record = Record(file.tell(), dict(zip(column_names, row_data)))
+                rows.append(record)
+            if progress:
+                pbar.update(len(line) + 1)  # Update progress bar with the length of the line plus newline character
+        
+        if progress:
+            pbar.close()
+    return rows
 
 class Database:
     def __init__(self, name):
@@ -80,7 +119,7 @@ class Database:
         self.name = state.name
         return self
     
-    def create_table_from_csv(self, dir, table_name, headers=True, delim=',', column_names=None, col_types=None, progress=False):
+    def create_table_from_csv(self, dir, table_name, headers=True, delim=',', column_names=None, col_types=None, progress=False, parrallel=False):
         """
         Creates a table in the database from a CSV file.
         Args:
@@ -91,12 +130,14 @@ class Database:
             column_names (list, optional): List of column names to use if headers is False. Defaults to None.
             col_types (list, optional): List of types to cast the columns to. Defaults to None.
             progress (bool, optional): If True, displays a progress bar. Defaults to False.
+            parallel (bool, optional): If True, uses multiprocessing to process the file. Defaults to False.
         Example:
             db.create_table_from_csv('/path/to/file.csv', 'my_table', headers=True, delim=';', column_names=['col1', 'col2'], col_types=[str, int], progress=True)
         """
-        import csv
-        from tqdm import tqdm
-    
+        if parrallel:
+            self._create_table_from_csv_mp(dir, table_name, headers, delim, column_names, col_types, progress)
+            return
+            
         with open(dir, 'r') as file:
             reader = csv.reader(file, delimiter=delim)
             if headers:
@@ -114,7 +155,7 @@ class Database:
                     row = [col_type(value) for col_type, value in zip(col_types, row)]
                 self.tables[table_name].insert(dict(zip(headers, row)))
 
-    def create_table_from_csv_multiprocessing(self, dir, table_name, headers=True, delim=',', column_names=None, col_types=None):
+    def _create_table_from_csv_mp(self, dir, table_name, headers=True, delim=',', column_names=None, col_types=None, progress=False):
         """
         Creates a table in the database from a CSV file using multiprocessing.
         Args:
@@ -124,25 +165,109 @@ class Database:
             delim (str, optional): The delimiter used in the CSV file. Defaults to ','.
             column_names (list, optional): List of column names to use if headers is False. Defaults to None.
             col_types (list, optional): List of types to cast the columns to. Defaults to None.
+            progress (bool, optional): If True, displays a progress bar. Defaults to False.
         """
-        import csv
-
+        # Warn the user that column_names will be ignored if headers is True
+        if headers and column_names:
+            print("--Warning: column_names will be ignored if headers is True.--")
+        
+        # If headers is False and column_names is not provided, generate column names
         with open(dir, 'r') as file:
             reader = csv.reader(file, delimiter=delim)
             if headers:
-                headers = next(reader)
+                column_names = next(reader)                
             else:
-                headers = column_names if column_names else [f"column{i}" for i in range(len(next(reader)))]
-    
-            self.create_table(table_name, headers)
-    
-            reader = list(reader)
-
-            with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
-                rows = pool.starmap(process_row, [(row, headers, col_types) for row in reader])
-                for row in rows:
-                    self.tables[table_name].insert(row)
+                column_names = column_names if column_names else [f"column{i}" for i in range(len(next(reader)))]
                 
+
+        # Get the number of CPU cores and split the file into chunks for each core
+        cpu_count, file_chunks = self._get_file_chunks(file_name=dir, max_cpu=mp.cpu_count(), headers=headers)
+        
+        # Process the file in parallel using multiple CPUs
+        records = self._process_file(cpu_count, file_chunks, delim, column_names, col_types, progress, headers)
+        
+        # Create the table and add the records
+        self.create_table(table_name, column_names)
+        self.tables[table_name].records = records
+                    
+    def _get_file_chunks(self, file_name, max_cpu, headers):
+        """
+        Split file into chunks for processing by multiple CPUs.
+        Args:
+            file_name (str): The name of the file to process.
+            max_cpu (int): The maximum number of CPU cores to use.
+            headers (bool): Indicates whether the CSV file contains headers.
+        Returns:
+            cpu_count (int): The number of CPU cores to use.
+            start_end (list): A list of tuples containing the start and end positions of each file chunk.
+        """
+        cpu_count = min(max_cpu, mp.cpu_count())    # Determine the number of CPU cores to use
+        # cpu_count = max_cpu
+
+        file_size = os.path.getsize(file_name)      # Get the total size of the file
+        chunk_size = file_size // cpu_count         # Calculate the size of each chunk based on the number of CPU cores
+
+        start_end = list()                          # List to store the start and end positions of each chunk
+        
+        with open(file_name, mode="r+b") as f:
+            # Function to check if the position is at the start of a new line   
+            def is_new_line(position):
+                if position == 0:
+                    return True
+                else:
+                    f.seek(position - 1)        # Move the file pointer to one byte before the current position
+                    return f.read(1) == b"\n"   # Read the byte to check if it is a newline character
+
+            # Function to find the start of the next line from the given position
+            def next_line(position):
+                f.seek(position)    # Move the file pointer to the given position
+                f.readline()        # Read the line to move to the end of it
+                return f.tell()     # Return the current position, which is now the start of the next line
+
+            if headers:
+                f.readline()  # Skip the header row
+
+            chunk_start = 0
+            while chunk_start < file_size:
+                chunk_end = min(file_size, chunk_start + chunk_size)    # End of the current chunk
+
+                while not is_new_line(chunk_end):                       # Adjust chunk_end to the start of the next line if necessary
+                    chunk_end -= 1
+
+                if chunk_start == chunk_end:                            # If the chunk size is very small, ensure it is moved to the start of the next line
+                    chunk_end = next_line(chunk_end)
+               
+                if chunk_end - chunk_start < chunk_size:                # If the chunk size is less than the target size, adjust the end position
+                    chunk_end = next_line(chunk_end)
+                
+                start_end.append((file_name, chunk_start, chunk_end))   # Append the current chunk information (file name, start, end) to the list
+                chunk_start = chunk_end                                 # Move to the next chunk
+
+        return (cpu_count, start_end)
+    
+    def _process_file(self, cpu_count, start_end, delim, column_names, col_types, progress, headers):
+        """
+        Process the file in parallel using multiple CPUs.
+        Args:
+            cpu_count (int): The number of CPU cores to use.
+            start_end (list): A list of tuples containing the start and end positions of each file chunk.
+            delim (str): The delimiter used in the CSV file.
+            column_names (list): List of column names to use if headers is False.
+            col_types (list): List of types to cast the columns to.
+            progress (bool): If True, displays a progress bar.
+            headers (bool): Indicates whether the CSV file contains headers.
+        Returns:
+            records (list): A list of Record objects representing the rows in the file.
+        """       
+        # Tasks to be processed by each CPU core
+        tasks = [(file_name, chunk_start, chunk_end, delim, column_names, col_types, progress, headers) for file_name, chunk_start, chunk_end in start_end]
+    
+        with mp.Pool(cpu_count) as pool:
+            chunk_rows = pool.starmap(_process_file_chunk, tasks)
+            
+        # Combine the records from each chunk
+        return [record for chunk in chunk_rows for record in chunk]       
+    
     def add_constraint(self, table_name, column, constraint, reference_table_name=None, reference_column=None):
         """
         Adds a constraint to a specified column in a table.

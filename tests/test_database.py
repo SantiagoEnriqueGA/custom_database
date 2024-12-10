@@ -6,6 +6,7 @@ import os
 # Change the working directory to the parent directory to allow importing the segadb package.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from segadb.database import Database
+from segadb.database import _process_file_chunk
 from test_utils import suppress_print
 
 class TestDatabase(unittest.TestCase):
@@ -23,6 +24,10 @@ class TestDatabase(unittest.TestCase):
     - test_join_tables: Tests joining two tables.
     - test_aggregate_table: Tests aggregating data in a table.
     - test_filter_table: Tests filtering data in a table.
+    - test_process_file_chunk: Tests processing a file chunk.
+    - test_create_table_from_csv_mp: Tests creating a table from a CSV file using multiprocessing.
+    - test_get_file_chunks: Tests getting file chunks for multiprocessing.
+    - test_process_file: Tests processing a file using multiprocessing.
     """
     @classmethod
     def setUpClass(cls):
@@ -170,6 +175,71 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(len(filtered_table.records), 2)
         self.assertEqual(filtered_table.records[0].data["user_id"], 2)
         self.assertEqual(filtered_table.records[1].data["user_id"], 2)
+
+    def test_process_file_chunk(self):
+        import tempfile
+        import csv
+
+        with tempfile.NamedTemporaryFile(delete=False, mode='w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(["id", "name", "email"])
+            writer.writerow([1, "John Doe", "john@example.com"])
+            writer.writerow([2, "Jane Doe", "jane@example.com"])
+            csvfile_path = csvfile.name
+
+        chunk_start = 0
+        chunk_end = os.path.getsize(csvfile_path)
+        rows = _process_file_chunk(csvfile_path, chunk_start, chunk_end, delim=',', column_names=["id", "name", "email"], headers=True)
+        self.assertEqual(len(rows), 2)
+        os.remove(csvfile_path)
+
+    def test_create_table_from_csv_mp(self):
+        import tempfile
+        import csv
+
+        db = Database("TestDB")
+        with tempfile.NamedTemporaryFile(delete=False, mode='w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(["id", "name", "email"])
+            writer.writerow([1, "John Doe", "john@example.com"])
+            writer.writerow([2, "Jane Doe", "jane@example.com"])
+            csvfile_path = csvfile.name
+
+        db.create_table_from_csv(csvfile_path, "Users", headers=True, parrallel=True)
+        table = db.get_table("Users")
+        self.assertIsNotNone(table)
+        self.assertEqual(len(table.records), 2)
+        os.remove(csvfile_path)
+
+    def test_get_file_chunks(self):
+        import tempfile
+
+        db = Database("TestDB")
+        with tempfile.NamedTemporaryFile(delete=False, mode='w', newline='') as csvfile:
+            csvfile.write("id,name,email\n")
+            for i in range(10000):
+                csvfile.write(f"{i},Name{i},email{i}@example.com\n")
+            csvfile_path = csvfile.name
+
+        cpu_count, chunks = db._get_file_chunks(csvfile_path, max_cpu=5, headers=True)
+        self.assertEqual(cpu_count, 5)
+        self.assertEqual(len(chunks), 5)
+        os.remove(csvfile_path)
+
+    def test_process_file(self):
+        import tempfile
+
+        db = Database("TestDB")
+        with tempfile.NamedTemporaryFile(delete=False, mode='w', newline='') as csvfile:
+            csvfile.write("id,name,email\n")
+            for i in range(100):
+                csvfile.write(f"{i},Name{i},email{i}@example.com\n")
+            csvfile_path = csvfile.name
+
+        cpu_count, chunks = db._get_file_chunks(csvfile_path, max_cpu=4, headers=True)
+        records = db._process_file(cpu_count, chunks, delim=',', column_names=["id", "name", "email"], col_types=[int, str, str], progress=False, headers=True)
+        self.assertEqual(len(records), 100)
+        os.remove(csvfile_path)
 
 if __name__ == '__main__':
     unittest.main()

@@ -463,7 +463,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Create measurement file")
     # parser.add_argument("-r","--records",help="Number of records to create (default is 1_000_000_000)",dest="records",type=min_records,default=1_000_000_000,)
-    parser.add_argument("-r","--records",help="Number of records to create (default is 1_000_000_000)",dest="records",type=min_records,default=1_000_00,)
+    parser.add_argument("-r","--records",help="Number of records to create (default is 1_000_000_000)",dest="records",type=min_records,default=1_000_000,)
     parser.add_argument("-o","--output",help="Output file name (default is 'measurements.txt')",dest="output",default="example_datasets/measurements_s.txt",)
     
     args = parser.parse_args()
