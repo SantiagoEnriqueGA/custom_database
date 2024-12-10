@@ -129,6 +129,12 @@ To run the tests, use the following command:
 ```sh
 python -m unittest discover -s tests
 ```
+OR
+Run the all tests file:
+```sh
+python run_all_tests.py
+```
+
 
 ### Test Files and Cases
 

@@ -80,7 +80,7 @@ class Database:
         self.name = state.name
         return self
     
-    def create_table_from_csv(self, dir, table_name, headers=True, delim=',', column_names=None, col_types=None, progress=True):
+    def create_table_from_csv(self, dir, table_name, headers=True, delim=',', column_names=None, col_types=None, progress=False):
         """
         Creates a table in the database from a CSV file.
         Args:
