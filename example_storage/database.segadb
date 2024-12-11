@@ -1,6 +1,21 @@
 {
     "name": "ExampleDB",
     "tables": {
+        "_users": {
+            "name": "_users",
+            "columns": [
+                "username",
+                "password_hash",
+                "roles"
+            ],
+            "records": [],
+            "next_id": 1,
+            "constraints": {
+                "username": [],
+                "password_hash": [],
+                "roles": []
+            }
+        },
         "users": {
             "name": "users",
             "columns": [

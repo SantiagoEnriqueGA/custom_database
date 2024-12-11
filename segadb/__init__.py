@@ -6,6 +6,7 @@ from .record import Record, VectorRecord, TimeSeriesRecord, ImageRecord, TextRec
 from .storage import Storage
 from .table import Table
 from .transaction import Transaction
+from .users import UserManager, Authorization
 
 __all__ = [
     "Database",
@@ -17,5 +18,7 @@ __all__ = [
     "TextRecord",
     "Storage",
     "Table",
-    "Transaction"
+    "Transaction",
+    "UserManager",
+    "Authorization"
 ]
