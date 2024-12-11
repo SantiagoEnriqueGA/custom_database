@@ -22,46 +22,50 @@ user1 = user_manager.authenticate_user("user1", "password123")
 print(f"Admin permisions: {user_manager.get_user_permissions('admin')}")
 print(f"User1 permisions: {user_manager.get_user_permissions('user1')}")
 
-# Log in users
+# Log in admin
+# --------------------------------------------------------------------------------
 admin_session = user_manager.login_user("admin", "password123")
-user1_session = user_manager.login_user("user1", "password123")
-
 print(f"\nAdmin session token: {admin_session}")
-print(f"User1 session token: {user1_session}")
 
-
-# Try creating a table with each user
-print("\nTrying to create a table with each user...")
+# Try creating a table with admin
 try:
-    db.create_table("test_table", ["col1", "col2"], session_token=admin_session)
+    db.create_table("test_table", ["col1", "col2"])
     print("Admin created a table.")
 except PermissionError as e:
     print(f"Admin failed to create a table: {e}")
 
+# Try dropping a table with admin
 try:
-    db.create_table("test_table2", ["col1", "col2"], session_token=user1_session)
-    print("User1 created a table.")
-except PermissionError as e:
-    print(f"User1 failed to create a table: {e}")
-
-# Try dropping a table with each user
-print("\nTrying to drop a table with each user...")
-try:
-    db.drop_table("test_table", session_token=admin_session)
+    db.drop_table("test_table")
     print("Admin dropped a table.")
 except PermissionError as e:
     print(f"Admin failed to drop a table: {e}")
 
+# Log out admin
+user_manager.logout_user(admin_session)
+print("\nadmin logged out.")
+
+# Log in user1
+# --------------------------------------------------------------------------------
+user1_session = user_manager.login_user("user1", "password123")
+print(f"\nUser1 session token: {user1_session}")
+
+# Try creating a table with user1
 try:
-    db.drop_table("test_table2", session_token=user1_session)
+    db.create_table("test_table2", ["col1", "col2"])
+    print("User1 created a table.")
+except PermissionError as e:
+    print(f"User1 failed to create a table: {e}")
+
+# Try dropping a table with user1
+try:
+    db.drop_table("test_table2")
     print("User1 dropped a table.")
 except PermissionError as e:
     print(f"User1 failed to drop a table: {e}")
 
-
-# Log out users
-user_manager.logout_user(admin_session)
+# Log out user1
 user_manager.logout_user(user1_session)
+print("\nuser1 logged out.")
 
-print("\nUsers logged out.")
 

@@ -58,8 +58,9 @@ class Database:
         """
         self.name = name
         self.tables = {}
-        self.create_table("_users", ["username", "password_hash", "roles"])
         self.sessions = {}
+        self.active_session = None
+        self.create_table("_users" , ["username", "password_hash", "roles"])
         
     def create_user_manager(self):
         """
@@ -88,7 +89,6 @@ class Database:
         # If there is not _users table, authorization is not required
         if "_users" not in self.tables:
             return False      
-
         
         return len(self.tables["_users"].records) > 0
 
@@ -101,6 +101,10 @@ class Database:
         Raises:
             PermissionError: If the user does not have the required permission.
         """
+        # If no session token is provided, check if active_session is set
+        if not session_token:
+            session_token = self.active_session
+        
         if self._is_auth_required():
             username = self.get_username_by_session(session_token)
             if not username or not self.check_permission(username, permission):

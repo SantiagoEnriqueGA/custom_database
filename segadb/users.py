@@ -106,6 +106,7 @@ class UserManager:
         user = self.authenticate_user(username, password)
         if user:
             session_token = self.db.create_session(username)
+            self.db.active_session = session_token
             return session_token
         return None
 
@@ -116,6 +117,7 @@ class UserManager:
             session_token (str): The session token of the user.
         """
         self.db.delete_session(session_token)
+        self.db.active_session = None
 
 class Authorization:
     def __init__(self, db):
