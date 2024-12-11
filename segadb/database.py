@@ -1,4 +1,4 @@
-from .users import User, UserManager, Authorization
+from .users import User, UserManager, Authorization, PRESET_ROLES
 from .table import Table
 from .record import Record
 import multiprocessing as mp
@@ -8,12 +8,6 @@ import csv
 from tqdm import tqdm
 import bcrypt
 import uuid
-
-PRESET_ROLES = {
-    "admin": ["create_table", "delete_table", "update_table", "read_table"],
-    "read_only": ["read_table"],
-    "editor": ["update_table", "read_table"]
-}
 
 def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_names=None, col_types=None, progress=False, headers=False):
     """
@@ -66,6 +60,24 @@ class Database:
         self.tables = {}
         self.create_table("_users", ["username", "password_hash", "roles"])
         self.sessions = {}
+        
+    def create_user_manager(self):
+        """
+        Create a new instance of the UserManager class.
+        Returns:
+            UserManager: A new instance of the UserManager class.
+        """
+        self.user_manager = UserManager(self)
+        return self.user_manager
+
+    def create_authorization(self):
+        """
+        Create a new instance of the Authorization class.
+        Returns:
+            Authorization: A new instance of the Authorization class.
+        """
+        self.authorization = Authorization(self)
+        return self.authorization
 
     def _is_auth_required(self):
         """
@@ -76,7 +88,7 @@ class Database:
         # If there is not _users table, authorization is not required
         if "_users" not in self.tables:
             return False      
-        
+
         
         return len(self.tables["_users"].records) > 0
 

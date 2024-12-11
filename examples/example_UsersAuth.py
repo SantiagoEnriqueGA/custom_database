@@ -8,8 +8,8 @@ from segadb import *
 
 # Initialize Database and UserManager
 db = Database("MyTestDB")
-user_manager = UserManager(db)
-auth = Authorization(db)
+user_manager = db.create_user_manager()
+auth = db.create_authorization()
 
 # Register users
 user_manager.register_user("admin", "password123", roles=["admin"])
@@ -27,7 +27,7 @@ admin_session = user_manager.login_user("admin", "password123")
 user1_session = user_manager.login_user("user1", "password123")
 
 print(f"\nAdmin session token: {admin_session}")
-print(f"\nUser1 session token: {user1_session}")
+print(f"User1 session token: {user1_session}")
 
 
 # Try creating a table with each user
