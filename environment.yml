@@ -1,0 +1,13 @@
+name: segadb_env
+channels:
+  - defaults
+dependencies:
+  - python=3.12.7
+  - cryptography=43.0.0=py312h89fc84f_0
+  - joblib=1.4.2=py312haa95532_0
+  - tabulate=0.9.0=py312haa95532_0
+  - pillow=10.4.0=py312h827c3e9_0
+  - tqdm=4.66.5=py312hfc267ef_0 
+  - pip=24.2=py312haa95532_0
+  - pip:
+      - polars==1.17.1

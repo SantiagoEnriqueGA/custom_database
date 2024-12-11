@@ -25,6 +25,22 @@ This project is primarily educational. It is designed to help understand the wor
     - `word_count()`: Counts the number of words in the text.
     - `to_uppercase()`: Converts the text to uppercase.
     - `to_lowercase()`: Converts the text to lowercase.
+
+## Installation
+
+To set up the project environment, you can use the provided `environment.yml` file to create a conda environment with all the necessary dependencies.
+
+1. Open a terminal or command prompt.
+2. Navigate to the directory where your repository is located.
+3. Run the following command to create the conda environment:
+```sh
+conda env create -f environment.yml
+```
+4. Activate the newly created environment:
+```sh
+conda activate segadb_env
+```
+
 ## File Structure
 The project directory structure is as follows:
 

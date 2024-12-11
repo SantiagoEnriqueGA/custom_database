@@ -13,3 +13,6 @@ __pycache__/
 # Ignore measurements.txt (too large)
 measurements.txt
 measurements_s.txt
+
+# Ignore conda environment
+env/
