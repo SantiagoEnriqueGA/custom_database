@@ -221,7 +221,7 @@ class TestDatabase(unittest.TestCase):
                 csvfile.write(f"{i},Name{i},email{i}@example.com\n")
             csvfile_path = csvfile.name
 
-        cpu_count, chunks = db._get_file_chunks(csvfile_path, max_cpu=5, headers=True)
+        cpu_count, chunks = db._get_file_chunks(csvfile_path, max_cpu=5, headers=True, max_chunk_size=None)
         self.assertEqual(cpu_count, 5)
         self.assertEqual(len(chunks), 5)
         os.remove(csvfile_path)
