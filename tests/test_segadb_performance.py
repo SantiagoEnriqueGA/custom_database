@@ -87,7 +87,17 @@ class TestDatabasePerformance(unittest.TestCase):
         self.db.restore(db_copy)
         end_time = time.time()
         print(f"Restore performance for {NUM_RECORDS} records: {(end_time - start_time):.2} seconds.")
-        
+              
+    def tes_loadCSV_MP_performance(self):
+        # Measure loadCSV performance
+        start_time = time.time()
+        self.db.create_table_from_csv("example_datasets/measurements_s.txt", "MillionRowTable_MP", 
+                                      headers=False, delim=';', 
+                                      column_names=['station', 'measure'],  col_types=[str, float],
+                                      progress=False, parrallel=True, max_chunk_size=5_000
+                                      )
+        end_time = time.time()
+        print(f"LoadCSV performance (multi-threaded) for 1 million records: {(end_time - start_time):.2} seconds.")
 
 if __name__ == '__main__':
     unittest.main()
