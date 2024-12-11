@@ -1,4 +1,4 @@
-from joblib import cpu_count
+from math import inf
 from .table import Table
 from .record import Record
 import multiprocessing as mp
@@ -119,7 +119,7 @@ class Database:
         self.name = state.name
         return self
     
-    def create_table_from_csv(self, dir, table_name, headers=True, delim=',', column_names=None, col_types=None, progress=False, parrallel=False):
+    def create_table_from_csv(self, dir, table_name, headers=True, delim=',', column_names=None, col_types=None, progress=False, parrallel=False, max_chunk_size=None):
         """
         Creates a table in the database from a CSV file.
         Args:
@@ -135,7 +135,7 @@ class Database:
             db.create_table_from_csv('/path/to/file.csv', 'my_table', headers=True, delim=';', column_names=['col1', 'col2'], col_types=[str, int], progress=True)
         """
         if parrallel:
-            self._create_table_from_csv_mp(dir, table_name, headers, delim, column_names, col_types, progress)
+            self._create_table_from_csv_mp(dir, table_name, headers, delim, column_names, col_types, progress, max_chunk_size)
             return
             
         with open(dir, 'r') as file:
@@ -155,7 +155,7 @@ class Database:
                     row = [col_type(value) for col_type, value in zip(col_types, row)]
                 self.tables[table_name].insert(dict(zip(headers, row)))
 
-    def _create_table_from_csv_mp(self, dir, table_name, headers=True, delim=',', column_names=None, col_types=None, progress=False):
+    def _create_table_from_csv_mp(self, dir, table_name, headers=True, delim=',', column_names=None, col_types=None, progress=False, max_chunk_size=None):
         """
         Creates a table in the database from a CSV file using multiprocessing.
         Args:
@@ -181,7 +181,7 @@ class Database:
                 
 
         # Get the number of CPU cores and split the file into chunks for each core
-        cpu_count, file_chunks = self._get_file_chunks(file_name=dir, max_cpu=mp.cpu_count(), headers=headers)
+        cpu_count, file_chunks = self._get_file_chunks(file_name=dir, max_cpu=mp.cpu_count(), headers=headers, max_chunk_size=max_chunk_size)
         
         # Process the file in parallel using multiple CPUs
         records = self._process_file(cpu_count, file_chunks, delim, column_names, col_types, progress, headers)
@@ -190,22 +190,24 @@ class Database:
         self.create_table(table_name, column_names)
         self.tables[table_name].records = records
                     
-    def _get_file_chunks(self, file_name, max_cpu, headers):
+    def _get_file_chunks(self, file_name, max_cpu, headers, max_chunk_size=10_000):
         """
         Split file into chunks for processing by multiple CPUs.
         Args:
             file_name (str): The name of the file to process.
             max_cpu (int): The maximum number of CPU cores to use.
             headers (bool): Indicates whether the CSV file contains headers.
+            max_chunk_size (int, optional): The maximum size of each chunk in bytes. Defaults to 10_000.
         Returns:
             cpu_count (int): The number of CPU cores to use.
             start_end (list): A list of tuples containing the start and end positions of each file chunk.
         """
+        if max_chunk_size is None:
+            max_chunk_size = inf
+        
         cpu_count = min(max_cpu, mp.cpu_count())    # Determine the number of CPU cores to use
-        # cpu_count = max_cpu
-
         file_size = os.path.getsize(file_name)      # Get the total size of the file
-        chunk_size = file_size // cpu_count         # Calculate the size of each chunk based on the number of CPU cores
+        chunk_size = min(file_size // cpu_count, max_chunk_size)  # Calculate the size of each chunk based on the number of CPU cores and max_chunk_size
 
         start_end = list()                          # List to store the start and end positions of each chunk
         
