@@ -8,6 +8,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from segadb.database import Database
 from segadb.users import User, UserManager, Authorization, PRESET_ROLES
+from test_utils import suppress_print
 
 class TestUser(unittest.TestCase):
     """
@@ -40,6 +41,7 @@ class TestUserManager(unittest.TestCase):
     - test_get_user_permissions: Tests getting user permissions.
     - test_login_user: Tests logging in a user.
     - test_logout_user: Tests logging out a user.
+    - test_remove_user: Tests removing a user.
     """
     def setUp(self):
         self.db = Mock(spec=Database)
@@ -70,6 +72,11 @@ class TestUserManager(unittest.TestCase):
     def test_logout_user(self):
         self.user_manager.logout_user("sessiontoken123")
         self.db.delete_session.assert_called_with("sessiontoken123")
+        
+    def test_remove_user(self):
+        with suppress_print():
+            self.user_manager.remove_user("testuser")
+            self.db.remove_user.assert_called_with("testuser")
 
 class TestAuthorization(unittest.TestCase):
     """

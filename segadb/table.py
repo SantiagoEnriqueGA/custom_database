@@ -126,6 +126,18 @@ class Table:
             transaction.add_operation(lambda: self._delete(record_id))
         else:
             self._delete(record_id)
+            
+    def get_id_by_column(self, column, value):
+        """
+        Get the ID of the record with the specified value in the specified column.
+        Args:
+            column (str): The column to search for the value.
+            value: The value to search for in the column.
+        Returns:
+            int: The ID of the record with the specified value in the specified column.
+        """
+        record = next((r for r in self.records if r.data.get(column) == value), None)
+        return record.id if record else None
 
     def _delete(self, record_id):
         """

@@ -118,7 +118,16 @@ class UserManager:
         """
         self.db.delete_session(session_token)
         self.db.active_session = None
-
+        
+    def remove_user(self, username):
+        """
+        Removes a user from the database.
+        Args:
+            username (str): The username of the user to be removed.
+        """
+        self.db.remove_user(username)
+        print(f"User {username} has been removed.")
+    
 class Authorization:
     def __init__(self, db):
         """

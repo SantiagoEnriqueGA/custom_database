@@ -69,3 +69,14 @@ user_manager.logout_user(user1_session)
 print("\nuser1 logged out.")
 
 
+# Remove user1
+# --------------------------------------------------------------------------------
+user_manager.remove_user("user1")
+
+# Try logging in user1 again
+user1_session = user_manager.login_user("user1", "password123")
+if user1_session:
+    print(f"\nUser1 session token: {user1_session}")
+else:
+    print(f"\nUser1 failed to log in.")
+

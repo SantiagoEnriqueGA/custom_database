@@ -565,3 +565,13 @@ class Database:
                 if permission in PRESET_ROLES.get(role, []):
                     return True
         return False
+    
+    def remove_user(self, username):
+        """
+        Removes a user from the database.
+        Args:
+            username (str): The username of the user to be removed.
+        """
+        id = self.tables["_users"].get_id_by_column("username", username)
+        
+        self.tables["_users"].delete(id)
