@@ -1,8 +1,12 @@
-from .index import Index
-
+# Imports: Standard Library
 import math
-from PIL import Image
 import io
+
+# Imports: Third Party
+from PIL import Image
+
+# Imports: Local
+from .index import Index
 
 class Record:
     def __init__(self, record_id, data):

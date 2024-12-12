@@ -1,14 +1,20 @@
+# Imports: Standard Library
+import os
+import csv
+import uuid
+from math import inf
+import multiprocessing as mp
+
+# Imports: Third Party
+import bcrypt
+from tqdm import tqdm
+
+# Imports: Local
 from .users import User, UserManager, Authorization, PRESET_ROLES
 from .table import Table
 from .record import Record
-import multiprocessing as mp
-from math import inf
-import os
-import csv
-from tqdm import tqdm
-import bcrypt
-import uuid
 
+# Helper function for processing file chunks in parallel (cannot be defined within the Database class)
 def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_names=None, col_types=None, progress=False, headers=False):
     """
     Process each file chunk in a different process.  
@@ -50,6 +56,8 @@ def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_nam
     return rows
 
 class Database:
+    # Initialization and Configuration
+    # ---------------------------------------------------------------------------------------------
     def __init__(self, name):
         """
         Initializes a new instance of the database with the given name.
@@ -80,6 +88,127 @@ class Database:
         self.authorization = Authorization(self)
         return self.authorization
 
+    # Connection and Session Management
+    # ---------------------------------------------------------------------------------------------
+    def create_session(self, username):
+        """
+        Creates a new session for a user.
+        Args:
+            username (str): The username of the user.
+        Returns:
+            str: The session token.
+        """
+        session_token = str(uuid.uuid4())
+        self.sessions[session_token] = username
+        return session_token
+
+    def delete_session(self, session_token):
+        """
+        Deletes a session.
+        Args:
+            session_token (str): The session token to delete.
+        """
+        if session_token in self.sessions:
+            del self.sessions[session_token]
+
+    def get_username_by_session(self, session_token):
+        """
+        Retrieves the username associated with a session token.
+        Args:
+            session_token (str): The session token.
+        Returns:
+            str: The username if the session exists, None otherwise.
+        """
+        return self.sessions.get(session_token)
+    
+    # User and Role Management
+    # ---------------------------------------------------------------------------------------------
+    def register_user(self, username, password, roles=None):
+        """
+        Registers a new user in the database.
+        Args:
+            username (str): The username of the new user.
+            password (str): The password of the new user.
+            roles (list, optional): A list of roles assigned to the user. Defaults to an empty list.
+        Raises:
+            ValueError: If the username already exists in the database.
+        """
+        if self.get_user(username):
+            raise ValueError("Username already exists")
+        password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        roles = roles if roles else []
+        self.tables["_users"].insert({"username": username, "password_hash": password_hash, "roles": roles})
+
+    def authenticate_user(self, username, password):
+        """
+        Authenticates a user by their username and password.
+        Args:
+            username (str): The username of the user.
+            password (str): The password of the user.
+        Returns:
+            dict or None: The user dictionary if authentication is successful, None otherwise.
+        """
+        user = self.get_user(username)
+        if user and bcrypt.checkpw(password.encode('utf-8'), user["password_hash"]):
+            return user
+        return None
+
+    def get_user(self, username):
+        """
+        Retrieve user data from the Users table based on the provided username.
+        Args:
+            username (str): The username of the user to retrieve.
+        Returns:
+            dict: A dictionary containing the user's data if found, otherwise None.
+        """
+        users_table = self.get_table("_users")
+        for record in users_table.records:
+            if record.data["username"] == username:
+                return record.data
+        return None
+
+    def add_role(self, username, role):
+        """
+        Add a role to a user.
+        Args:
+            username (str): The username of the user to whom the role will be added.
+            role (str): The role to be added to the user.
+        Raises:
+            ValueError: If the user is not found in the database.
+        """
+        user = self.get_user(username)
+        if user:
+            user["roles"].append(role)
+            self.tables["_users"].update(user["username"], user)
+        else:
+            raise ValueError("User not found")
+
+    def check_role(self, username, role):
+        """
+        Check if a user has a specific role.
+        Args:
+            username (str): The username of the user to check.
+            role (str): The role to check for.
+        Returns:
+            bool: True if the user has the specified role, False otherwise.
+        """
+        user = self.get_user(username)
+        if user:
+            return role in user["roles"]
+        return False
+    
+    def remove_user(self, username):
+        """
+        Removes a user from the database.
+        Args:
+            username (str): The username of the user to be removed.
+        """
+        id = self.tables["_users"].get_id_by_column("username", username)
+        
+        self.tables["_users"].delete(id)
+    
+    # Authorization and Permissions
+    # ---------------------------------------------------------------------------------------------
     def _is_auth_required(self):
         """
         Check if authorization is required based on the presence of users in the _users table.
@@ -109,7 +238,25 @@ class Database:
             username = self.get_username_by_session(session_token)
             if not username or not self.check_permission(username, permission):
                 raise PermissionError(f"User does not have permission: {permission}")
+            
+    def check_permission(self, username, permission):
+        """
+        Check if a user has a specific permission.
+        Args:
+            username (str): The username of the user.
+            permission (str): The permission to check for.
+        Returns:
+            bool: True if the user has the permission, False otherwise.
+        """
+        user = self.get_user(username)
+        if user:
+            for role in user["roles"]:
+                if permission in PRESET_ROLES.get(role, []):
+                    return True
+        return False
 
+    # Table Management
+    # ---------------------------------------------------------------------------------------------
     def create_table(self, table_name, columns, session_token=None):
         """
         Creates a new table in the database.
@@ -179,30 +326,6 @@ class Database:
             Table: The table object.
         """
         return self.tables.get(table_name)
-
-    def copy(self):
-        """
-        Create a deep copy of the database state.  
-        This method uses the `copy` module to create a deep copy of the current
-        database instance, ensuring that all nested objects are also copied.
-        Returns:
-            A new instance of the database with the same state as the original.
-        """
-        import copy
-        return copy.deepcopy(self)
-
-    def restore(self, state):
-        """
-        Restore the database state from a shadow copy.
-        Args:
-            state (object): An object containing the state to restore, including tables and name attributes.
-        Returns:
-            self: The instance of the database with the restored state.
-        """
-        # Restore the database state from shadow copy
-        self.tables = state.tables
-        self.name = state.name
-        return self
     
     def create_table_from_csv(self, dir, table_name, headers=True, delim=',', column_names=None, col_types=None, progress=False, parrallel=False, max_chunk_size=None):
         """
@@ -355,6 +478,8 @@ class Database:
         # Combine the records from each chunk
         return [record for chunk in chunk_rows for record in chunk]       
     
+    # Table Operations
+    # ---------------------------------------------------------------------------------------------    
     def add_constraint(self, table_name, column, constraint, reference_table_name=None, reference_column=None):
         """
         Adds a constraint to a specified column in a table.
@@ -425,6 +550,8 @@ class Database:
         else:
             raise ValueError(f"Table {table_name} does not exist.")
 
+    # Utility Methods
+    # ---------------------------------------------------------------------------------------------
     def print_db(self, index=False):
         """
         Print the database tables, including their names, columns, constraints, and records.
@@ -445,133 +572,26 @@ class Database:
                 
             table.print_table(pretty=True, index=index)
             
-    def register_user(self, username, password, roles=None):
+    def copy(self):
         """
-        Registers a new user in the database.
-        Args:
-            username (str): The username of the new user.
-            password (str): The password of the new user.
-            roles (list, optional): A list of roles assigned to the user. Defaults to an empty list.
-        Raises:
-            ValueError: If the username already exists in the database.
-        """
-        if self.get_user(username):
-            raise ValueError("Username already exists")
-        password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        roles = roles if roles else []
-        self.tables["_users"].insert({"username": username, "password_hash": password_hash, "roles": roles})
-
-    def authenticate_user(self, username, password):
-        """
-        Authenticates a user by their username and password.
-        Args:
-            username (str): The username of the user.
-            password (str): The password of the user.
+        Create a deep copy of the database state.  
+        This method uses the `copy` module to create a deep copy of the current
+        database instance, ensuring that all nested objects are also copied.
         Returns:
-            dict or None: The user dictionary if authentication is successful, None otherwise.
+            A new instance of the database with the same state as the original.
         """
-        user = self.get_user(username)
-        if user and bcrypt.checkpw(password.encode('utf-8'), user["password_hash"]):
-            return user
-        return None
+        import copy
+        return copy.deepcopy(self)
 
-    def get_user(self, username):
+    def restore(self, state):
         """
-        Retrieve user data from the Users table based on the provided username.
+        Restore the database state from a shadow copy.
         Args:
-            username (str): The username of the user to retrieve.
+            state (object): An object containing the state to restore, including tables and name attributes.
         Returns:
-            dict: A dictionary containing the user's data if found, otherwise None.
+            self: The instance of the database with the restored state.
         """
-        users_table = self.get_table("_users")
-        for record in users_table.records:
-            if record.data["username"] == username:
-                return record.data
-        return None
-
-    def add_role(self, username, role):
-        """
-        Add a role to a user.
-        Args:
-            username (str): The username of the user to whom the role will be added.
-            role (str): The role to be added to the user.
-        Raises:
-            ValueError: If the user is not found in the database.
-        """
-        user = self.get_user(username)
-        if user:
-            user["roles"].append(role)
-            self.tables["_users"].update(user["username"], user)
-        else:
-            raise ValueError("User not found")
-
-    def check_role(self, username, role):
-        """
-        Check if a user has a specific role.
-        Args:
-            username (str): The username of the user to check.
-            role (str): The role to check for.
-        Returns:
-            bool: True if the user has the specified role, False otherwise.
-        """
-        user = self.get_user(username)
-        if user:
-            return role in user["roles"]
-        return False
-
-    def create_session(self, username):
-        """
-        Creates a new session for a user.
-        Args:
-            username (str): The username of the user.
-        Returns:
-            str: The session token.
-        """
-        session_token = str(uuid.uuid4())
-        self.sessions[session_token] = username
-        return session_token
-
-    def delete_session(self, session_token):
-        """
-        Deletes a session.
-        Args:
-            session_token (str): The session token to delete.
-        """
-        if session_token in self.sessions:
-            del self.sessions[session_token]
-
-    def get_username_by_session(self, session_token):
-        """
-        Retrieves the username associated with a session token.
-        Args:
-            session_token (str): The session token.
-        Returns:
-            str: The username if the session exists, None otherwise.
-        """
-        return self.sessions.get(session_token)
-
-    def check_permission(self, username, permission):
-        """
-        Check if a user has a specific permission.
-        Args:
-            username (str): The username of the user.
-            permission (str): The permission to check for.
-        Returns:
-            bool: True if the user has the permission, False otherwise.
-        """
-        user = self.get_user(username)
-        if user:
-            for role in user["roles"]:
-                if permission in PRESET_ROLES.get(role, []):
-                    return True
-        return False
-    
-    def remove_user(self, username):
-        """
-        Removes a user from the database.
-        Args:
-            username (str): The username of the user to be removed.
-        """
-        id = self.tables["_users"].get_id_by_column("username", username)
-        
-        self.tables["_users"].delete(id)
+        # Restore the database state from shadow copy
+        self.tables = state.tables
+        self.name = state.name
+        return self

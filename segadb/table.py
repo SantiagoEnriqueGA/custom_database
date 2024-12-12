@@ -1,6 +1,9 @@
+# Imports: Local
 from .record import Record
 
 class Table:
+    # Initialization and Configuration
+    # ---------------------------------------------------------------------------------------------
     def __init__(self, name, columns):
         """
         Initialize a new table with a name and columns.
@@ -69,6 +72,8 @@ class Table:
                     print(f"Constraint violation on column {column} for value {data.get(column)}")
                     raise ValueError(f"Constraint violation on column {column} for value {data.get(column)}")
 
+    # CRUD Operations
+    # ---------------------------------------------------------------------------------------------
     def insert(self, data, record_type=Record, transaction=None):
         """
         Inserts a new record into the table.  
@@ -127,18 +132,6 @@ class Table:
         else:
             self._delete(record_id)
             
-    def get_id_by_column(self, column, value):
-        """
-        Get the ID of the record with the specified value in the specified column.
-        Args:
-            column (str): The column to search for the value.
-            value: The value to search for in the column.
-        Returns:
-            int: The ID of the record with the specified value in the specified column.
-        """
-        record = next((r for r in self.records if r.data.get(column) == value), None)
-        return record.id if record else None
-
     def _delete(self, record_id):
         """
         Deletes a record from the records list based on the given record ID.
@@ -173,6 +166,18 @@ class Table:
             record.data = data
             record.add_to_index(self.index_cnt)
             self.index_cnt += 1
+            
+    def get_id_by_column(self, column, value):
+        """
+        Get the ID of the record with the specified value in the specified column.
+        Args:
+            column (str): The column to search for the value.
+            value: The value to search for in the column.
+        Returns:
+            int: The ID of the record with the specified value in the specified column.
+        """
+        record = next((r for r in self.records if r.data.get(column) == value), None)
+        return record.id if record else None
 
     def select(self, condition):
         """
@@ -183,58 +188,9 @@ class Table:
             list: A list of records that satisfy the condition.
         """
         return [record for record in self.records if condition(record)]
-    
-    def print_table(self, limit=None, pretty=False, index=False):
-        """
-        Prints the records in the table.
-        Args:
-            limit (int, optional): The maximum number of records to print. If None, all records are printed. Defaults to None.
-            pretty (bool, optional): If True, prints the table in a pretty format using the tabulate library. Defaults to False.
-        """
-        if pretty: 
-            self._print_table_pretty(limit, index)
-            return
-        
-        count = 0
-        for record in self.records:
-            if limit is not None and count >= limit:
-                break
-            print(f"Record ID: {record.id}, Data: {record.data}")
-            count += 1
-            
-    def _print_table_pretty(self, limit=None, index=False, max_data_length=25):
-        """
-        Prints the records in the table in a pretty format using the tabulate library.
-        Args:
-            limit (int, optional): The maximum number of records to print. If None, all records are printed. Defaults to None.
-            index (bool, optional): If True, includes the index in the printed table. Defaults to False.
-            max_data_length (int, optional): The maximum length of the data to be printed. If None, the full data is printed. Defaults to None.
-        """
-        from tabulate import tabulate
-        table = []
-        count = 0
-        for record in self.records:
-            if limit is not None and count >= limit:
-                break
-            
-            data = record.data    
-            if max_data_length is not None:
-                data = {k: (str(v)[:max_data_length] + '...' if len(str(v)) > max_data_length else v) for k, v in data.items()}
-            
-            # Format numerical values to 2 decimal places
-            data = {k: (f"{v:.2f}" if isinstance(v, (int, float)) else v) for k, v in data.items()}
-            
-            if index:
-                table.append([record.index.__str__(), record.id, data])
-            else:
-                table.append([record.id, data])
-            count += 1
-        
-        if index:
-            print(tabulate(table, headers=["Index", "ID", "Data"]))
-        else:
-            print(tabulate(table, headers=["ID", "Data"]))
 
+    # Table Operations
+    # ---------------------------------------------------------------------------------------------
     def join(self, other_table, on_column, other_column):
         """
         Perform an inner join with another table on specified columns.
@@ -328,3 +284,58 @@ class Table:
         for record in sorted_records:
             new_table.insert(record.data)
         return new_table
+    
+    # Utility Methods
+    # ---------------------------------------------------------------------------------------------
+    def print_table(self, limit=None, pretty=False, index=False):
+        """
+        Prints the records in the table.
+        Args:
+            limit (int, optional): The maximum number of records to print. If None, all records are printed. Defaults to None.
+            pretty (bool, optional): If True, prints the table in a pretty format using the tabulate library. Defaults to False.
+        """
+        if pretty: 
+            self._print_table_pretty(limit, index)
+            return
+        
+        count = 0
+        for record in self.records:
+            if limit is not None and count >= limit:
+                break
+            print(f"Record ID: {record.id}, Data: {record.data}")
+            count += 1
+            
+    def _print_table_pretty(self, limit=None, index=False, max_data_length=25):
+        """
+        Prints the records in the table in a pretty format using the tabulate library.
+        Args:
+            limit (int, optional): The maximum number of records to print. If None, all records are printed. Defaults to None.
+            index (bool, optional): If True, includes the index in the printed table. Defaults to False.
+            max_data_length (int, optional): The maximum length of the data to be printed. If None, the full data is printed. Defaults to None.
+        """
+        from tabulate import tabulate
+        table = []
+        count = 0
+        for record in self.records:
+            if limit is not None and count >= limit:
+                break
+            
+            data = record.data    
+            if max_data_length is not None:
+                data = {k: (str(v)[:max_data_length] + '...' if len(str(v)) > max_data_length else v) for k, v in data.items()}
+            
+            # Format numerical values to 2 decimal places
+            data = {k: (f"{v:.2f}" if isinstance(v, (int, float)) else v) for k, v in data.items()}
+            
+            if index:
+                table.append([record.index.__str__(), record.id, data])
+            else:
+                table.append([record.id, data])
+            count += 1
+        
+        if index:
+            print(tabulate(table, headers=["Index", "ID", "Data"]))
+        else:
+            print(tabulate(table, headers=["ID", "Data"]))
+
+    

@@ -1,6 +1,10 @@
+# Imports: Standard Library
 import json
+
+# Imports: Third Party
 from cryptography.fernet import Fernet
 
+# Imports: Local
 from .database import Database
 from .record import Record
 from .index import Index
@@ -9,6 +13,8 @@ from .index import Index
 class Storage:
     """A utility class for saving, loading, and deleting database files."""
     
+    # Encryption and Decryption
+    # ---------------------------------------------------------------------------------------------
     @staticmethod
     def generate_key():
         """Generate a key for encryption."""
@@ -26,6 +32,8 @@ class Storage:
         fernet = Fernet(key)
         return fernet.decrypt(data).decode()
     
+    # Database Operations
+    # ---------------------------------------------------------------------------------------------
     @staticmethod
     def save(db, filename, key=None):
         """
@@ -163,6 +171,8 @@ class Storage:
             }
         return data
     
+    # Table Operations
+    # ---------------------------------------------------------------------------------------------
     @staticmethod
     def save_table(table, filename, format='csv'):
         """
