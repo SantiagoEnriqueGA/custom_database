@@ -47,7 +47,7 @@ class Storage:
                 "columns": table.columns,
                 "records": [{
                     "id": record.id, 
-                    "data": record.data,
+                    "data": {k: (v.decode() if isinstance(v, bytes) else v) for k, v in record.data.items()},
                     "index": record.index.to_dict(),
                 } for record in table.records],
                 "next_id": table.next_id,
@@ -62,6 +62,7 @@ class Storage:
                 },
                 
             }
+        
         with open(filename, 'wb' if key else 'w') as f:
             json_data = json.dumps(data, indent=4)
             if key:
@@ -71,7 +72,7 @@ class Storage:
                 f.write(json_data)
 
     @staticmethod
-    def load(filename, key=None):
+    def load(filename, key=None, user=None, password=None):
         """
         Load a database from a JSON file.
         Args:
@@ -87,24 +88,33 @@ class Storage:
             data = json.loads(json_data)
         
         db = Database(data["name"])
+        
         for table_name, table_data in data["tables"].items():
-            db.create_table(table_name, table_data["columns"])
-            table = db.get_table(table_name)
-            table.next_id = table_data["next_id"]
-            for record in table_data["records"]:
-                table.insert(record["data"], record_type=Record)
-                table.records[-1].id = record["id"]
-            for column, constraints in table_data["constraints"].items():
-                for constraint in constraints:
-                    if constraint["name"] == "unique_constraint":
-                        table.add_constraint(column, "UNIQUE")
-                    elif constraint["name"] == "foreign_key_constraint":
-                        reference_table = db.get_table(constraint["reference_table"])
-                        reference_column = constraint["reference_column"]
-                        table.add_constraint(column, "FOREIGN_KEY", reference_table, reference_column)
-                    else:
-                        # Handle other constraints if necessary
-                        pass
+            # If table does not exist, or if it is _users table and there are no users, create it
+            if not db.get_table(table_name) or (table_name == "_users" and db.get_table(table_name).records == []):
+                db.create_table(table_name, table_data["columns"])     
+                table = db.get_table(table_name)
+                table.next_id = table_data["next_id"]
+                for record in table_data["records"]:
+                    record_data = {k: (v.encode() if isinstance(v, str) and k == "password_hash" else v) for k, v in record["data"].items()}
+                    table.insert(record_data, record_type=Record)
+                    table.records[-1].id = record["id"]
+                for column, constraints in table_data["constraints"].items():
+                    for constraint in constraints:
+                        if constraint["name"] == "unique_constraint":
+                            table.add_constraint(column, "UNIQUE")
+                        elif constraint["name"] == "foreign_key_constraint":
+                            reference_table = db.get_table(constraint["reference_table"])
+                            reference_column = constraint["reference_column"]
+                            table.add_constraint(column, "FOREIGN_KEY", reference_table, reference_column)
+                        else:
+                            # Handle other constraints if necessary
+                            pass
+            
+            if user and password and len(db.get_table("_users").records) > 0 and not db.active_session:
+                user_manager = db.create_user_manager()
+                auth = db.create_authorization()
+                user_manager.login_user(user, password)     
         return db
         
     @staticmethod

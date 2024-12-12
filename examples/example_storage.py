@@ -9,6 +9,15 @@ from segadb import *
 
 # Create a new database
 db = Database("ExampleDB")
+user_manager = db.create_user_manager()
+auth = db.create_authorization()
+
+# Register users with different roles
+user_manager.register_user("admin", "password123", roles=["admin"])
+user_manager.register_user("user1", "password123", roles=["read_only"])
+
+# Log in as admin
+admin_session = user_manager.login_user("admin", "password123")
 
 # Create two tables: users and orders
 db.create_table("users", ["user_id", "name", "email"])
@@ -48,7 +57,7 @@ print("-------------------------------------------------------------------------
 Storage.save(db, "example_storage/database.segadb")
 
 # Load the database from a file
-loaded_db = Storage.load("example_storage/database.segadb")
+loaded_db = Storage.load("example_storage/database.segadb", user="admin", password="password123")
 
 
 # Print the tables after loading
@@ -86,7 +95,7 @@ with open("example_storage/database_encrypted.segadb", "r") as f:
     print(f"Encrypted File Preview: {f.read(100)}")
 
 # Load the database from an encrypted file
-loaded_e_db = Storage.load("example_storage/database_encrypted.segadb", key=key)
+loaded_e_db = Storage.load("example_storage/database_encrypted.segadb", key=key,  user="admin", password="password123")
 
 
 # Print the tables after loading
