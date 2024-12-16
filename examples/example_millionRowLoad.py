@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from segadb import *
 
-if __name__ == '__main__':
+def main():
     # Create a new database
     db = Database("BRC_DB")
 
@@ -78,3 +78,6 @@ if __name__ == '__main__':
     # print("\nFirst 10 rows of the table MillionRowTable_MP")
     # avg_temp_mp = db.get_table("MillionRowTable_MP").aggregate("station", "measure", "AVG")
     # avg_temp_mp.sort("station", ascending=True).print_table(pretty=True, limit=10)
+
+if __name__ == '__main__':
+    main()
