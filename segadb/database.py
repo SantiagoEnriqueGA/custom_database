@@ -32,7 +32,7 @@ def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_nam
         rows (list): A list of Record objects representing the rows in the chunk.
     """
     rows = []
-    with open(file_name, 'r') as file:
+    with open(file_name, 'r', encoding='utf-8') as file:
         file.seek(chunk_start)
         if headers and file.tell() == 0:
             file.readline()  # Skip the header row
@@ -346,7 +346,7 @@ class Database:
             self._create_table_from_csv_mp(dir, table_name, headers, delim, column_names, col_types, progress, max_chunk_size)
             return
             
-        with open(dir, 'r') as file:
+        with open(dir, 'r', encoding='utf-8') as file:
             reader = csv.reader(file, delimiter=delim)
             if headers:
                 headers = next(reader)
@@ -380,7 +380,7 @@ class Database:
             print("--Warning: column_names will be ignored if headers is True.--")
         
         # If headers is False and column_names is not provided, generate column names
-        with open(dir, 'r') as file:
+        with open(dir, 'r', encoding='utf-8') as file:
             reader = csv.reader(file, delimiter=delim)
             if headers:
                 column_names = next(reader)                
