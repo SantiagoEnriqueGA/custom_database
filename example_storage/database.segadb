@@ -13,7 +13,7 @@
                     "id": 1,
                     "data": {
                         "username": "admin",
-                        "password_hash": "$2b$12$0J4miftuZW4c8VIS16hRBO8E.4LQL5jigTvbm2YsskvOnONGqBIiq",
+                        "password_hash": "$2b$12$PZqELbKyJFF.NpPOzcTmDOPtlHjE5twt7kmezkvkfdYJGuwyKGjoC",
                         "roles": [
                             "admin"
                         ]
@@ -28,7 +28,7 @@
                     "id": 2,
                     "data": {
                         "username": "user1",
-                        "password_hash": "$2b$12$D/ILLQtlMshS0u/hSyqGP.Y7zyIEvWLpGqyxElVhmlTd/uX9hQvPq",
+                        "password_hash": "$2b$12$ehUpLvHXsjlvntwqlJgcweMJsSzz2W8k2xbNb7ZtBs2pfNIAb3bMe",
                         "roles": [
                             "read_only"
                         ]
