@@ -1,6 +1,7 @@
 # Imports: Standard Library
 import math
 import io
+import base64
 
 # Imports: Third Party
 from PIL import Image
@@ -149,6 +150,24 @@ class ImageRecord(Record):
         new_height = int(height * percentage)
         resized_image = image.resize((new_width, new_height))
         return resized_image
+    
+    def _convert_to_base64(self):
+        """
+        Converts the image data to a base64 encoded string.
+        Returns:
+            str: The base64 encoded image data.
+        """
+        return base64.b64encode(self.image_data).decode()
+
+    def to_dict(self):
+        """
+        Converts the ImageRecord to a dictionary, encoding image data to base64.
+        Returns:
+            dict: The dictionary representation of the ImageRecord.
+        """
+        data = self.data.copy()
+        data["image_data"] = self._convert_to_base64()
+        return data
         
 class TextRecord(Record):
     def __init__(self, record_id, text):

@@ -8,6 +8,7 @@ from cryptography.fernet import Fernet
 from .database import Database
 from .record import Record
 from .index import Index
+from .record import ImageRecord
 
 # Note: these are static methods, so they don't need to be instantiated
 class Storage:
@@ -54,8 +55,8 @@ class Storage:
                 "name": table.name,
                 "columns": table.columns,
                 "records": [{
-                    "id": record.id, 
-                    "data": {k: (v.decode() if isinstance(v, bytes) else v) for k, v in record.data.items()},
+                    "id": record.id,
+                    "data": record.to_dict() if isinstance(record, ImageRecord) else {k: (v.decode() if isinstance(v, bytes) else v) for k, v in record.data.items()},
                     "index": record.index.to_dict(),
                 } for record in table.records],
                 "next_id": table.next_id,
