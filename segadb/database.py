@@ -552,25 +552,42 @@ class Database:
 
     # Utility Methods
     # ---------------------------------------------------------------------------------------------
-    def print_db(self, index=False):
+    def print_db(self, index=False, limit=None):
         """
         Print the database tables, including their names, columns, constraints, and records.
         Args:
             index (bool, optional): Whether to print the index of each record. Defaults to False.
+            limit (int, optional): The maximum number of records to print for each table. Defaults to None.
         """
-        print(f"Database: {self.name}")
+        print("DATABASE DETAILS")
+        print("-" * 100)
+        print(f"Database Name: {self.name}")
+        print(f"Database Size (MB): {self.get_db_size() / (1024 * 1024):.4}")
+        print(f"Tables: {len(self.tables)}")
+        print(f"Authorization Required: {self._is_auth_required()}")
+        print(f"Active Session: \"{self.get_username_by_session(self.active_session)}:{self.active_session}\"")
+        print("-" * 100)
+        
+        print("\n\nTABLE DETAILS")
+        print("-" * 100)
         for table_name, table in self.tables.items():
-            print(f"\nTable: {table_name}")
-            print(f"Columns: {table.columns}")
+            if table_name == "_users":
+                print(f"Table: {table_name} (User management table)")                
+                print(f"Registered Users: {len(table.records)}")
+            
+            else:
+                print(f"\nTable: {table_name}")
+                print(f"Records: {len(table.records)}")
+                print(f"Columns: {table.columns}")
             
             consts = []
             for constraint in table.constraints:
                 if len(table.constraints[constraint]) == 1:
                     consts.append(f"{constraint}: {table.constraints[constraint][0].__name__}")
                 
-            print(f"Constraints: {consts}")
+            print(f"Constraints: {consts if consts else 'None'}")
                 
-            table.print_table(pretty=True, index=index)
+            table.print_table(pretty=True, index=index, limit=limit)
             
     def copy(self):
         """
@@ -595,3 +612,16 @@ class Database:
         self.tables = state.tables
         self.name = state.name
         return self
+
+    def get_db_size(self):
+        """
+        Calculate the size of the database in bytes.
+        Returns:
+            int: The size of the database in bytes.
+        """
+        total_size = 0
+        for table in self.tables.values():
+            for record in table.records:
+                total_size += sum(len(str(value)) for value in record.data.values())
+        return total_size
+    
