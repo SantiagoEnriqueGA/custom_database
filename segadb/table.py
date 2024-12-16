@@ -74,7 +74,7 @@ class Table:
 
     # CRUD Operations
     # ---------------------------------------------------------------------------------------------
-    def insert(self, data, record_type=Record, transaction=None):
+    def insert(self, data, record_type=Record, transaction=None, flex_ids = False):
         """
         Inserts a new record into the table.  
         If a transaction is provided, the operation is added to the transaction.  
@@ -91,7 +91,10 @@ class Table:
         self._check_constraints(data)
         record_id = int(data.get("id", self.next_id))
         if any(record.id == record_id for record in self.records):
-            raise ValueError(f"ID {record_id} is already in use.")
+            if flex_ids:
+                record_id = max([record.id for record in self.records]) + 1
+            else:
+                raise ValueError(f"ID {record_id} is already in use.")
         if "id" in data:
             del data["id"]
         record = record_type(record_id, data)

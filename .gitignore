@@ -16,3 +16,6 @@ measurements_s.txt
 
 # Ignore conda environment
 env/
+
+# Ignore files over 100MB
+reviews.csv

@@ -1,5 +1,6 @@
 # Imports: Standard Library
 import json
+import zlib
 
 # Imports: Third Party
 from cryptography.fernet import Fernet
@@ -36,7 +37,7 @@ class Storage:
     # Database Operations
     # ---------------------------------------------------------------------------------------------
     @staticmethod
-    def save(db, filename, key=None):
+    def save(db, filename, key=None, compress=False):
         """
         Save the database object to a JSON file.  
         The database object is serialized into a JSON format and written to the specified file.  
@@ -45,6 +46,7 @@ class Storage:
             db (Database): The database object to be saved.
             filename (str): The path to the file where the database will be saved.
             key (bytes, optional): The encryption key. If provided, the data will be encrypted before saving.
+            compress (bool, optional): If True, the data will be compressed using zlib before saving.
         """
         data = {
             "name": db.name,
@@ -72,28 +74,33 @@ class Storage:
                 
             }
         
-        with open(filename, 'wb' if key else 'w') as f:
-            json_data = json.dumps(data, indent=4)
+        json_data = json.dumps(data, indent=4)
+        if compress:
+            json_data = zlib.compress(json_data.encode())
+        
+        with open(filename, 'wb' if compress or key else 'w') as f:
             if key:
                 json_data = Storage.encrypt(json_data, key)
-                f.write(json_data)
-            else:
-                f.write(json_data)
+            f.write(json_data)
 
     @staticmethod
-    def load(filename, key=None, user=None, password=None):
+    def load(filename, key=None, user=None, password=None, compression=False):
         """
         Load a database from a JSON file.
         Args:
             filename (str): The path to the JSON file containing the database data.
             key (bytes, optional): The encryption key. If provided, the data will be decrypted after loading.
+            compression (bool, optional): If True, the data will be decompressed using zlib after loading.
         Returns:
             Database: An instance of the Database class populated with the data from the JSON file.
         """
-        with open(filename, 'r') as f:
+        with open(filename, 'rb' if compression or key else 'r') as f:
             json_data = f.read()
             if key:
                 json_data = Storage.decrypt(json_data, key)
+            if compression:
+                json_data = zlib.decompress(json_data).decode()
+
             data = json.loads(json_data)
         
         db = Database(data["name"])
@@ -106,7 +113,7 @@ class Storage:
                 table.next_id = table_data["next_id"]
                 for record in table_data["records"]:
                     record_data = {k: (v.encode() if isinstance(v, str) and k == "password_hash" else v) for k, v in record["data"].items()}
-                    table.insert(record_data, record_type=Record)
+                    table.insert(record_data, record_type=Record, flex_ids = True)
                     table.records[-1].id = record["id"]
                 for column, constraints in table_data["constraints"].items():
                     for constraint in constraints:

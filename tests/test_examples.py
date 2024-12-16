@@ -61,7 +61,9 @@ def load_tests(loader, tests, pattern):
                 spec.loader.exec_module(example_module)
         
         # Dynamically add the test function to the TestExamples class.
-        if test_name == 'test_example_millionRowLoad.py':
+        # If example file runs in __main__, use a lambda function to call the test function.
+        test_exeptions = ['test_example_millionRowLoad.py', 'test_example_storageCompression.py']
+        if test_name in test_exeptions:
             setattr(TestExamples, test_name, lambda self, example_file=example_file: TestExampleMillionRowLoad().test_main(example_file))
         else:
             setattr(TestExamples, test_name, test_func)

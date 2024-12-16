@@ -38,7 +38,7 @@ def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_nam
             file.readline()  # Skip the header row
         if progress:
             total_lines = chunk_end - chunk_start
-            pbar = tqdm(total=total_lines, desc="Processing chunk", unit="line")
+            pbar = tqdm(total=total_lines, desc="Processing chunks", unit="line")
         
         while file.tell() < chunk_end:
             line = file.readline().strip()
@@ -474,7 +474,9 @@ class Database:
     
         with mp.Pool(cpu_count) as pool:
             chunk_rows = pool.starmap(_process_file_chunk, tasks)
-            
+        
+        if progress: print("Processing complete, combining chunks...")
+        
         # Combine the records from each chunk
         return [record for chunk in chunk_rows for record in chunk]       
     
