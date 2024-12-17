@@ -1,6 +1,6 @@
 "Lines per Python file:"
 Get-ChildItem -Recurse -Filter *.py | ForEach-Object { 
-    $filePath = $_.FullName -replace "C:\\Users\\sg670w\\OneDrive - AT&T Services, Inc\\Documents\\Projects\\", "`t"
+    $filePath = $_.FullName -replace ".*custom_database", "`tcustom_database"
     $lineCount = (Get-Content $_.FullName | Measure-Object -Line).Lines
     "{0,-80}: {1,5}" -f $filePath, $lineCount
 }
