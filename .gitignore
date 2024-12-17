@@ -22,3 +22,6 @@ reviews.csv
 
 # Ignore example storage
 example_storage/
+
+# Ignore test backup folders
+tests_backups*/

@@ -4,6 +4,7 @@ from math import inf
 import json
 import zlib
 import multiprocessing as mp
+from datetime import datetime
 
 # Imports: Third Party
 from cryptography.fernet import Fernet
@@ -59,6 +60,98 @@ class Storage:
     
     # Database Operations
     # ---------------------------------------------------------------------------------------------
+    @staticmethod
+    def backup(db, key=None, compress=False, dir=None, date=False):
+        """
+        Backup the database to a file. 
+        If none exists, a folder named 'backups_' + db.name will be created in the directory.
+        The database object is serialized into a JSON format and written to the specified file.
+        Each backup file is named 'db.name_backup_n.segadb', where n is the number of backups in the directory.
+        Args:
+            db (Database): The database object to be saved.
+            key (bytes, optional): The encryption key. If provided, the data will be encrypted before saving.
+            compress (bool, optional): If True, the data will be compressed using zlib before saving.
+            dir (str, optional): The directory where the backup will be saved. Default is None.       
+            date (bool, optional): If True, the date will be appended to the filename. Default is False.
+        Returns:
+            status (str): The status of the backup operation, as well as the path to the backup file.
+        """
+        # Create the directory if it does not exist
+        if dir is None: dir = os.path.join(os.getcwd(), "backups_" + db.name)
+        if not os.path.exists(dir): os.makedirs(dir)
+        
+        # Generate the filename
+        files = os.listdir(dir)
+        n = len([f for f in files if db.name in f])
+        filename = f"{db.name}_backup_{n}.segadb"
+        
+        if date:
+            date_str = datetime.now().strftime("%Y%m%d%H%M%S")
+            filename = f"{db.name}_backup_{n}_{date_str}.segadb"
+        
+        filepath = os.path.join(dir, filename)
+        
+        # Save the database
+        Storage.save(db, filepath, key=key, compress=compress)
+        
+        return f"Backup saved to: {filepath}"
+    
+    @staticmethod
+    def list_backups(dir=None, print_output=True):
+        """
+        List the backup files in the specified directory.
+        Args:
+            dir (str, optional): The directory to search for backup files. Default is None.
+        Returns:
+            list: A list of the backup files in the directory.
+        """
+        if dir is None: dir = os.path.join(os.getcwd(), "backups")
+        files = os.listdir(dir)
+        backups = [f for f in files if f.endswith(".segadb")]
+        
+        # Sort backups by the number in descending order
+        # backups.sort(key=lambda x: int(x.split('_')[2]), reverse=True)
+        backups.sort(key=lambda x: int(x.split('_')[2].split('.')[0]), reverse=True)
+        
+        if print_output:
+            print("\n".join(backups))
+        
+        return backups
+            
+    @staticmethod
+    def restore(db, key=None, compress=False, user=None, password=None, dir=None, backup_name=None):
+        """
+        Restore a database from a backup file.
+        Args:
+            db (Database): The database object to be restored.
+            key (bytes, optional): The encryption key. If provided, the data will be decrypted after loading.
+            compress (bool, optional): If True, the data will be decompressed using zlib after loading.
+            user (str, optional): The username for authentication. Defaults to None.
+            password (str, optional): The password for authentication. Defaults to None.
+            dir (str, optional): The directory where the backup is saved. Default is None.
+            backup_name (str, optional): The name of the backup file. Default is None. Will use the latest backup if None.
+        Returns:
+            Database: An instance of the Database class populated with the data from the backup file.
+        """
+        if dir is None: dir = os.path.join(os.getcwd(), "backups_" + db.name)
+        
+        if backup_name is None:
+            backup_name = Storage.list_backups(dir, print_output=False)[0]
+        else:
+            backups = Storage.list_backups(dir, print_output=False)
+            matching_backups = [f for f in backups if backup_name in f]
+            if not matching_backups:
+                raise FileNotFoundError(f"No backup file found containing '{backup_name}'")
+            
+            if len(matching_backups) > 1:
+                print(f"--Multiple backup files found containing '{backup_name}'. Using the first match: {matching_backups[0]}")
+            
+            backup_name = matching_backups[0]
+        
+        filepath = os.path.join(dir, backup_name)
+        
+        return Storage.load(filepath, key=key, user=user, password=password, compression=compress)
+    
     @staticmethod
     def save(db, filename, key=None, compress=False):
         """
@@ -158,75 +251,7 @@ class Storage:
                 user_manager = db.create_user_manager()
                 auth = db.create_authorization()
                 user_manager.login_user(user, password)     
-        return db
-    
-    def _load_mp(filename, key=None, user=None, password=None, compression=False):
-        """
-        Load a database from a JSON file using multiprocessing.
-        Args:
-            filename (str): The name of the file to load.
-            key (str, optional): The encryption key. Defaults to None.
-            user (str, optional): The username for authentication. Defaults to None.
-            password (str, optional): The password for authentication. Defaults to None.
-            compression (bool, optional): If True, decompress the file. Defaults to False.
-        """
-        with open(filename, 'rb' if compression or key else 'r') as f:
-            json_data = f.read()
-            if key:
-                json_data = Storage.decrypt(json_data, key)
-            if compression:
-                json_data = zlib.decompress(json_data).decode()
-
-            data = json.loads(json_data)
-
-        db = Database(data["name"])
-        cpu_count = mp.cpu_count()
-        
-        for table_name, table_data in data["tables"].items():
-            # If table does not exist, or if it is _users table and there are no users, create it
-            if not db.get_table(table_name) or (table_name == "_users" and db.get_table(table_name).records == []):
-                db.create_table(table_name, table_data["columns"])     
-                table = db.get_table(table_name)
-                table.next_id = table_data["next_id"]
-                
-                # Split the records into chunks
-                record_chunks = Storage._get_record_chunks(table_data["records"], cpu_count)
-                
-                # Process the chunks in parallel
-                with mp.Pool(cpu_count) as pool:
-                    results = [pool.apply_async(_process_chunk, args=(chunk, table)) for chunk in record_chunks]
-                    record_objects = [result.get() for result in results]
-                for record_chunk in record_objects:
-                    for record in record_chunk:
-                        table.records.append(record)
-                    
-                for column, constraints in table_data["constraints"].items():
-                    for constraint in constraints:
-                        if constraint["name"] == "unique_constraint":
-                            table.add_constraint(column, "UNIQUE")
-                        elif constraint["name"] == "foreign_key_constraint":
-                            reference_table = db.get_table(constraint["reference_table"])
-                            reference_column = constraint["reference_column"]
-                            table.add_constraint(column, "FOREIGN_KEY", reference_table, reference_column)
-                        else:
-                            # Handle other constraints if necessary
-                            pass
-            
-            if user and password and len(db.get_table("_users").records) > 0 and not db.active_session:
-                user_manager = db.create_user_manager()
-                auth = db.create_authorization()
-                user_manager.login_user(user, password)     
-        return db
-        
-    def _get_record_chunks(records, num_chunks):
-        """
-        Split a list of records into chunks.
-        """
-        chunk_size = len(records) // num_chunks
-        if chunk_size == 0:
-            chunk_size = 1
-        chunks = [records[i:i + chunk_size] for i in range(0, len(records), chunk_size)]
-        return chunks     
+        return db   
         
     @staticmethod
     def delete(filename):
@@ -345,3 +370,74 @@ class Storage:
         conn.commit()
         conn.close()
 
+    # Utility Functions
+    # ---------------------------------------------------------------------------------------------
+    def _load_mp(filename, key=None, user=None, password=None, compression=False):
+        """
+        Load a database from a JSON file using multiprocessing.
+        Args:
+            filename (str): The name of the file to load.
+            key (str, optional): The encryption key. Defaults to None.
+            user (str, optional): The username for authentication. Defaults to None.
+            password (str, optional): The password for authentication. Defaults to None.
+            compression (bool, optional): If True, decompress the file. Defaults to False.
+        """
+        with open(filename, 'rb' if compression or key else 'r') as f:
+            json_data = f.read()
+            if key:
+                json_data = Storage.decrypt(json_data, key)
+            if compression:
+                json_data = zlib.decompress(json_data).decode()
+
+            data = json.loads(json_data)
+
+        db = Database(data["name"])
+        cpu_count = mp.cpu_count()
+        
+        for table_name, table_data in data["tables"].items():
+            # If table does not exist, or if it is _users table and there are no users, create it
+            if not db.get_table(table_name) or (table_name == "_users" and db.get_table(table_name).records == []):
+                db.create_table(table_name, table_data["columns"])     
+                table = db.get_table(table_name)
+                table.next_id = table_data["next_id"]
+                
+                # Split the records into chunks
+                record_chunks = Storage._get_record_chunks(table_data["records"], cpu_count)
+                
+                # Process the chunks in parallel
+                with mp.Pool(cpu_count) as pool:
+                    results = [pool.apply_async(_process_chunk, args=(chunk, table)) for chunk in record_chunks]
+                    record_objects = [result.get() for result in results]
+                for record_chunk in record_objects:
+                    for record in record_chunk:
+                        table.records.append(record)
+                    
+                for column, constraints in table_data["constraints"].items():
+                    for constraint in constraints:
+                        if constraint["name"] == "unique_constraint":
+                            table.add_constraint(column, "UNIQUE")
+                        elif constraint["name"] == "foreign_key_constraint":
+                            reference_table = db.get_table(constraint["reference_table"])
+                            reference_column = constraint["reference_column"]
+                            table.add_constraint(column, "FOREIGN_KEY", reference_table, reference_column)
+                        else:
+                            # Handle other constraints if necessary
+                            pass
+            
+            if user and password and len(db.get_table("_users").records) > 0 and not db.active_session:
+                user_manager = db.create_user_manager()
+                auth = db.create_authorization()
+                user_manager.login_user(user, password)     
+        return db
+    
+    def _get_record_chunks(records, num_chunks):
+        """
+        Split a list of records into chunks.
+        """
+        chunk_size = len(records) // num_chunks
+        if chunk_size == 0:
+            chunk_size = 1
+        chunks = [records[i:i + chunk_size] for i in range(0, len(records), chunk_size)]
+        return chunks  
+    
+    

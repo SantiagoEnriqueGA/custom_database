@@ -23,6 +23,10 @@ class TestStorage(unittest.TestCase):
     - test_db_to_dict: Tests converting a database to a dictionary.
     - test_generate_key: Tests generating a key for encryption.
     - test_encrypt_decrypt: Tests encrypting and decrypting data.
+    - test_compress_decompress: Tests compressing and decompressing data.
+    - test_backup: Tests creating a backup of the database.
+    - test_list_backups: Tests listing the backups of the database.
+    - test_restore: Tests restoring the database from a backup.
     """
     @classmethod
     def setUpClass(cls):
@@ -32,6 +36,17 @@ class TestStorage(unittest.TestCase):
         self.db = Database("TestDB")
         self.db.create_table("Users", ["id", "name", "email"])
         self.filename = "test_db.segadb"
+        
+        # Ensure tests_backups, tests_backups_list, and tests_backups_restore directories are empty
+        if os.path.exists("tests_backups"):
+            for file in os.listdir("tests_backups"):
+                os.remove(os.path.join("tests_backups", file))
+        if os.path.exists("tests_backups_list"):
+            for file in os.listdir("tests_backups_list"):
+                os.remove(os.path.join("tests_backups_list", file))
+        if os.path.exists("tests_backups_restore"):
+            for file in os.listdir("tests_backups_restore"):
+                os.remove(os.path.join("tests_backups_restore", file))        
 
     def tearDown(self):
         if os.path.exists(self.filename):
@@ -103,6 +118,27 @@ class TestStorage(unittest.TestCase):
         self.assertEqual(loaded_db.get_table("Users").columns, self.db.get_table("Users").columns)
         self.assertEqual(len(loaded_db.get_table("Users").records), len(self.db.get_table("Users").records))
         self.assertEqual(loaded_db.get_table("Users").constraints, self.db.get_table("Users").constraints)    
+
+    def test_backup(self):
+        Storage.backup(self.db, dir="tests_backups")
+        self.assertTrue(os.path.exists("tests_backups/TestDB_backup_0.segadb"))
+        os.remove(sys.path[0] + "/tests_backups/TestDB_backup_0.segadb")
+    
+    def test_list_backups(self):
+        Storage.backup(self.db, dir="tests_backups_list")
+        Storage.backup(self.db, dir="tests_backups_list")
+        Storage.backup(self.db, dir="tests_backups_list")
+        backups = Storage.list_backups("tests_backups_list", print_output=False)
+        self.assertEqual(len(backups), 3)
+        os.remove(sys.path[0] + "/tests_backups_list/TestDB_backup_0.segadb")
+        os.remove(sys.path[0] + "/tests_backups_list/TestDB_backup_1.segadb")
+        os.remove(sys.path[0] + "/tests_backups_list/TestDB_backup_2.segadb")
+    
+    def test_restore(self):
+        Storage.backup(self.db, dir="tests_backups_restore")
+        Storage.restore(self.db, dir="tests_backups_restore")
+        self.assertTrue(os.path.exists("tests_backups_restore/TestDB_backup_0.segadb"))
+        os.remove(sys.path[0] + "/tests_backups_restore/TestDB_backup_0.segadb")
 
 if __name__ == '__main__':
     unittest.main()
