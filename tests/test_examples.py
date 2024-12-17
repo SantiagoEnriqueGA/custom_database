@@ -12,15 +12,30 @@ from test_utils import suppress_print
 # Change the working directory to the parent directory to allow importing the segadb package.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from examples.example_millionRowLoad import main
-class TestExampleMillionRowLoad(unittest.TestCase):
+class TestExampleExceptions(unittest.TestCase):
     """
     Test case for the example file 'example_millionRowLoad.py'.
     """
     def test_main(self, example_file):
-        print(f"Testing file: {example_file}")
-        with suppress_print():
-            main()
+        
+        if 'example_millionRowLoad.py' in example_file:
+            from examples.example_millionRowLoad import main    
+            print(f"Testing file: {example_file}")
+            with suppress_print():
+                main()
+        
+        if 'example_storageCompression.py' in example_file:
+            from examples.example_storageCompression import main
+            print(f"Testing file: {example_file}")
+            with suppress_print():
+                main()
+        
+        if 'example_storageCompressionLarge.py' in example_file:
+            from examples.example_storageCompressionLarge import main
+            print(f"Testing file: {example_file}")
+            with suppress_print():
+                main()
+
 
 class TestExamples(unittest.TestCase):
     """
@@ -62,9 +77,10 @@ def load_tests(loader, tests, pattern):
         
         # Dynamically add the test function to the TestExamples class.
         # If example file runs in __main__, use a lambda function to call the test function.
-        test_exeptions = ['test_example_millionRowLoad.py', 'test_example_storageCompression.py']
+        test_exeptions = ['example_millionRowLoad.py', 'example_storageCompression.py', 'example_storageCompressionLarge.py']
+        test_exeptions = [f'test_{name}' for name in test_exeptions]
         if test_name in test_exeptions:
-            setattr(TestExamples, test_name, lambda self, example_file=example_file: TestExampleMillionRowLoad().test_main(example_file))
+            setattr(TestExamples, test_name, lambda self, example_file=example_file: TestExampleExceptions().test_main(example_file))
         else:
             setattr(TestExamples, test_name, test_func)
     
