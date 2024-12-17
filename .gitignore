@@ -10,9 +10,8 @@ __pycache__/
 # Ignore .pytest_cache directory
 .pytest_cache/
 
-# Ignore measurements.txt (too large)
-measurements.txt
-measurements_s.txt
+# Ignore measurements_*.txt (too large)
+measurements_*.txt
 
 # Ignore conda environment
 env/

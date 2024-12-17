@@ -462,9 +462,16 @@ if __name__ == "__main__":
 
 
     parser = argparse.ArgumentParser(description="Create measurement file")
-    # parser.add_argument("-r","--records",help="Number of records to create (default is 1_000_000_000)",dest="records",type=min_records,default=1_000_000_000,)
-    parser.add_argument("-r","--records",help="Number of records to create (default is 1_000_000_000)",dest="records",type=min_records,default=1_000_000,)
-    parser.add_argument("-o","--output",help="Output file name (default is 'measurements.txt')",dest="output",default="example_datasets/measurements_s.txt",)
+    
+    # One Million: 1_000_000
+    # parser.add_argument("-r","--records",help="Number of records to create (default is 1_000_000_000)",dest="records",type=min_records,default=1_000_000,)
+    # parser.add_argument("-o","--output",help="Output file name (default is 'measurements.txt')",dest="output",default="example_datasets/measurements_million.txt",)
+    
+    # Ten Million: 10_000_000
+    parser.add_argument("-r","--records",help="Number of records to create (default is 1_000_000_000)",dest="records",type=min_records,default=10_000_000,)
+    parser.add_argument("-o","--output",help="Output file name (default is 'measurements.txt')",dest="output",default="example_datasets/measurements_tenMillion.txt",)
+    
+    
     
     args = parser.parse_args()
 

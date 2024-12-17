@@ -23,7 +23,7 @@ def main():
     # --------------------------------------------------------------------------------
     # Time the creation of the table using the default method
     # start_time = time.time()
-    # db.create_table_from_csv("example_datasets/measurements_million.txt", "MillionRowTable", 
+    # db.create_table_from_csv("example_datasets/measurements_tenMillion.txt", "MillionRowTable", 
     #                          headers=False, delim=';', 
     #                          column_names=['station', 'measure'],  col_types=[str, float],
     #                          progress=True
@@ -39,7 +39,7 @@ def main():
     # Time the creation of the second table using multiprocessing
     # --------------------------------------------------------------------------------
     start_time = time.time()
-    db.create_table_from_csv("example_datasets/measurements_million.txt", "MillionRowTable_MP", 
+    db.create_table_from_csv("example_datasets/measurements_tenMillion.txt", "MillionRowTable_MP", 
                                              headers=False, delim=';', 
                                              column_names=['station', 'measure'],  col_types=[str, float],
                                              progress=False, parrallel=True, max_chunk_size=5_000
@@ -52,32 +52,7 @@ def main():
     avg_temp_mp = db.get_table("MillionRowTable_MP").aggregate("station", "measure", "AVG")
     avg_temp_mp.sort("station", ascending=True).print_table(pretty=True, limit=10)
     
-    # Time the creation of the second table using multiprocessing, with different chunk sizes
-    # --------------------------------------------------------------------------------
-    # chunk_sizes = [None, 100, 500, 1_000, 5_000, 10_000, 50_000, 100_000]
-    # num_runs = 5
-
-    # for chunk_size in chunk_sizes:
-    #     total_time = 0
-    #     for _ in range(num_runs):
-    #         start_time = time.time()
-    #         db.create_table_from_csv("example_datasets/measurements_million.txt", "MillionRowTable_MP", 
-    #                                  headers=False, delim=';', 
-    #                                  column_names=['station', 'measure'],  col_types=[str, float],
-    #                                  progress=False, parrallel=True, max_chunk_size=chunk_size
-    #                                  )
-    #         end_time = time.time()
-    #         total_time += (end_time - start_time)
-        
-    #     avg_time = total_time / num_runs
-    #     time_std = sum([(avg_time - (end_time - start_time))**2 for _ in range(num_runs)]) / num_runs
-        
-    #     print(f"Avg time to load table with max_chunk_size {chunk_size}: {avg_time:.2f}s, std: {time_std:.2f}s")
-
-    # # Print first 10 rows of the table
-    # print("\nFirst 10 rows of the table MillionRowTable_MP")
-    # avg_temp_mp = db.get_table("MillionRowTable_MP").aggregate("station", "measure", "AVG")
-    # avg_temp_mp.sort("station", ascending=True).print_table(pretty=True, limit=10)
+    # Time to load table with multiprocessing: 78.41 seconds
 
 if __name__ == '__main__':
     main()
