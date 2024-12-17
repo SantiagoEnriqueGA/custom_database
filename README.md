@@ -8,7 +8,7 @@ This project is primarily educational. It is designed to help understand the wor
 - **Table Operations**: Insert, update, delete, and select records in a table. See [`Table`](segadb/table.py).
 - **Transaction Handling**: Support for transactions with commit and rollback functionality. See [`Transaction`](segadb/transaction.py).
 - **Indexing**: Create and manage indexes for efficient data retrieval. See [`Index`](segadb/index.py).
-- **Storage**: Save and load the database to and from a file. See [`Storage`](segadb/storage.py).
+- **Storage**: Save and load the database to and from a file. Create and restore from backups. See [`Storage`](segadb/storage.py).
 - **Record Management**: Manage individual records with unique IDs and data. See [`Record`](segadb/record.py).
   - Support for vector records
     - `magnitude()`: Calculates the magnitude of the vector.
@@ -56,13 +56,13 @@ The project directory structure is as follows:
   - [`transaction.py`](segadb/transaction.py): Implements the `Transaction` class for transaction handling.
 - **tests/**: Contains unit and performance tests for the database library.
   - [`run_all_tests.py`](tests/run_all_tests.py): Runs all available tests.
+  - [`test_utils.py`](tests/test_utils.py): Utility functions for tests.
   - [`test_database.py`](tests/test_database.py): Unit tests for the `Database` class.
   - [`test_table.py`](tests/test_table.py): Unit tests for the `Table` class.
   - [`test_index.py`](tests/test_index.py): Unit tests for the `Index` class.
   - [`test_record.py`](tests/test_record.py): Unit tests for the `Record` class.
   - [`test_storage.py`](tests/test_storage.py): Unit tests for the `Storage` class.
   - [`test_transaction.py`](tests/test_transaction.py): Unit tests for the `Transaction` class.
-  - [`test_utils.py`](tests/test_utils.py): Utility functions for tests.
   - [`test_segadb_performance.py`](tests/test_segadb_performance.py): Performance tests for the segadb package.
   - [`test_examples.py`](tests/test_examples.py): Contains tests for the example scripts.
 - **examples/**: Example usages of the segadb library.
@@ -73,12 +73,14 @@ The project directory structure is as follows:
   - [example_recordTypes.py](examples/example_recordTypes.py): Demonstrates how to use different record types (VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord).
   - [example_queries.py](examples/example_queries.py): Demonstrates how to create tables, add constraints, insert data, perform joins, aggregations, and filtering operations.
   - [example_storage.py](examples/example_storage.py): Demonstrates how to save and load the database, and check constraints.
-- **example_storage/**: Example storage and exports from the segadb library.
-  - database.segadb: database saved in custom json format
-  - database_encrypted.segadb: database saved in custom json format, encrypted with fernet key. (base64-encoded 32-byte key)
-  - users.json: User table experted to .json
-  - users.csv: User table experted to .csv
-  - users.db: User table experted to SQLite database file
+  - [example_millionRowLoad.py](examples/example_millionRowLoad.py): Demonstrates how to load a table with a million rows using multiprocessing.
+  - [example_storageCompression.py](examples/example_storageCompression.py): Demonstrates how to save and load the database with compression.
+  - [example_storageCompressionLarge.py](examples/example_storageCompressionLarge.py): Demonstrates how to save and load a large database with compression, using multiprocessing.
+  - [example_dataImports.py](examples/example_dataImports.py): Demonstrates how to import data from a CSV file.
+  - [example_dataExport.py](examples/example_dataExport.py): Demonstrates how to export data to different formats: CSV, JSON, SQLite.
+  - [example_backupRecovery.py](examples/example_backupRecovery.py): Demonstrates how to create and restore backups.
+  - [example_UsersAuth.py](examples/example_UsersAuth.py): Demonstrates user authentication and authorization.
+
 
 ## Usage
 ```python
@@ -151,16 +153,42 @@ Run the all tests file:
 ```sh
 python run_all_tests.py
 ```
+### Test Results
+The following are the results of running the tests:
 
+```sh
+segadb_env/python.exe "..custom_database/tests/run_all_tests.py"
 
-### Test Files and Cases
-
-- **`test_database.py`**: Unit tests for the `Database` class.
-- **`test_table.py`**: Unit tests for the `Table` class.
-- **`test_index.py`**: Unit tests for the `Index` class.
-- **`test_record.py`**: Unit tests for the `Record` class.
-- **`test_storage.py`**: Unit tests for the `Storage` class.
-- **`test_transaction.py`**: Unit tests for the `Transaction` class.
-- **`test_utils.py`**: Utility functions for tests.
-- **`test_segadb_performance.py`**: Performance tests for the segadb package.
-- **`test_examples.py`**: Contains tests for the example scripts.
+Testing Database Class..............
+.Testing file: .\custom_database\tests\..\examples\example_UsersAuth.py
+.Testing file: \custom_database\tests\..\examples\example_backupRecovery.py
+.Testing file: \custom_database\tests\..\examples\example_change_ids.py
+.Testing file: \custom_database\tests\..\examples\example_constraints.py
+.Testing file: \custom_database\tests\..\examples\example_dataExport.py
+.Testing file: \custom_database\tests\..\examples\example_dataImports.py
+.Testing file: \custom_database\tests\..\examples\example_databaseDetails.py
+.Testing file: \custom_database\tests\..\examples\example_foreignKeys.py
+.Testing file: \custom_database\tests\..\examples\example_millionRowLoad.py
+.Testing file: \custom_database\tests\..\examples\example_queries.py
+.Testing file: \custom_database\tests\..\examples\example_recordTypes.py
+.Testing file: \custom_database\tests\..\examples\example_storage.py
+.Testing file: \custom_database\tests\..\examples\example_storageCompression.py
+.Testing file: \custom_database\tests\..\examples\example_storageCompressionLarge.py
+.Testing file: \custom_database\tests\..\examples\example_transactions.py
+.Testing Imports
+..Testing Index Class
+..Testing Record Class
+.....Delete performance on 5000 [id, name, email] records: 0.013 seconds.
+.Insert performance for 5000 [id, name, email] records: 0.94 seconds.
+.Load performance for 5000 records: 0.89 seconds.
+.Restore performance for 5000 records: 0.0 seconds.
+.Save performance for 5000 records: 0.14 seconds.
+.Select performance of 1 out of 5000 [id, name, email] records: 0.002 seconds.
+.Update performance on 5000 [id, name, email] records: 0.49 seconds.
+.Testing Storage Class
+............Testing Table Class
+........Testing Transaction Class
+.............
+----------------------------------------------------------------------
+Ran 79 tests in 131.661s
+```
