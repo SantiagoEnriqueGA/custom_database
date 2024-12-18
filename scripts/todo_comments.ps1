@@ -2,13 +2,17 @@
 Get-ChildItem -Recurse -Filter *.py | Where-Object { 
     -not ($_.FullName -like "*__archive*") 
 } | ForEach-Object {
-    $lines = Get-Content $_.FullName
-    $lines | ForEach-Object {
+    $file = $_
+    $lines = Get-Content $file.FullName
+    $lines | ForEach-Object -Begin { $global:lineNumber = 0 } -Process {
+        $lineNumber++
         if ($_ -match 'TODO') {
-            [PSCustomObject]@{
-                FileName = $_.FullName -replace ".*custom_database", "custom_database"
-                Line     = $_
+            $todoComment = [PSCustomObject]@{
+                FileName   = $file.FullName -replace ".*custom_database", "custom_database"
+                LineNumber = $global:lineNumber
+                Line       = $_
             }
+            $todoComment
         }
     }
-} | Format-Table -AutoSize | Out-File -FilePath "scripts/out/todo_comments.txt" -Encoding utf8
+} | Tee-Object -FilePath "scripts/out/todo_comments.txt" | Format-Table -AutoSize
