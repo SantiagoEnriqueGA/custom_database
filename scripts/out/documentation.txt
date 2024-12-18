@@ -5,6 +5,7 @@ wrote segadb.storage.html
 wrote segadb.table.html
 wrote segadb.transaction.html
 wrote segadb.users.html
+wrote segadb.views.html
 wrote segadb.__init__.html
 wrote segadb.html
  

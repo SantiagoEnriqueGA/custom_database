@@ -35,7 +35,7 @@ This project is primarily educational. It is designed to help understand the wor
     - `to_uppercase()`: Converts the text to uppercase.
     - `to_lowercase()`: Converts the text to lowercase.
 - **User Management and Authorization**: Manage users, their roles, and permissions. See [`User`, `UserManager`, and `Authorization`](segadb/users.py).
-
+- **View and Materialized View Management**: Create, retrieve, refresh, and delete views and materialized views. See [`View`](segadb/views.py).
 
 ## Installation
 
@@ -60,6 +60,7 @@ The project directory structure is as follows:
   - [`table.py`](segadb/table.py): Implements the `Table` class for table operations.
   - [`transaction.py`](segadb/transaction.py): Implements the `Transaction` class for transaction handling.
   - [`users.py`](segadb/users.py): Implements the `User`, `UserManager`, and `Authorization` classes for user management and authorization.
+  - [`views.py`](segadb/views.py): Implements the `View` and `MaterializedView` classes for view management.
 - **tests/**: Contains unit and performance tests for the database library.
   - [`run_all_tests.py`](tests/run_all_tests.py): Runs all available tests.
   - [`test_utils.py`](tests/test_utils.py): Utility functions for tests.
@@ -88,6 +89,7 @@ The project directory structure is as follows:
   - [example_storageCompressionLarge.py](examples/example_storageCompressionLarge.py): Demonstrates how to save and load a large database with compression, using multiprocessing.
   - [example_transactions.py](examples/example_transactions.py): Demonstrates how to use transactions for commit and rollback operations.
   - [example_UsersAuth.py](examples/example_UsersAuth.py): Demonstrates user authentication and authorization.
+  - [example_views.py](examples/example_views.py): Demonstrates how to create, retrieve, refresh, and delete views and materialized views.
 - **docs/**: Contains the generated documentation for the segadb library.
   - [segadb.database.html](docs/segadb.database.html): Documentation for the `Database` class.
   - [segadb.index.html](docs/segadb.index.html): Documentation for the `Index` class.
@@ -138,6 +140,9 @@ The project directory structure is as follows:
 
 ### User Management
 - [example_UsersAuth.py](examples/example_UsersAuth.py): Demonstrates user authentication and authorization.
+
+### View Management
+- [example_views.py](examples/example_views.py): Demonstrates how to create, retrieve, refresh, and delete views and materialized views.
 
 ---
 #### Here is a simple example of creating a segadb Database and a table with constraints.
@@ -230,38 +235,37 @@ Or run the all tests file: `python run_all_tests.py`
 The following are the results of running the tests:
 
 ```sh
-segadb_env/python.exe "..custom_database/tests/run_all_tests.py"
-
-Testing Database Class..............
-.Testing file: .\custom_database\tests\..\examples\example_UsersAuth.py
-.Testing file: \custom_database\tests\..\examples\example_backupRecovery.py
-.Testing file: \custom_database\tests\..\examples\example_change_ids.py
-.Testing file: \custom_database\tests\..\examples\example_constraints.py
-.Testing file: \custom_database\tests\..\examples\example_dataExport.py
-.Testing file: \custom_database\tests\..\examples\example_dataImports.py
-.Testing file: \custom_database\tests\..\examples\example_databaseDetails.py
-.Testing file: \custom_database\tests\..\examples\example_foreignKeys.py
-.Testing file: \custom_database\tests\..\examples\example_millionRowLoad.py
-.Testing file: \custom_database\tests\..\examples\example_queries.py
-.Testing file: \custom_database\tests\..\examples\example_recordTypes.py
-.Testing file: \custom_database\tests\..\examples\example_storage.py
-.Testing file: \custom_database\tests\..\examples\example_storageCompression.py
-.Testing file: \custom_database\tests\..\examples\example_storageCompressionLarge.py
-.Testing file: \custom_database\tests\..\examples\example_transactions.py
+Testing Database Class
+...........................Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_UsersAuth.py
+.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_backupRecovery.py
+.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_change_ids.py
+.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_constraints.py
+.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_dataExport.py
+.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_dataImports.py
+.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_databaseDetails.py
+.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_foreignKeys.py
+.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_millionRowLoad.py
+.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_queries.py
+.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_recordTypes.py
+.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_storage.py
+.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_storageCompression.py
+.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_storageCompressionLarge.py
+.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_transactions.py
+.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_views.py
 .Testing Imports
 ..Testing Index Class
 ..Testing Record Class
-.....Delete performance on 5000 [id, name, email] records: 0.013 seconds.
-.Insert performance for 5000 [id, name, email] records: 0.94 seconds.
-.Load performance for 5000 records: 0.89 seconds.
+.....Delete performance on 5000 [id, name, email] records: 0.011 seconds.
+.Insert performance for 5000 [id, name, email] records: 0.97 seconds.
+.Load performance for 5000 records: 0.86 seconds.
 .Restore performance for 5000 records: 0.0 seconds.
-.Save performance for 5000 records: 0.14 seconds.
+.Save performance for 5000 records: 0.12 seconds.
 .Select performance of 1 out of 5000 [id, name, email] records: 0.002 seconds.
-.Update performance on 5000 [id, name, email] records: 0.49 seconds.
+.Update performance on 5000 [id, name, email] records: 0.45 seconds.
 .Testing Storage Class
 ............Testing Table Class
 ........Testing Transaction Class
-.............
+....................
 ----------------------------------------------------------------------
-Ran 79 tests in 131.661s
+Ran 99 tests in 125.892s
 ```

@@ -7,6 +7,7 @@ from .storage import Storage
 from .table import Table
 from .transaction import Transaction
 from .users import User, UserManager, Authorization
+from .views import View, MaterializedView
 
 __all__ = [
     "Database",
@@ -21,5 +22,7 @@ __all__ = [
     "Transaction",
     "User",
     "UserManager",
-    "Authorization"
+    "Authorization",
+    "View",
+    "MaterializedView",
 ]

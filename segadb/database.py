@@ -13,6 +13,7 @@ from tqdm import tqdm
 from .users import User, UserManager, Authorization, PRESET_ROLES
 from .table import Table
 from .record import Record
+from .views import View, MaterializedView
 
 # Helper function for processing file chunks in parallel (cannot be defined within the Database class)
 def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_names=None, col_types=None, progress=False, headers=False):
@@ -55,7 +56,7 @@ def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_nam
             pbar.close()
     return rows
 
-class Database:
+class Database:  
     # Initialization and Configuration
     # ---------------------------------------------------------------------------------------------
     def __init__(self, name):
@@ -66,6 +67,8 @@ class Database:
         """
         self.name = name
         self.tables = {}
+        self.views = {}
+        self.materialized_views = {}
         self.sessions = {}
         self.active_session = None
         self.create_table("_users" , ["username", "password_hash", "roles"])
@@ -551,7 +554,87 @@ class Database:
             return table.filter(condition)
         else:
             raise ValueError(f"Table {table_name} does not exist.")
+        
+    # View Management
+    # ---------------------------------------------------------------------------------------------
+    def create_view(self, view_name, query):
+        """
+        Create a new view.
+        Args:
+            view_name (str): The name of the view.
+            query (function): A function that returns the data for the view.
+        """
+        if view_name in self.views:
+            raise ValueError(f"View {view_name} already exists.")
+        self.views[view_name] = View(view_name, query)
 
+    def get_view(self, view_name):
+        """
+        Retrieve a view by name.
+        Args:
+            view_name (str): The name of the view.
+        Returns:
+            View: The view object.
+        """
+        if view_name not in self.views:
+            raise ValueError(f"View {view_name} does not exist.")
+        return self.views[view_name]
+
+    def delete_view(self, view_name):
+        """
+        Delete a view by name.
+        Args:
+            view_name (str): The name of the view.
+        """
+        if view_name not in self.views:
+            raise ValueError(f"View {view_name} does not exist.")
+        del self.views[view_name]    
+    
+    # Materialized View Management
+    # ---------------------------------------------------------------------------------------------
+    def create_materialized_view(self, view_name, query):
+        """
+        Create a new materialized view.
+        Args:
+            view_name (str): The name of the materialized view.
+            query (function): A function that returns the data for the materialized view.
+        """
+        if view_name in self.materialized_views:
+            raise ValueError(f"Materialized view {view_name} already exists.")
+        self.materialized_views[view_name] = MaterializedView(view_name, query)
+
+    def get_materialized_view(self, view_name):
+        """
+        Retrieve a materialized view by name.
+        Args:
+            view_name (str): The name of the materialized view.
+        Returns:
+            MaterializedView: The materialized view object.
+        """
+        if view_name not in self.materialized_views:
+            raise ValueError(f"Materialized view {view_name} does not exist.")
+        return self.materialized_views[view_name]
+
+    def refresh_materialized_view(self, view_name):
+        """
+        Refresh a materialized view by name.
+        Args:
+            view_name (str): The name of the materialized view.
+        """
+        if view_name not in self.materialized_views:
+            raise ValueError(f"Materialized view {view_name} does not exist.")
+        self.materialized_views[view_name].refresh()
+
+    def delete_materialized_view(self, view_name):
+        """
+        Delete a materialized view by name.
+        Args:
+            view_name (str): The name of the materialized view.
+        """
+        if view_name not in self.materialized_views:
+            raise ValueError(f"Materialized view {view_name} does not exist.")
+        del self.materialized_views[view_name]    
+        
     # Utility Methods
     # ---------------------------------------------------------------------------------------------
     def print_db(self, index=False, limit=None):

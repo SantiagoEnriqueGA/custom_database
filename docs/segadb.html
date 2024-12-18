@@ -50,6 +50,7 @@ td.singlecolumn { width: 100%; }
 </td><td class="multicolumn"><a href="segadb.table.html">table</a><br>
 <a href="segadb.transaction.html">transaction</a><br>
 </td><td class="multicolumn"><a href="segadb.users.html">users</a><br>
+<a href="segadb.views.html">views</a><br>
 </td></tr></table></td></tr></table><p>
 <table class="section">
 <tr class="decor index-decor heading-text">
@@ -77,6 +78,8 @@ td.singlecolumn { width: 100%; }
 </dt><dt class="heading-text"><a href="segadb.users.html#Authorization">segadb.users.Authorization</a>
 </dt><dt class="heading-text"><a href="segadb.users.html#User">segadb.users.User</a>
 </dt><dt class="heading-text"><a href="segadb.users.html#UserManager">segadb.users.UserManager</a>
+</dt><dt class="heading-text"><a href="segadb.views.html#MaterializedView">segadb.views.MaterializedView</a>
+</dt><dt class="heading-text"><a href="segadb.views.html#View">segadb.views.View</a>
 </dt></dl>
 </dd>
 </dl>
@@ -187,6 +190,11 @@ Returns:<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Authorization">Authorization</a>:&nbsp;A&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;<a href="#Authorization">Authorization</a>&nbsp;class.</span></dd></dl>
 
+<dl><dt><a name="Database-create_materialized_view"><strong>create_materialized_view</strong></a>(self, view_name, query)</dt><dd><span class="code">Create&nbsp;a&nbsp;new&nbsp;materialized&nbsp;view.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;view_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;materialized&nbsp;view.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;query&nbsp;(function):&nbsp;A&nbsp;function&nbsp;that&nbsp;returns&nbsp;the&nbsp;data&nbsp;for&nbsp;the&nbsp;materialized&nbsp;view.</span></dd></dl>
+
 <dl><dt><a name="Database-create_session"><strong>create_session</strong></a>(self, username)</dt><dd><span class="code">Creates&nbsp;a&nbsp;new&nbsp;session&nbsp;for&nbsp;a&nbsp;user.<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user.<br>
@@ -218,9 +226,22 @@ Example:<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#UserManager">UserManager</a>:&nbsp;A&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;<a href="#UserManager">UserManager</a>&nbsp;class.</span></dd></dl>
 
+<dl><dt><a name="Database-create_view"><strong>create_view</strong></a>(self, view_name, query)</dt><dd><span class="code">Create&nbsp;a&nbsp;new&nbsp;view.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;view_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;view.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;query&nbsp;(function):&nbsp;A&nbsp;function&nbsp;that&nbsp;returns&nbsp;the&nbsp;data&nbsp;for&nbsp;the&nbsp;view.</span></dd></dl>
+
+<dl><dt><a name="Database-delete_materialized_view"><strong>delete_materialized_view</strong></a>(self, view_name)</dt><dd><span class="code">Delete&nbsp;a&nbsp;materialized&nbsp;view&nbsp;by&nbsp;name.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;view_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;materialized&nbsp;view.</span></dd></dl>
+
 <dl><dt><a name="Database-delete_session"><strong>delete_session</strong></a>(self, session_token)</dt><dd><span class="code">Deletes&nbsp;a&nbsp;session.<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;session_token&nbsp;(str):&nbsp;The&nbsp;session&nbsp;token&nbsp;to&nbsp;delete.</span></dd></dl>
+
+<dl><dt><a name="Database-delete_view"><strong>delete_view</strong></a>(self, view_name)</dt><dd><span class="code">Delete&nbsp;a&nbsp;view&nbsp;by&nbsp;name.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;view_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;view.</span></dd></dl>
 
 <dl><dt><a name="Database-drop_table"><strong>drop_table</strong></a>(self, table_name, session_token=None)</dt><dd><span class="code">Drops&nbsp;a&nbsp;table&nbsp;from&nbsp;the&nbsp;database.<br>
 Args:<br>
@@ -238,6 +259,12 @@ Returns:<br>
 <dl><dt><a name="Database-get_db_size"><strong>get_db_size</strong></a>(self)</dt><dd><span class="code">Calculate&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;database&nbsp;in&nbsp;bytes.<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;int:&nbsp;The&nbsp;size&nbsp;of&nbsp;the&nbsp;database&nbsp;in&nbsp;bytes.</span></dd></dl>
+
+<dl><dt><a name="Database-get_materialized_view"><strong>get_materialized_view</strong></a>(self, view_name)</dt><dd><span class="code">Retrieve&nbsp;a&nbsp;materialized&nbsp;view&nbsp;by&nbsp;name.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;view_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;materialized&nbsp;view.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#MaterializedView">MaterializedView</a>:&nbsp;The&nbsp;materialized&nbsp;view&nbsp;<a href="builtins.html#object">object</a>.</span></dd></dl>
 
 <dl><dt><a name="Database-get_table"><strong>get_table</strong></a>(self, table_name)</dt><dd><span class="code">Retrieve&nbsp;a&nbsp;table&nbsp;from&nbsp;the&nbsp;database&nbsp;by&nbsp;its&nbsp;name.<br>
 Args:<br>
@@ -257,6 +284,12 @@ Args:<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;The&nbsp;username&nbsp;if&nbsp;the&nbsp;session&nbsp;exists,&nbsp;None&nbsp;otherwise.</span></dd></dl>
 
+<dl><dt><a name="Database-get_view"><strong>get_view</strong></a>(self, view_name)</dt><dd><span class="code">Retrieve&nbsp;a&nbsp;view&nbsp;by&nbsp;name.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;view_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;view.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#View">View</a>:&nbsp;The&nbsp;view&nbsp;<a href="builtins.html#object">object</a>.</span></dd></dl>
+
 <dl><dt><a name="Database-join_tables"><strong>join_tables</strong></a>(self, table_name1, table_name2, on_column, other_column)</dt><dd><span class="code">Perform&nbsp;an&nbsp;inner&nbsp;join&nbsp;between&nbsp;two&nbsp;tables&nbsp;on&nbsp;specified&nbsp;columns.<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;table_name1&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;first&nbsp;table.<br>
@@ -270,6 +303,10 @@ Returns:<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;index&nbsp;(bool,&nbsp;optional):&nbsp;Whether&nbsp;to&nbsp;print&nbsp;the&nbsp;index&nbsp;of&nbsp;each&nbsp;record.&nbsp;Defaults&nbsp;to&nbsp;False.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;limit&nbsp;(int,&nbsp;optional):&nbsp;The&nbsp;maximum&nbsp;number&nbsp;of&nbsp;records&nbsp;to&nbsp;print&nbsp;for&nbsp;each&nbsp;table.&nbsp;Defaults&nbsp;to&nbsp;None.</span></dd></dl>
+
+<dl><dt><a name="Database-refresh_materialized_view"><strong>refresh_materialized_view</strong></a>(self, view_name)</dt><dd><span class="code">Refresh&nbsp;a&nbsp;materialized&nbsp;view&nbsp;by&nbsp;name.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;view_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;materialized&nbsp;view.</span></dd></dl>
 
 <dl><dt><a name="Database-register_user"><strong>register_user</strong></a>(self, username, password, roles=None)</dt><dd><span class="code">Registers&nbsp;a&nbsp;new&nbsp;user&nbsp;in&nbsp;the&nbsp;database.<br>
 Args:<br>
@@ -401,6 +438,36 @@ Args:<br>
 <dl><dt><a name="Index-to_dict"><strong>to_dict</strong></a>(self)</dt><dd><span class="code">Returns&nbsp;a&nbsp;dictionary&nbsp;representation&nbsp;of&nbsp;the&nbsp;index.<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;dict:&nbsp;A&nbsp;dictionary&nbsp;representation&nbsp;of&nbsp;the&nbsp;index.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="MaterializedView">class <strong>MaterializedView</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#MaterializedView">MaterializedView</a>(name,&nbsp;query)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="MaterializedView-__init__"><strong>__init__</strong></a>(self, name, query)</dt><dd><span class="code">Initialize&nbsp;a&nbsp;new&nbsp;materialized&nbsp;view&nbsp;with&nbsp;a&nbsp;name&nbsp;and&nbsp;query.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;materialized&nbsp;view.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;query&nbsp;(function):&nbsp;A&nbsp;function&nbsp;that&nbsp;returns&nbsp;the&nbsp;data&nbsp;for&nbsp;the&nbsp;materialized&nbsp;view.</span></dd></dl>
+
+<dl><dt><a name="MaterializedView-get_data"><strong>get_data</strong></a>(self)</dt><dd><span class="code">Return&nbsp;the&nbsp;data&nbsp;for&nbsp;the&nbsp;materialized&nbsp;view.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;list:&nbsp;The&nbsp;data&nbsp;for&nbsp;the&nbsp;materialized&nbsp;view.</span></dd></dl>
+
+<dl><dt><a name="MaterializedView-refresh"><strong>refresh</strong></a>(self)</dt><dd><span class="code">Refresh&nbsp;the&nbsp;data&nbsp;for&nbsp;the&nbsp;materialized&nbsp;view&nbsp;by&nbsp;re-executing&nbsp;the&nbsp;query.</span></dd></dl>
 
 <hr>
 Data descriptors defined here:<br>
@@ -972,11 +1039,39 @@ Data descriptors inherited from <a href="segadb.record.html#Record">Record</a>:<
 <dl><dt><strong>__weakref__</strong></dt>
 <dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
 </dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="View">class <strong>View</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#View">View</a>(name,&nbsp;query)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="View-__init__"><strong>__init__</strong></a>(self, name, query)</dt><dd><span class="code">Initialize&nbsp;a&nbsp;new&nbsp;view&nbsp;with&nbsp;a&nbsp;name&nbsp;and&nbsp;query.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;view.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;query&nbsp;(function):&nbsp;A&nbsp;function&nbsp;that&nbsp;returns&nbsp;the&nbsp;data&nbsp;for&nbsp;the&nbsp;view.</span></dd></dl>
+
+<dl><dt><a name="View-get_data"><strong>get_data</strong></a>(self)</dt><dd><span class="code">Execute&nbsp;the&nbsp;query&nbsp;and&nbsp;return&nbsp;the&nbsp;data&nbsp;for&nbsp;the&nbsp;view.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;list:&nbsp;The&nbsp;data&nbsp;for&nbsp;the&nbsp;view.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
 </td></tr></table></td></tr></table><p>
 <table class="section">
 <tr class="decor data-decor heading-text">
 <td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
     
 <tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
-<td class="singlecolumn"><strong>__all__</strong> = ['Database', 'Index', 'Record', 'VectorRecord', 'TimeSeriesRecord', 'ImageRecord', 'TextRecord', 'Storage', 'Table', 'Transaction', 'User', 'UserManager', 'Authorization']</td></tr></table>
+<td class="singlecolumn"><strong>__all__</strong> = ['Database', 'Index', 'Record', 'VectorRecord', 'TimeSeriesRecord', 'ImageRecord', 'TextRecord', 'Storage', 'Table', 'Transaction', 'User', 'UserManager', 'Authorization', 'View', 'MaterializedView']</td></tr></table>
 </body></html>

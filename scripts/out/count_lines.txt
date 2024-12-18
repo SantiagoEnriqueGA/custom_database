@@ -1,18 +1,18 @@
 ﻿Lines per Python file, sorted by descending order:
 ____________________________________________________________________________________________________
-	custom_database\segadb\database.py                                             :   595
+	custom_database\segadb\database.py                                             :   674
 	custom_database\example_datasets\createMeasurements.py                         :   465
 	custom_database\segadb\storage.py                                              :   429
 	custom_database\segadb\table.py                                                :   328
-	custom_database\tests\test_database.py                                         :   219
+	custom_database\tests\test_database.py                                         :   299
 	custom_database\segadb\record.py                                               :   187
 	custom_database\segadb\users.py                                                :   154
 	custom_database\tests\test_storage.py                                          :   131
 	custom_database\tests\test_segadb_performance.py                               :    95
 	custom_database\tests\test_users.py                                            :    89
 	custom_database\examples\example_storage.py                                    :    87
-	custom_database\examples\example_databaseDetails.py                            :    85
 	custom_database\examples\example_recordTypes.py                                :    85
+	custom_database\examples\example_databaseDetails.py                            :    85
 	custom_database\tests\test_examples.py                                         :    83
 	custom_database\examples\example_queries.py                                    :    78
 	custom_database\tests\test_table.py                                            :    78
@@ -20,17 +20,20 @@ ________________________________________________________________________________
 	custom_database\segadb\transaction.py                                          :    71
 	custom_database\examples\example_UsersAuth.py                                  :    64
 	custom_database\examples\example_backupRecovery.py                             :    62
+	custom_database\examples\example_views.py                                      :    61
 	custom_database\tests\test_imports.py                                          :    61
-	custom_database\examples\example_storageCompressionLarge.py                    :    60
 	custom_database\examples\example_storageCompression.py                         :    60
+	custom_database\examples\example_storageCompressionLarge.py                    :    60
+	custom_database\tests\test_views.py                                            :    55
 	custom_database\tests\test_record.py                                           :    54
 	custom_database\segadb\index.py                                                :    53
 	custom_database\tests\test_transaction.py                                      :    44
 	custom_database\examples\example_dataExport.py                                 :    41
+	custom_database\segadb\views.py                                                :    41
 	custom_database\examples\example_foreignKeys.py                                :    33
 	custom_database\examples\example_transactions.py                               :    33
-	custom_database\examples\example_constraints.py                                :    29
 	custom_database\examples\example_change_ids.py                                 :    29
+	custom_database\examples\example_constraints.py                                :    29
 	custom_database\tests\test_index.py                                            :    29
 	custom_database\segadb\__init__.py                                             :    23
 	custom_database\tests\test_utils.py                                            :    22
@@ -38,5 +41,5 @@ ________________________________________________________________________________
 	custom_database\examples\example_dataImports.py                                :    13
 	custom_database\tests\run_all_tests.py                                         :    11
 ____________________________________________________________________________________________________
-Total lines                                                                            :  4071
+Total lines                                                                            :  4387
  

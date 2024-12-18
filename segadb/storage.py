@@ -35,7 +35,7 @@ def _process_chunk(records_chunk, table):
         record_objects.append(r)
     return record_objects
 
-# Note: these are static methods, so they don't need to be instantiated
+# TODO: Add support for saving and loading views and materialized views
 class Storage:
     """A utility class for saving, loading, and deleting database files."""
     

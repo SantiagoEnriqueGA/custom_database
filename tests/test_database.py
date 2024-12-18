@@ -29,6 +29,18 @@ class TestDatabase(unittest.TestCase):
     - test_create_table_from_csv_mp: Tests creating a table from a CSV file using multiprocessing.
     - test_get_file_chunks: Tests getting file chunks for multiprocessing.
     - test_process_file: Tests processing a file using multiprocessing.
+    - test_create_view: Tests creating a view in the database.
+    - test_create_view_existing: Tests creating a view that already exists.
+    - test_get_view_nonexistent: Tests retrieving a view that does not exist.
+    - test_delete_view: Tests deleting a view from the database.
+    - test_delete_view_nonexistent: Tests deleting a view that does not exist.
+    - test_create_materialized_view: Tests creating a materialized view in the database.
+    - test_create_materialized_view_existing: Tests creating a materialized view that already exists.
+    - test_get_materialized_view_nonexistent: Tests retrieving a materialized view that does not exist.
+    - test_refresh_materialized_view: Tests refreshing a materialized view.
+    - test_refresh_materialized_view_nonexistent: Tests refreshing a materialized view that does not exist.
+    - test_delete_materialized_view: Tests deleting a materialized view from the database.
+    - test_delete_materialized_view_nonexistent: Tests deleting a materialized view that does not exist.
     """
     @classmethod
     def setUpClass(cls):
@@ -241,6 +253,84 @@ class TestDatabase(unittest.TestCase):
         records = db._process_file(cpu_count, chunks, delim=',', column_names=["id", "name", "email"], col_types=[int, str, str], progress=False, headers=True)
         self.assertEqual(len(records), 100)
         os.remove(csvfile_path)
+        
+    def test_create_view(self):
+        db = Database("TestDB")
+        query = lambda: [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
+        db.create_view("UserView", query)
+        self.assertIn("UserView", db.views)
+        view = db.get_view("UserView")
+        self.assertEqual(view.name, "UserView")
+        self.assertEqual(view.query(), query())
 
+    def test_create_view_existing(self):
+        db = Database("TestDB")
+        query = lambda: [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
+        db.create_view("UserView", query)
+        with self.assertRaises(ValueError):
+            db.create_view("UserView", query)
+
+    def test_get_view_nonexistent(self):
+        db = Database("TestDB")
+        with self.assertRaises(ValueError):
+            db.get_view("NonExistentView")
+
+    def test_delete_view(self):
+        db = Database("TestDB")
+        query = lambda: [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
+        db.create_view("UserView", query)
+        db.delete_view("UserView")
+        self.assertNotIn("UserView", db.views)
+
+    def test_delete_view_nonexistent(self):
+        db = Database("TestDB")
+        with self.assertRaises(ValueError):
+            db.delete_view("NonExistentView")
+
+    def test_create_materialized_view(self):
+        db = Database("TestDB")
+        query = lambda: [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
+        db.create_materialized_view("UserMaterializedView", query)
+        self.assertIn("UserMaterializedView", db.materialized_views)
+        materialized_view = db.get_materialized_view("UserMaterializedView")
+        self.assertEqual(materialized_view.name, "UserMaterializedView")
+        self.assertEqual(materialized_view.query(), query())
+
+    def test_create_materialized_view_existing(self):
+        db = Database("TestDB")
+        query = lambda: [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
+        db.create_materialized_view("UserMaterializedView", query)
+        with self.assertRaises(ValueError):
+            db.create_materialized_view("UserMaterializedView", query)
+
+    def test_get_materialized_view_nonexistent(self):
+        db = Database("TestDB")
+        with self.assertRaises(ValueError):
+            db.get_materialized_view("NonExistentMaterializedView")
+
+    def test_refresh_materialized_view(self):
+        db = Database("TestDB")
+        query = Mock(return_value=[{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}])
+        db.create_materialized_view("UserMaterializedView", query)
+        db.refresh_materialized_view("UserMaterializedView")
+        self.assertEqual(query.call_count, 2)
+
+    def test_refresh_materialized_view_nonexistent(self):
+        db = Database("TestDB")
+        with self.assertRaises(ValueError):
+            db.refresh_materialized_view("NonExistentMaterializedView")
+
+    def test_delete_materialized_view(self):
+        db = Database("TestDB")
+        query = lambda: [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
+        db.create_materialized_view("UserMaterializedView", query)
+        db.delete_materialized_view("UserMaterializedView")
+        self.assertNotIn("UserMaterializedView", db.materialized_views)
+
+    def test_delete_materialized_view_nonexistent(self):
+        db = Database("TestDB")
+        with self.assertRaises(ValueError):
+            db.delete_materialized_view("NonExistentMaterializedView")
+            
 if __name__ == '__main__':
     unittest.main()
