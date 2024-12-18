@@ -11,4 +11,4 @@ Get-ChildItem -Recurse -Filter *.py | Where-Object {
             }
         }
     }
-} | Format-Table -AutoSize | Out-File -FilePath "scripts/todo_comments.txt" -Encoding utf8
+} | Format-Table -AutoSize | Out-File -FilePath "scripts/out/todo_comments.txt" -Encoding utf8

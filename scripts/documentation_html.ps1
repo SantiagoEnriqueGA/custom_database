@@ -20,7 +20,7 @@ $files += "segadb"
 $files | ForEach-Object {
     Write-Host "Generating documentation for: $_"
     pydoc -w $_
-} | Out-File -FilePath "scripts/documentation.txt" -Encoding utf8
+} | Out-File -FilePath "scripts/out/documentation.txt" -Encoding utf8
 
 # Add custom CSS to each HTML file
 $cssContent = @"
@@ -71,7 +71,7 @@ $generatedDocs | ForEach-Object {
 }
 
 # Add how to run the documentation the scripts/documentation.txt
-Add-Content -Path "scripts/documentation.txt" -Value " "
-Add-Content -Path "scripts/documentation.txt" -Value "To view the documentation, run the following command in the terminal:"
-Add-Content -Path "scripts/documentation.txt" -Value "python -m pydoc -p 8080"
-Add-Content -Path "scripts/documentation.txt" -Value "Then open a web browser and navigate to http://localhost:8080/segadb.html"
+Add-Content -Path "scripts/out/documentation.txt" -Value " "
+Add-Content -Path "scripts/out/documentation.txt" -Value "To view the documentation, run the following command in the terminal:"
+Add-Content -Path "scripts/out/documentation.txt" -Value "python -m pydoc -p 8080"
+Add-Content -Path "scripts/out/documentation.txt" -Value "Then open a web browser and navigate to http://localhost:8080/segadb.html"

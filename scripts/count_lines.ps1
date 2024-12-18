@@ -42,4 +42,4 @@ $output += " "
 $output | ForEach-Object { Write-Output $_ }
 
 # Save the output to count_lines.txt
-$output | Out-File -FilePath "scripts/count_lines.txt" -Encoding utf8
+$output | Out-File -FilePath "scripts/out/count_lines.txt" -Encoding utf8
