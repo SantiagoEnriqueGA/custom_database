@@ -29,8 +29,7 @@ $generatedDocs | ForEach-Object {
     Move-Item -Path $_.FullName -Destination $destinationFolder
 }
 
-
-# Add how to run the documentation the scipts/documentation.txt
+# Add how to run the documentation the scripts/documentation.txt
 Add-Content -Path "scripts/documentation.txt" -Value " "
 Add-Content -Path "scripts/documentation.txt" -Value "To view the documentation, run the following command in the terminal:"
 Add-Content -Path "scripts/documentation.txt" -Value "python -m pydoc -p 8080"
