@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module segadb.storage</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title"><a href="segadb.html" class="white">segadb</a>.storage</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:c%3A%5Cusers%5Csg670w%5Conedrive%20-%20at%26t%20services%2C%20inc%5Cdocuments%5Cprojects%5Ccustom_database%5Csegadb%5Cstorage.py">c:\users\sg670w\onedrive - at&t services, inc\documents\projects\custom_database\segadb\storage.py</a></td></tr></table>
+    <p><span class="code">#&nbsp;Imports:&nbsp;Standard&nbsp;Library</span></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="json.html">json</a><br>
+</td><td class="multicolumn"><a href="multiprocessing.html">multiprocessing</a><br>
+</td><td class="multicolumn"><a href="os.html">os</a><br>
+</td><td class="multicolumn"><a href="zlib.html">zlib</a><br>
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor index-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Classes</strong></td></tr>
+    
+<tr><td class="decor index-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl>
+<dt class="heading-text"><a href="builtins.html#object">builtins.object</a>
+</dt><dd>
+<dl>
+<dt class="heading-text"><a href="segadb.storage.html#Storage">Storage</a>
+</dt></dl>
+</dd>
+</dl>
+ <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="Storage">class <strong>Storage</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">A&nbsp;utility&nbsp;class&nbsp;for&nbsp;saving,&nbsp;loading,&nbsp;and&nbsp;deleting&nbsp;database&nbsp;files.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Static methods defined here:<br>
+<dl><dt><a name="Storage-backup"><strong>backup</strong></a>(db, key=None, compress=False, dir=None, date=False)</dt><dd><span class="code">Backup&nbsp;the&nbsp;database&nbsp;to&nbsp;a&nbsp;file.&nbsp;<br>
+If&nbsp;none&nbsp;exists,&nbsp;a&nbsp;folder&nbsp;named&nbsp;'backups_'&nbsp;+&nbsp;db.name&nbsp;will&nbsp;be&nbsp;created&nbsp;in&nbsp;the&nbsp;directory.<br>
+The&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;is&nbsp;serialized&nbsp;into&nbsp;a&nbsp;JSON&nbsp;format&nbsp;and&nbsp;written&nbsp;to&nbsp;the&nbsp;specified&nbsp;file.<br>
+Each&nbsp;backup&nbsp;file&nbsp;is&nbsp;named&nbsp;'db.name_backup_n.segadb',&nbsp;where&nbsp;n&nbsp;is&nbsp;the&nbsp;number&nbsp;of&nbsp;backups&nbsp;in&nbsp;the&nbsp;directory.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db&nbsp;(Database):&nbsp;The&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;be&nbsp;saved.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;key&nbsp;(bytes,&nbsp;optional):&nbsp;The&nbsp;encryption&nbsp;key.&nbsp;If&nbsp;provided,&nbsp;the&nbsp;data&nbsp;will&nbsp;be&nbsp;encrypted&nbsp;before&nbsp;saving.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;compress&nbsp;(bool,&nbsp;optional):&nbsp;If&nbsp;True,&nbsp;the&nbsp;data&nbsp;will&nbsp;be&nbsp;compressed&nbsp;using&nbsp;zlib&nbsp;before&nbsp;saving.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dir&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;directory&nbsp;where&nbsp;the&nbsp;backup&nbsp;will&nbsp;be&nbsp;saved.&nbsp;Default&nbsp;is&nbsp;None.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;date&nbsp;(bool,&nbsp;optional):&nbsp;If&nbsp;True,&nbsp;the&nbsp;date&nbsp;will&nbsp;be&nbsp;appended&nbsp;to&nbsp;the&nbsp;filename.&nbsp;Default&nbsp;is&nbsp;False.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;status&nbsp;(str):&nbsp;The&nbsp;status&nbsp;of&nbsp;the&nbsp;backup&nbsp;operation,&nbsp;as&nbsp;well&nbsp;as&nbsp;the&nbsp;path&nbsp;to&nbsp;the&nbsp;backup&nbsp;file.</span></dd></dl>
+
+<dl><dt><a name="Storage-db_to_dict"><strong>db_to_dict</strong></a>(db)</dt><dd><span class="code">Convert&nbsp;a&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;a&nbsp;dictionary.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db&nbsp;(Database):&nbsp;The&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;be&nbsp;converted.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dict:&nbsp;A&nbsp;dictionary&nbsp;representation&nbsp;of&nbsp;the&nbsp;database&nbsp;<a href="builtins.html#object">object</a></span></dd></dl>
+
+<dl><dt><a name="Storage-decrypt"><strong>decrypt</strong></a>(data, key)</dt><dd><span class="code">Decrypt&nbsp;the&nbsp;data&nbsp;using&nbsp;the&nbsp;provided&nbsp;key.</span></dd></dl>
+
+<dl><dt><a name="Storage-delete"><strong>delete</strong></a>(filename)</dt><dd><span class="code">Delete&nbsp;the&nbsp;specified&nbsp;file&nbsp;from&nbsp;the&nbsp;filesystem.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;filename&nbsp;(str):&nbsp;The&nbsp;path&nbsp;to&nbsp;the&nbsp;file&nbsp;to&nbsp;be&nbsp;deleted.</span></dd></dl>
+
+<dl><dt><a name="Storage-encrypt"><strong>encrypt</strong></a>(data, key)</dt><dd><span class="code">Encrypt&nbsp;the&nbsp;data&nbsp;using&nbsp;the&nbsp;provided&nbsp;key.</span></dd></dl>
+
+<dl><dt><a name="Storage-generate_key"><strong>generate_key</strong></a>()</dt><dd><span class="code">Generate&nbsp;a&nbsp;key&nbsp;for&nbsp;encryption.</span></dd></dl>
+
+<dl><dt><a name="Storage-list_backups"><strong>list_backups</strong></a>(dir=None, print_output=True)</dt><dd><span class="code">List&nbsp;the&nbsp;backup&nbsp;files&nbsp;in&nbsp;the&nbsp;specified&nbsp;directory.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dir&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;directory&nbsp;to&nbsp;search&nbsp;for&nbsp;backup&nbsp;files.&nbsp;Default&nbsp;is&nbsp;None.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;list:&nbsp;A&nbsp;list&nbsp;of&nbsp;the&nbsp;backup&nbsp;files&nbsp;in&nbsp;the&nbsp;directory.</span></dd></dl>
+
+<dl><dt><a name="Storage-load"><strong>load</strong></a>(filename, key=None, user=None, password=None, compression=False, parrallel=False)</dt><dd><span class="code">Load&nbsp;a&nbsp;database&nbsp;from&nbsp;a&nbsp;JSON&nbsp;file.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;filename&nbsp;(str):&nbsp;The&nbsp;path&nbsp;to&nbsp;the&nbsp;JSON&nbsp;file&nbsp;containing&nbsp;the&nbsp;database&nbsp;data.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;key&nbsp;(bytes,&nbsp;optional):&nbsp;The&nbsp;encryption&nbsp;key.&nbsp;If&nbsp;provided,&nbsp;the&nbsp;data&nbsp;will&nbsp;be&nbsp;decrypted&nbsp;after&nbsp;loading.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;compression&nbsp;(bool,&nbsp;optional):&nbsp;If&nbsp;True,&nbsp;the&nbsp;data&nbsp;will&nbsp;be&nbsp;decompressed&nbsp;using&nbsp;zlib&nbsp;after&nbsp;loading.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;parrallel&nbsp;(bool,&nbsp;optional):&nbsp;If&nbsp;True,&nbsp;the&nbsp;data&nbsp;will&nbsp;be&nbsp;loaded&nbsp;in&nbsp;parallel&nbsp;using&nbsp;multiprocessing.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Database:&nbsp;An&nbsp;instance&nbsp;of&nbsp;the&nbsp;Database&nbsp;class&nbsp;populated&nbsp;with&nbsp;the&nbsp;data&nbsp;from&nbsp;the&nbsp;JSON&nbsp;file.</span></dd></dl>
+
+<dl><dt><a name="Storage-restore"><strong>restore</strong></a>(db, key=None, compress=False, user=None, password=None, dir=None, backup_name=None)</dt><dd><span class="code">Restore&nbsp;a&nbsp;database&nbsp;from&nbsp;a&nbsp;backup&nbsp;file.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db&nbsp;(Database):&nbsp;The&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;be&nbsp;restored.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;key&nbsp;(bytes,&nbsp;optional):&nbsp;The&nbsp;encryption&nbsp;key.&nbsp;If&nbsp;provided,&nbsp;the&nbsp;data&nbsp;will&nbsp;be&nbsp;decrypted&nbsp;after&nbsp;loading.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;compress&nbsp;(bool,&nbsp;optional):&nbsp;If&nbsp;True,&nbsp;the&nbsp;data&nbsp;will&nbsp;be&nbsp;decompressed&nbsp;using&nbsp;zlib&nbsp;after&nbsp;loading.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;user&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;username&nbsp;for&nbsp;authentication.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;password&nbsp;for&nbsp;authentication.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dir&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;directory&nbsp;where&nbsp;the&nbsp;backup&nbsp;is&nbsp;saved.&nbsp;Default&nbsp;is&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;backup_name&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;backup&nbsp;file.&nbsp;Default&nbsp;is&nbsp;None.&nbsp;Will&nbsp;use&nbsp;the&nbsp;latest&nbsp;backup&nbsp;if&nbsp;None.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Database:&nbsp;An&nbsp;instance&nbsp;of&nbsp;the&nbsp;Database&nbsp;class&nbsp;populated&nbsp;with&nbsp;the&nbsp;data&nbsp;from&nbsp;the&nbsp;backup&nbsp;file.</span></dd></dl>
+
+<dl><dt><a name="Storage-save"><strong>save</strong></a>(db, filename, key=None, compress=False)</dt><dd><span class="code">Save&nbsp;the&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;a&nbsp;JSON&nbsp;file.&nbsp;&nbsp;<br>
+The&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;is&nbsp;serialized&nbsp;into&nbsp;a&nbsp;JSON&nbsp;format&nbsp;and&nbsp;written&nbsp;to&nbsp;the&nbsp;specified&nbsp;file.&nbsp;&nbsp;<br>
+The&nbsp;JSON&nbsp;structure&nbsp;includes&nbsp;the&nbsp;database&nbsp;name,&nbsp;tables,&nbsp;columns,&nbsp;records,&nbsp;next_id,&nbsp;and&nbsp;constraints.&nbsp;&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db&nbsp;(Database):&nbsp;The&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;be&nbsp;saved.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;filename&nbsp;(str):&nbsp;The&nbsp;path&nbsp;to&nbsp;the&nbsp;file&nbsp;where&nbsp;the&nbsp;database&nbsp;will&nbsp;be&nbsp;saved.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;key&nbsp;(bytes,&nbsp;optional):&nbsp;The&nbsp;encryption&nbsp;key.&nbsp;If&nbsp;provided,&nbsp;the&nbsp;data&nbsp;will&nbsp;be&nbsp;encrypted&nbsp;before&nbsp;saving.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;compress&nbsp;(bool,&nbsp;optional):&nbsp;If&nbsp;True,&nbsp;the&nbsp;data&nbsp;will&nbsp;be&nbsp;compressed&nbsp;using&nbsp;zlib&nbsp;before&nbsp;saving.</span></dd></dl>
+
+<dl><dt><a name="Storage-save_table"><strong>save_table</strong></a>(table, filename, format='csv')</dt><dd><span class="code">Save&nbsp;the&nbsp;table&nbsp;to&nbsp;a&nbsp;file&nbsp;in&nbsp;the&nbsp;specified&nbsp;format.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;table&nbsp;(Table):&nbsp;The&nbsp;table&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;be&nbsp;saved.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;filename&nbsp;(str):&nbsp;The&nbsp;path&nbsp;to&nbsp;the&nbsp;file&nbsp;where&nbsp;the&nbsp;table&nbsp;will&nbsp;be&nbsp;saved.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;format&nbsp;(str):&nbsp;The&nbsp;format&nbsp;in&nbsp;which&nbsp;the&nbsp;table&nbsp;will&nbsp;be&nbsp;saved.&nbsp;Default&nbsp;is&nbsp;'csv'.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+    
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>inf</strong> = inf</td></tr></table>
+</body></html>

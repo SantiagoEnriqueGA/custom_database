@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module segadb.transaction</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title"><a href="segadb.html" class="white">segadb</a>.transaction</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:c%3A%5Cusers%5Csg670w%5Conedrive%20-%20at%26t%20services%2C%20inc%5Cdocuments%5Cprojects%5Ccustom_database%5Csegadb%5Ctransaction.py">c:\users\sg670w\onedrive - at&t services, inc\documents\projects\custom_database\segadb\transaction.py</a></td></tr></table>
+    <p></p>
+<p>
+<table class="section">
+<tr class="decor index-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Classes</strong></td></tr>
+    
+<tr><td class="decor index-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl>
+<dt class="heading-text"><a href="builtins.html#object">builtins.object</a>
+</dt><dd>
+<dl>
+<dt class="heading-text"><a href="segadb.transaction.html#Transaction">Transaction</a>
+</dt></dl>
+</dd>
+</dl>
+ <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="Transaction">class <strong>Transaction</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#Transaction">Transaction</a>(database)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="Transaction-__init__"><strong>__init__</strong></a>(self, database)</dt><dd><span class="code">Initializes&nbsp;a&nbsp;new&nbsp;transaction&nbsp;instance.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;database:&nbsp;The&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;associate&nbsp;with&nbsp;this&nbsp;transaction.<br>
+&nbsp;<br>
+Attributes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;database:&nbsp;The&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;associated&nbsp;with&nbsp;this&nbsp;transaction.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;operations:&nbsp;A&nbsp;list&nbsp;to&nbsp;store&nbsp;the&nbsp;operations&nbsp;performed&nbsp;in&nbsp;this&nbsp;transaction.</span></dd></dl>
+
+<dl><dt><a name="Transaction-add_operation"><strong>add_operation</strong></a>(self, operation)</dt><dd><span class="code">Adds&nbsp;an&nbsp;operation&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;operations.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;operation:&nbsp;The&nbsp;operation&nbsp;to&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;list.</span></dd></dl>
+
+<dl><dt><a name="Transaction-begin"><strong>begin</strong></a>(self)</dt><dd><span class="code">Begins&nbsp;a&nbsp;new&nbsp;transaction.&nbsp;&nbsp;<br>
+This&nbsp;method&nbsp;initializes&nbsp;the&nbsp;operations&nbsp;list&nbsp;and&nbsp;creates&nbsp;a&nbsp;shadow&nbsp;copy<br>
+of&nbsp;the&nbsp;current&nbsp;state&nbsp;of&nbsp;the&nbsp;database.&nbsp;The&nbsp;shadow&nbsp;copy&nbsp;is&nbsp;stored&nbsp;in&nbsp;the<br>
+database&nbsp;to&nbsp;allow&nbsp;for&nbsp;rollback&nbsp;if&nbsp;needed.</span></dd></dl>
+
+<dl><dt><a name="Transaction-commit"><strong>commit</strong></a>(self)</dt><dd><span class="code">Commits&nbsp;the&nbsp;current&nbsp;transaction&nbsp;by&nbsp;executing&nbsp;all&nbsp;operations&nbsp;in&nbsp;the&nbsp;transaction.&nbsp;&nbsp;<br>
+This&nbsp;method&nbsp;iterates&nbsp;over&nbsp;the&nbsp;list&nbsp;of&nbsp;operations&nbsp;and&nbsp;executes&nbsp;each&nbsp;one.&nbsp;After&nbsp;all&nbsp;operations<br>
+are&nbsp;executed,&nbsp;it&nbsp;clears&nbsp;the&nbsp;list&nbsp;of&nbsp;operations&nbsp;and&nbsp;discards&nbsp;the&nbsp;shadow&nbsp;copy&nbsp;of&nbsp;the&nbsp;database.</span></dd></dl>
+
+<dl><dt><a name="Transaction-copy"><strong>copy</strong></a>(self)</dt><dd><span class="code">Copies&nbsp;a&nbsp;transaction&nbsp;<a href="builtins.html#object">object</a>.</span></dd></dl>
+
+<dl><dt><a name="Transaction-preview"><strong>preview</strong></a>(self)</dt><dd><span class="code">Previews&nbsp;the&nbsp;operations&nbsp;in&nbsp;the&nbsp;current&nbsp;transaction&nbsp;without&nbsp;committing&nbsp;or&nbsp;rolling&nbsp;back.</span></dd></dl>
+
+<dl><dt><a name="Transaction-rollback"><strong>rollback</strong></a>(self)</dt><dd><span class="code">Reverts&nbsp;the&nbsp;database&nbsp;to&nbsp;its&nbsp;previous&nbsp;state&nbsp;using&nbsp;a&nbsp;shadow&nbsp;copy&nbsp;if&nbsp;available.&nbsp;&nbsp;<br>
+This&nbsp;method&nbsp;restores&nbsp;the&nbsp;database&nbsp;to&nbsp;the&nbsp;state&nbsp;saved&nbsp;in&nbsp;the&nbsp;shadow&nbsp;copy,<br>
+clears&nbsp;the&nbsp;list&nbsp;of&nbsp;operations,&nbsp;and&nbsp;removes&nbsp;the&nbsp;shadow&nbsp;copy&nbsp;reference.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

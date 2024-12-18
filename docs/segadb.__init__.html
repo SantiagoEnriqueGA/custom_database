@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module segadb.__init__</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title"><a href="segadb.html" class="white">segadb</a>.__init__</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:c%3A%5Cusers%5Csg670w%5Conedrive%20-%20at%26t%20services%2C%20inc%5Cdocuments%5Cprojects%5Ccustom_database%5Csegadb%5C__init__.py">c:\users\sg670w\onedrive - at&t services, inc\documents\projects\custom_database\segadb\__init__.py</a></td></tr></table>
+    <p><span class="code">#&nbsp;segadb/__init__.py</span></p>
+<p>
+<table class="section">
+<tr class="decor index-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Classes</strong></td></tr>
+    
+<tr><td class="decor index-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl>
+<dt class="heading-text"><a href="builtins.html#object">builtins.object</a>
+</dt><dd>
+<dl>
+<dt class="heading-text"><a href="segadb.database.html#Database">segadb.database.Database</a>
+</dt><dt class="heading-text"><a href="segadb.index.html#Index">segadb.index.Index</a>
+</dt><dt class="heading-text"><a href="segadb.record.html#Record">segadb.record.Record</a>
+</dt><dd>
+<dl>
+<dt class="heading-text"><a href="segadb.record.html#ImageRecord">segadb.record.ImageRecord</a>
+</dt><dt class="heading-text"><a href="segadb.record.html#TextRecord">segadb.record.TextRecord</a>
+</dt><dt class="heading-text"><a href="segadb.record.html#TimeSeriesRecord">segadb.record.TimeSeriesRecord</a>
+</dt><dt class="heading-text"><a href="segadb.record.html#VectorRecord">segadb.record.VectorRecord</a>
+</dt></dl>
+</dd>
+<dt class="heading-text"><a href="segadb.storage.html#Storage">segadb.storage.Storage</a>
+</dt><dt class="heading-text"><a href="segadb.table.html#Table">segadb.table.Table</a>
+</dt><dt class="heading-text"><a href="segadb.transaction.html#Transaction">segadb.transaction.Transaction</a>
+</dt><dt class="heading-text"><a href="segadb.users.html#Authorization">segadb.users.Authorization</a>
+</dt><dt class="heading-text"><a href="segadb.users.html#User">segadb.users.User</a>
+</dt><dt class="heading-text"><a href="segadb.users.html#UserManager">segadb.users.UserManager</a>
+</dt></dl>
+</dd>
+</dl>
+ <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="Authorization">class <strong>Authorization</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#Authorization">Authorization</a>(db)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="Authorization-__init__"><strong>__init__</strong></a>(self, db)</dt><dd><span class="code">Initializes&nbsp;a&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;class.<br>
+Attributes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;permissions&nbsp;(dict):&nbsp;A&nbsp;dictionary&nbsp;to&nbsp;store&nbsp;user&nbsp;permissions.</span></dd></dl>
+
+<dl><dt><a name="Authorization-add_permission"><strong>add_permission</strong></a>(self, username, role)</dt><dd><span class="code">Adds&nbsp;a&nbsp;permission&nbsp;to&nbsp;a&nbsp;specified&nbsp;role.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;role&nbsp;(str):&nbsp;The&nbsp;role&nbsp;to&nbsp;which&nbsp;the&nbsp;permission&nbsp;will&nbsp;be&nbsp;added.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;permission&nbsp;(str):&nbsp;The&nbsp;permission&nbsp;to&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;role.</span></dd></dl>
+
+<dl><dt><a name="Authorization-check_permission"><strong>check_permission</strong></a>(self, username, permission)</dt><dd><span class="code">Check&nbsp;if&nbsp;a&nbsp;user&nbsp;has&nbsp;a&nbsp;specific&nbsp;permission.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;role&nbsp;(str):&nbsp;The&nbsp;role&nbsp;to&nbsp;check&nbsp;for.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bool:&nbsp;True&nbsp;if&nbsp;the&nbsp;user&nbsp;has&nbsp;the&nbsp;permission,&nbsp;False&nbsp;otherwise.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="Database">class <strong>Database</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#Database">Database</a>(name)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="Database-__init__"><strong>__init__</strong></a>(self, name)</dt><dd><span class="code">Initializes&nbsp;a&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;database&nbsp;with&nbsp;the&nbsp;given&nbsp;name.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;database.</span></dd></dl>
+
+<dl><dt><a name="Database-add_constraint"><strong>add_constraint</strong></a>(self, table_name, column, constraint, reference_table_name=None, reference_column=None)</dt><dd><span class="code">Adds&nbsp;a&nbsp;constraint&nbsp;to&nbsp;a&nbsp;specified&nbsp;column&nbsp;in&nbsp;a&nbsp;table.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;table_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;table&nbsp;to&nbsp;which&nbsp;the&nbsp;constraint&nbsp;will&nbsp;be&nbsp;added.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;column&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;column&nbsp;to&nbsp;which&nbsp;the&nbsp;constraint&nbsp;will&nbsp;be&nbsp;applied.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;constraint&nbsp;(str):&nbsp;The&nbsp;constraint&nbsp;to&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;column.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;reference_table_name&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;table&nbsp;that&nbsp;the&nbsp;foreign&nbsp;key&nbsp;references.&nbsp;Required&nbsp;for&nbsp;foreign&nbsp;key&nbsp;constraints.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;reference_column&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;column&nbsp;in&nbsp;the&nbsp;reference&nbsp;table&nbsp;that&nbsp;the&nbsp;foreign&nbsp;key&nbsp;references.&nbsp;Required&nbsp;for&nbsp;foreign&nbsp;key&nbsp;constraints.<br>
+Raises:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ValueError:&nbsp;If&nbsp;the&nbsp;specified&nbsp;table&nbsp;does&nbsp;not&nbsp;exist.</span></dd></dl>
+
+<dl><dt><a name="Database-add_role"><strong>add_role</strong></a>(self, username, role)</dt><dd><span class="code">Add&nbsp;a&nbsp;role&nbsp;to&nbsp;a&nbsp;user.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user&nbsp;to&nbsp;whom&nbsp;the&nbsp;role&nbsp;will&nbsp;be&nbsp;added.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;role&nbsp;(str):&nbsp;The&nbsp;role&nbsp;to&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;user.<br>
+Raises:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ValueError:&nbsp;If&nbsp;the&nbsp;user&nbsp;is&nbsp;not&nbsp;found&nbsp;in&nbsp;the&nbsp;database.</span></dd></dl>
+
+<dl><dt><a name="Database-aggregate_table"><strong>aggregate_table</strong></a>(self, table_name, group_column, agg_column, agg_func)</dt><dd><span class="code">Perform&nbsp;an&nbsp;aggregation&nbsp;on&nbsp;a&nbsp;specified&nbsp;column&nbsp;in&nbsp;a&nbsp;table&nbsp;using&nbsp;the&nbsp;provided&nbsp;aggregation&nbsp;function.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;table_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;table.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;group_column&nbsp;(str):&nbsp;The&nbsp;column&nbsp;to&nbsp;group&nbsp;by.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;agg_column&nbsp;(str):&nbsp;The&nbsp;column&nbsp;to&nbsp;aggregate.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;agg_func&nbsp;(str):&nbsp;The&nbsp;aggregation&nbsp;function&nbsp;to&nbsp;apply.&nbsp;Supported&nbsp;values&nbsp;are&nbsp;'MIN',&nbsp;'MAX',&nbsp;'COUNT',&nbsp;'SUM',&nbsp;'AVG',&nbsp;'COUNT_DISTINCT'.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Table">Table</a>:&nbsp;A&nbsp;new&nbsp;table&nbsp;containing&nbsp;the&nbsp;result&nbsp;of&nbsp;the&nbsp;aggregation.</span></dd></dl>
+
+<dl><dt><a name="Database-authenticate_user"><strong>authenticate_user</strong></a>(self, username, password)</dt><dd><span class="code">Authenticates&nbsp;a&nbsp;user&nbsp;by&nbsp;their&nbsp;username&nbsp;and&nbsp;password.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password&nbsp;(str):&nbsp;The&nbsp;password&nbsp;of&nbsp;the&nbsp;user.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dict&nbsp;or&nbsp;None:&nbsp;The&nbsp;user&nbsp;dictionary&nbsp;if&nbsp;authentication&nbsp;is&nbsp;successful,&nbsp;None&nbsp;otherwise.</span></dd></dl>
+
+<dl><dt><a name="Database-check_permission"><strong>check_permission</strong></a>(self, username, permission)</dt><dd><span class="code">Check&nbsp;if&nbsp;a&nbsp;user&nbsp;has&nbsp;a&nbsp;specific&nbsp;permission.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;permission&nbsp;(str):&nbsp;The&nbsp;permission&nbsp;to&nbsp;check&nbsp;for.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bool:&nbsp;True&nbsp;if&nbsp;the&nbsp;user&nbsp;has&nbsp;the&nbsp;permission,&nbsp;False&nbsp;otherwise.</span></dd></dl>
+
+<dl><dt><a name="Database-check_role"><strong>check_role</strong></a>(self, username, role)</dt><dd><span class="code">Check&nbsp;if&nbsp;a&nbsp;user&nbsp;has&nbsp;a&nbsp;specific&nbsp;role.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user&nbsp;to&nbsp;check.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;role&nbsp;(str):&nbsp;The&nbsp;role&nbsp;to&nbsp;check&nbsp;for.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bool:&nbsp;True&nbsp;if&nbsp;the&nbsp;user&nbsp;has&nbsp;the&nbsp;specified&nbsp;role,&nbsp;False&nbsp;otherwise.</span></dd></dl>
+
+<dl><dt><a name="Database-copy"><strong>copy</strong></a>(self)</dt><dd><span class="code">Create&nbsp;a&nbsp;deep&nbsp;copy&nbsp;of&nbsp;the&nbsp;database&nbsp;state.&nbsp;&nbsp;<br>
+This&nbsp;method&nbsp;uses&nbsp;the&nbsp;`copy`&nbsp;module&nbsp;to&nbsp;create&nbsp;a&nbsp;deep&nbsp;copy&nbsp;of&nbsp;the&nbsp;current<br>
+database&nbsp;instance,&nbsp;ensuring&nbsp;that&nbsp;all&nbsp;nested&nbsp;objects&nbsp;are&nbsp;also&nbsp;copied.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;database&nbsp;with&nbsp;the&nbsp;same&nbsp;state&nbsp;as&nbsp;the&nbsp;original.</span></dd></dl>
+
+<dl><dt><a name="Database-create_authorization"><strong>create_authorization</strong></a>(self)</dt><dd><span class="code">Create&nbsp;a&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;<a href="#Authorization">Authorization</a>&nbsp;class.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Authorization">Authorization</a>:&nbsp;A&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;<a href="#Authorization">Authorization</a>&nbsp;class.</span></dd></dl>
+
+<dl><dt><a name="Database-create_session"><strong>create_session</strong></a>(self, username)</dt><dd><span class="code">Creates&nbsp;a&nbsp;new&nbsp;session&nbsp;for&nbsp;a&nbsp;user.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;The&nbsp;session&nbsp;token.</span></dd></dl>
+
+<dl><dt><a name="Database-create_table"><strong>create_table</strong></a>(self, table_name, columns, session_token=None)</dt><dd><span class="code">Creates&nbsp;a&nbsp;new&nbsp;table&nbsp;in&nbsp;the&nbsp;database.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;table_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;table&nbsp;to&nbsp;be&nbsp;created.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;columns&nbsp;(list):&nbsp;A&nbsp;list&nbsp;of&nbsp;column&nbsp;definitions&nbsp;for&nbsp;the&nbsp;table.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;session_token&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;session&nbsp;token&nbsp;of&nbsp;the&nbsp;user&nbsp;performing&nbsp;the&nbsp;action.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;None</span></dd></dl>
+
+<dl><dt><a name="Database-create_table_from_csv"><strong>create_table_from_csv</strong></a>(self, dir, table_name, headers=True, delim=',', column_names=None, col_types=None, progress=False, parrallel=False, max_chunk_size=None)</dt><dd><span class="code">Creates&nbsp;a&nbsp;table&nbsp;in&nbsp;the&nbsp;database&nbsp;from&nbsp;a&nbsp;CSV&nbsp;file.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dir&nbsp;(str):&nbsp;The&nbsp;directory&nbsp;path&nbsp;to&nbsp;the&nbsp;CSV&nbsp;file.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;table_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;table&nbsp;to&nbsp;be&nbsp;created.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;headers&nbsp;(bool,&nbsp;optional):&nbsp;Indicates&nbsp;whether&nbsp;the&nbsp;CSV&nbsp;file&nbsp;contains&nbsp;headers.&nbsp;Defaults&nbsp;to&nbsp;True.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;delim&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;delimiter&nbsp;used&nbsp;in&nbsp;the&nbsp;CSV&nbsp;file.&nbsp;Defaults&nbsp;to&nbsp;','.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;column_names&nbsp;(list,&nbsp;optional):&nbsp;List&nbsp;of&nbsp;column&nbsp;names&nbsp;to&nbsp;use&nbsp;if&nbsp;headers&nbsp;is&nbsp;False.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;col_types&nbsp;(list,&nbsp;optional):&nbsp;List&nbsp;of&nbsp;types&nbsp;to&nbsp;cast&nbsp;the&nbsp;columns&nbsp;to.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;progress&nbsp;(bool,&nbsp;optional):&nbsp;If&nbsp;True,&nbsp;displays&nbsp;a&nbsp;progress&nbsp;bar.&nbsp;Defaults&nbsp;to&nbsp;False.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;parallel&nbsp;(bool,&nbsp;optional):&nbsp;If&nbsp;True,&nbsp;uses&nbsp;multiprocessing&nbsp;to&nbsp;process&nbsp;the&nbsp;file.&nbsp;Defaults&nbsp;to&nbsp;False.<br>
+Example:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db.<a href="#Database-create_table_from_csv">create_table_from_csv</a>('/path/to/file.csv',&nbsp;'my_table',&nbsp;headers=True,&nbsp;delim=';',&nbsp;column_names=['col1',&nbsp;'col2'],&nbsp;col_types=[str,&nbsp;int],&nbsp;progress=True)</span></dd></dl>
+
+<dl><dt><a name="Database-create_user_manager"><strong>create_user_manager</strong></a>(self)</dt><dd><span class="code">Create&nbsp;a&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;<a href="#UserManager">UserManager</a>&nbsp;class.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#UserManager">UserManager</a>:&nbsp;A&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;<a href="#UserManager">UserManager</a>&nbsp;class.</span></dd></dl>
+
+<dl><dt><a name="Database-delete_session"><strong>delete_session</strong></a>(self, session_token)</dt><dd><span class="code">Deletes&nbsp;a&nbsp;session.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;session_token&nbsp;(str):&nbsp;The&nbsp;session&nbsp;token&nbsp;to&nbsp;delete.</span></dd></dl>
+
+<dl><dt><a name="Database-drop_table"><strong>drop_table</strong></a>(self, table_name, session_token=None)</dt><dd><span class="code">Drops&nbsp;a&nbsp;table&nbsp;from&nbsp;the&nbsp;database.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;table_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;table&nbsp;to&nbsp;be&nbsp;dropped.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;session_token&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;session&nbsp;token&nbsp;of&nbsp;the&nbsp;user&nbsp;performing&nbsp;the&nbsp;action.</span></dd></dl>
+
+<dl><dt><a name="Database-filter_table"><strong>filter_table</strong></a>(self, table_name, condition)</dt><dd><span class="code">Filter&nbsp;records&nbsp;in&nbsp;a&nbsp;table&nbsp;based&nbsp;on&nbsp;a&nbsp;condition.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;table_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;table.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;condition&nbsp;(function):&nbsp;A&nbsp;function&nbsp;that&nbsp;takes&nbsp;a&nbsp;record&nbsp;as&nbsp;input&nbsp;and&nbsp;returns&nbsp;True&nbsp;if&nbsp;the&nbsp;record&nbsp;satisfies&nbsp;the&nbsp;condition,&nbsp;False&nbsp;otherwise.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example:&nbsp;lambda&nbsp;record:&nbsp;record.data["product"]&nbsp;==&nbsp;"Laptop"<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Table">Table</a>:&nbsp;A&nbsp;new&nbsp;table&nbsp;containing&nbsp;the&nbsp;filtered&nbsp;records.</span></dd></dl>
+
+<dl><dt><a name="Database-get_db_size"><strong>get_db_size</strong></a>(self)</dt><dd><span class="code">Calculate&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;database&nbsp;in&nbsp;bytes.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int:&nbsp;The&nbsp;size&nbsp;of&nbsp;the&nbsp;database&nbsp;in&nbsp;bytes.</span></dd></dl>
+
+<dl><dt><a name="Database-get_table"><strong>get_table</strong></a>(self, table_name)</dt><dd><span class="code">Retrieve&nbsp;a&nbsp;table&nbsp;from&nbsp;the&nbsp;database&nbsp;by&nbsp;its&nbsp;name.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;table_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;table&nbsp;to&nbsp;retrieve.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Table">Table</a>:&nbsp;The&nbsp;table&nbsp;<a href="builtins.html#object">object</a>.</span></dd></dl>
+
+<dl><dt><a name="Database-get_user"><strong>get_user</strong></a>(self, username)</dt><dd><span class="code">Retrieve&nbsp;user&nbsp;data&nbsp;from&nbsp;the&nbsp;Users&nbsp;table&nbsp;based&nbsp;on&nbsp;the&nbsp;provided&nbsp;username.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user&nbsp;to&nbsp;retrieve.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dict:&nbsp;A&nbsp;dictionary&nbsp;containing&nbsp;the&nbsp;user's&nbsp;data&nbsp;if&nbsp;found,&nbsp;otherwise&nbsp;None.</span></dd></dl>
+
+<dl><dt><a name="Database-get_username_by_session"><strong>get_username_by_session</strong></a>(self, session_token)</dt><dd><span class="code">Retrieves&nbsp;the&nbsp;username&nbsp;associated&nbsp;with&nbsp;a&nbsp;session&nbsp;token.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;session_token&nbsp;(str):&nbsp;The&nbsp;session&nbsp;token.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;The&nbsp;username&nbsp;if&nbsp;the&nbsp;session&nbsp;exists,&nbsp;None&nbsp;otherwise.</span></dd></dl>
+
+<dl><dt><a name="Database-join_tables"><strong>join_tables</strong></a>(self, table_name1, table_name2, on_column, other_column)</dt><dd><span class="code">Perform&nbsp;an&nbsp;inner&nbsp;join&nbsp;between&nbsp;two&nbsp;tables&nbsp;on&nbsp;specified&nbsp;columns.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;table_name1&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;first&nbsp;table.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;table_name2&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;second&nbsp;table.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;on_column&nbsp;(str):&nbsp;The&nbsp;column&nbsp;in&nbsp;the&nbsp;first&nbsp;table&nbsp;to&nbsp;join&nbsp;on.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;other_column&nbsp;(str):&nbsp;The&nbsp;column&nbsp;in&nbsp;the&nbsp;second&nbsp;table&nbsp;to&nbsp;join&nbsp;on.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Table">Table</a>:&nbsp;A&nbsp;new&nbsp;table&nbsp;containing&nbsp;the&nbsp;joined&nbsp;records.</span></dd></dl>
+
+<dl><dt><a name="Database-print_db"><strong>print_db</strong></a>(self, index=False, limit=None)</dt><dd><span class="code">Print&nbsp;the&nbsp;database&nbsp;tables,&nbsp;including&nbsp;their&nbsp;names,&nbsp;columns,&nbsp;constraints,&nbsp;and&nbsp;records.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;index&nbsp;(bool,&nbsp;optional):&nbsp;Whether&nbsp;to&nbsp;print&nbsp;the&nbsp;index&nbsp;of&nbsp;each&nbsp;record.&nbsp;Defaults&nbsp;to&nbsp;False.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;limit&nbsp;(int,&nbsp;optional):&nbsp;The&nbsp;maximum&nbsp;number&nbsp;of&nbsp;records&nbsp;to&nbsp;print&nbsp;for&nbsp;each&nbsp;table.&nbsp;Defaults&nbsp;to&nbsp;None.</span></dd></dl>
+
+<dl><dt><a name="Database-register_user"><strong>register_user</strong></a>(self, username, password, roles=None)</dt><dd><span class="code">Registers&nbsp;a&nbsp;new&nbsp;user&nbsp;in&nbsp;the&nbsp;database.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;new&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password&nbsp;(str):&nbsp;The&nbsp;password&nbsp;of&nbsp;the&nbsp;new&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;roles&nbsp;(list,&nbsp;optional):&nbsp;A&nbsp;list&nbsp;of&nbsp;roles&nbsp;assigned&nbsp;to&nbsp;the&nbsp;user.&nbsp;Defaults&nbsp;to&nbsp;an&nbsp;empty&nbsp;list.<br>
+Raises:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ValueError:&nbsp;If&nbsp;the&nbsp;username&nbsp;already&nbsp;exists&nbsp;in&nbsp;the&nbsp;database.</span></dd></dl>
+
+<dl><dt><a name="Database-remove_user"><strong>remove_user</strong></a>(self, username)</dt><dd><span class="code">Removes&nbsp;a&nbsp;user&nbsp;from&nbsp;the&nbsp;database.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user&nbsp;to&nbsp;be&nbsp;removed.</span></dd></dl>
+
+<dl><dt><a name="Database-restore"><strong>restore</strong></a>(self, state)</dt><dd><span class="code">Restore&nbsp;the&nbsp;database&nbsp;state&nbsp;from&nbsp;a&nbsp;shadow&nbsp;copy.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;state&nbsp;(<a href="builtins.html#object">object</a>):&nbsp;An&nbsp;<a href="builtins.html#object">object</a>&nbsp;containing&nbsp;the&nbsp;state&nbsp;to&nbsp;restore,&nbsp;including&nbsp;tables&nbsp;and&nbsp;name&nbsp;attributes.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;self:&nbsp;The&nbsp;instance&nbsp;of&nbsp;the&nbsp;database&nbsp;with&nbsp;the&nbsp;restored&nbsp;state.</span></dd></dl>
+
+<dl><dt><a name="Database-update_table"><strong>update_table</strong></a>(self, table_name, updates, session_token=None)</dt><dd><span class="code">Updates&nbsp;a&nbsp;table&nbsp;in&nbsp;the&nbsp;database.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;table_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;table&nbsp;to&nbsp;be&nbsp;updated.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;updates&nbsp;(dict):&nbsp;A&nbsp;dictionary&nbsp;of&nbsp;updates&nbsp;to&nbsp;apply&nbsp;to&nbsp;the&nbsp;table.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;session_token&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;session&nbsp;token&nbsp;of&nbsp;the&nbsp;user&nbsp;performing&nbsp;the&nbsp;action.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="ImageRecord">class <strong>ImageRecord</strong></a>(<a href="segadb.record.html#Record">Record</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#ImageRecord">ImageRecord</a>(record_id,&nbsp;image_path)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt>Method resolution order:</dt>
+<dd><a href="segadb.record.html#ImageRecord">ImageRecord</a></dd>
+<dd><a href="segadb.record.html#Record">Record</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="ImageRecord-__init__"><strong>__init__</strong></a>(self, record_id, image_path)</dt><dd><span class="code">Initializes&nbsp;a&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;<a href="#ImageRecord">ImageRecord</a>&nbsp;class.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;record_id&nbsp;(int):&nbsp;The&nbsp;unique&nbsp;identifier&nbsp;for&nbsp;the&nbsp;record.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;image_path&nbsp;(str):&nbsp;The&nbsp;file&nbsp;path&nbsp;to&nbsp;the&nbsp;image.</span></dd></dl>
+
+<dl><dt><a name="ImageRecord-get_image"><strong>get_image</strong></a>(self)</dt><dd><span class="code">Converts&nbsp;the&nbsp;image&nbsp;data&nbsp;to&nbsp;a&nbsp;PIL&nbsp;Image&nbsp;<a href="builtins.html#object">object</a>.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Image:&nbsp;The&nbsp;PIL&nbsp;Image&nbsp;<a href="builtins.html#object">object</a>.</span></dd></dl>
+
+<dl><dt><a name="ImageRecord-resize"><strong>resize</strong></a>(self, percentage)</dt><dd><span class="code">Resizes&nbsp;the&nbsp;image&nbsp;by&nbsp;a&nbsp;given&nbsp;percentage.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;percentage&nbsp;(float):&nbsp;The&nbsp;percentage&nbsp;to&nbsp;increase&nbsp;or&nbsp;decrease&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;image.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Image:&nbsp;The&nbsp;resized&nbsp;PIL&nbsp;Image&nbsp;<a href="builtins.html#object">object</a>.</span></dd></dl>
+
+<dl><dt><a name="ImageRecord-to_dict"><strong>to_dict</strong></a>(self)</dt><dd><span class="code">Converts&nbsp;the&nbsp;<a href="#ImageRecord">ImageRecord</a>&nbsp;to&nbsp;a&nbsp;dictionary,&nbsp;encoding&nbsp;image&nbsp;data&nbsp;to&nbsp;base64.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dict:&nbsp;The&nbsp;dictionary&nbsp;representation&nbsp;of&nbsp;the&nbsp;<a href="#ImageRecord">ImageRecord</a>.</span></dd></dl>
+
+<hr>
+Readonly properties defined here:<br>
+<dl><dt><strong>image_data</strong></dt>
+</dl>
+<dl><dt><strong>image_path</strong></dt>
+</dl>
+<dl><dt><strong>image_size</strong></dt>
+<dd><span class="code">Returns&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;image&nbsp;in&nbsp;bytes.</span></dd>
+</dl>
+<hr>
+Methods inherited from <a href="segadb.record.html#Record">Record</a>:<br>
+<dl><dt><a name="ImageRecord-add_to_index"><strong>add_to_index</strong></a>(self, key)</dt></dl>
+
+<dl><dt><a name="ImageRecord-remove_from_index"><strong>remove_from_index</strong></a>(self, key)</dt></dl>
+
+<hr>
+Readonly properties inherited from <a href="segadb.record.html#Record">Record</a>:<br>
+<dl><dt><strong>index</strong></dt>
+<dd><span class="code">Returns&nbsp;the&nbsp;index&nbsp;of&nbsp;the&nbsp;record.&nbsp;<br>
+@property&nbsp;decorator&nbsp;is&nbsp;used&nbsp;to&nbsp;make&nbsp;the&nbsp;method&nbsp;behave&nbsp;like&nbsp;an&nbsp;attribute.&nbsp;(Read-only)</span></dd>
+</dl>
+<hr>
+Data descriptors inherited from <a href="segadb.record.html#Record">Record</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="Index">class <strong>Index</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor"><span class="code">&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="Index-__init__"><strong>__init__</strong></a>(self)</dt><dd><span class="code">Initializes&nbsp;the&nbsp;index&nbsp;dictionary&nbsp;for&nbsp;the&nbsp;class&nbsp;instance.</span></dd></dl>
+
+<dl><dt><a name="Index-__str__"><strong>__str__</strong></a>(self)</dt><dd><span class="code">Returns&nbsp;a&nbsp;string&nbsp;representation&nbsp;of&nbsp;the&nbsp;index.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;A&nbsp;string&nbsp;representation&nbsp;of&nbsp;the&nbsp;index.</span></dd></dl>
+
+<dl><dt><a name="Index-add"><strong>add</strong></a>(self, key, record)</dt><dd><span class="code">Adds&nbsp;a&nbsp;record&nbsp;to&nbsp;the&nbsp;index&nbsp;under&nbsp;the&nbsp;specified&nbsp;key.&nbsp;&nbsp;<br>
+If&nbsp;the&nbsp;key&nbsp;does&nbsp;not&nbsp;exist&nbsp;in&nbsp;the&nbsp;index,&nbsp;it&nbsp;will&nbsp;be&nbsp;created.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;key&nbsp;(str):&nbsp;The&nbsp;key&nbsp;under&nbsp;which&nbsp;the&nbsp;record&nbsp;will&nbsp;be&nbsp;added.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;record&nbsp;(Any):&nbsp;The&nbsp;record&nbsp;to&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;index.</span></dd></dl>
+
+<dl><dt><a name="Index-find"><strong>find</strong></a>(self, key)</dt><dd><span class="code">Find&nbsp;the&nbsp;value&nbsp;associated&nbsp;with&nbsp;the&nbsp;given&nbsp;key&nbsp;in&nbsp;the&nbsp;index.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;key:&nbsp;The&nbsp;key&nbsp;to&nbsp;search&nbsp;for&nbsp;in&nbsp;the&nbsp;index.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;value&nbsp;associated&nbsp;with&nbsp;the&nbsp;key&nbsp;if&nbsp;found,&nbsp;otherwise&nbsp;an&nbsp;empty&nbsp;list.</span></dd></dl>
+
+<dl><dt><a name="Index-remove"><strong>remove</strong></a>(self, key, record)</dt><dd><span class="code">Remove&nbsp;a&nbsp;record&nbsp;from&nbsp;the&nbsp;index&nbsp;for&nbsp;a&nbsp;given&nbsp;key.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;key&nbsp;(str):&nbsp;The&nbsp;key&nbsp;from&nbsp;which&nbsp;the&nbsp;record&nbsp;should&nbsp;be&nbsp;removed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;record&nbsp;(Any):&nbsp;The&nbsp;record&nbsp;to&nbsp;be&nbsp;removed&nbsp;from&nbsp;the&nbsp;index.</span></dd></dl>
+
+<dl><dt><a name="Index-to_dict"><strong>to_dict</strong></a>(self)</dt><dd><span class="code">Returns&nbsp;a&nbsp;dictionary&nbsp;representation&nbsp;of&nbsp;the&nbsp;index.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dict:&nbsp;A&nbsp;dictionary&nbsp;representation&nbsp;of&nbsp;the&nbsp;index.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="Record">class <strong>Record</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#Record">Record</a>(record_id,&nbsp;data)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="Record-__init__"><strong>__init__</strong></a>(self, record_id, data)</dt><dd><span class="code">Initializes&nbsp;a&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;class.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;record_id&nbsp;(int):&nbsp;The&nbsp;unique&nbsp;identifier&nbsp;for&nbsp;the&nbsp;record.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;(dict):&nbsp;The&nbsp;data&nbsp;associated&nbsp;with&nbsp;the&nbsp;record.</span></dd></dl>
+
+<dl><dt><a name="Record-add_to_index"><strong>add_to_index</strong></a>(self, key)</dt></dl>
+
+<dl><dt><a name="Record-remove_from_index"><strong>remove_from_index</strong></a>(self, key)</dt></dl>
+
+<hr>
+Readonly properties defined here:<br>
+<dl><dt><strong>index</strong></dt>
+<dd><span class="code">Returns&nbsp;the&nbsp;index&nbsp;of&nbsp;the&nbsp;record.&nbsp;<br>
+@property&nbsp;decorator&nbsp;is&nbsp;used&nbsp;to&nbsp;make&nbsp;the&nbsp;method&nbsp;behave&nbsp;like&nbsp;an&nbsp;attribute.&nbsp;(Read-only)</span></dd>
+</dl>
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="Storage">class <strong>Storage</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code">A&nbsp;utility&nbsp;class&nbsp;for&nbsp;saving,&nbsp;loading,&nbsp;and&nbsp;deleting&nbsp;database&nbsp;files.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Static methods defined here:<br>
+<dl><dt><a name="Storage-backup"><strong>backup</strong></a>(db, key=None, compress=False, dir=None, date=False)</dt><dd><span class="code">Backup&nbsp;the&nbsp;database&nbsp;to&nbsp;a&nbsp;file.&nbsp;<br>
+If&nbsp;none&nbsp;exists,&nbsp;a&nbsp;folder&nbsp;named&nbsp;'backups_'&nbsp;+&nbsp;db.name&nbsp;will&nbsp;be&nbsp;created&nbsp;in&nbsp;the&nbsp;directory.<br>
+The&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;is&nbsp;serialized&nbsp;into&nbsp;a&nbsp;JSON&nbsp;format&nbsp;and&nbsp;written&nbsp;to&nbsp;the&nbsp;specified&nbsp;file.<br>
+Each&nbsp;backup&nbsp;file&nbsp;is&nbsp;named&nbsp;'db.name_backup_n.segadb',&nbsp;where&nbsp;n&nbsp;is&nbsp;the&nbsp;number&nbsp;of&nbsp;backups&nbsp;in&nbsp;the&nbsp;directory.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db&nbsp;(<a href="#Database">Database</a>):&nbsp;The&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;be&nbsp;saved.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;key&nbsp;(bytes,&nbsp;optional):&nbsp;The&nbsp;encryption&nbsp;key.&nbsp;If&nbsp;provided,&nbsp;the&nbsp;data&nbsp;will&nbsp;be&nbsp;encrypted&nbsp;before&nbsp;saving.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;compress&nbsp;(bool,&nbsp;optional):&nbsp;If&nbsp;True,&nbsp;the&nbsp;data&nbsp;will&nbsp;be&nbsp;compressed&nbsp;using&nbsp;zlib&nbsp;before&nbsp;saving.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dir&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;directory&nbsp;where&nbsp;the&nbsp;backup&nbsp;will&nbsp;be&nbsp;saved.&nbsp;Default&nbsp;is&nbsp;None.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;date&nbsp;(bool,&nbsp;optional):&nbsp;If&nbsp;True,&nbsp;the&nbsp;date&nbsp;will&nbsp;be&nbsp;appended&nbsp;to&nbsp;the&nbsp;filename.&nbsp;Default&nbsp;is&nbsp;False.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;status&nbsp;(str):&nbsp;The&nbsp;status&nbsp;of&nbsp;the&nbsp;backup&nbsp;operation,&nbsp;as&nbsp;well&nbsp;as&nbsp;the&nbsp;path&nbsp;to&nbsp;the&nbsp;backup&nbsp;file.</span></dd></dl>
+
+<dl><dt><a name="Storage-db_to_dict"><strong>db_to_dict</strong></a>(db)</dt><dd><span class="code">Convert&nbsp;a&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;a&nbsp;dictionary.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db&nbsp;(<a href="#Database">Database</a>):&nbsp;The&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;be&nbsp;converted.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dict:&nbsp;A&nbsp;dictionary&nbsp;representation&nbsp;of&nbsp;the&nbsp;database&nbsp;<a href="builtins.html#object">object</a></span></dd></dl>
+
+<dl><dt><a name="Storage-decrypt"><strong>decrypt</strong></a>(data, key)</dt><dd><span class="code">Decrypt&nbsp;the&nbsp;data&nbsp;using&nbsp;the&nbsp;provided&nbsp;key.</span></dd></dl>
+
+<dl><dt><a name="Storage-delete"><strong>delete</strong></a>(filename)</dt><dd><span class="code">Delete&nbsp;the&nbsp;specified&nbsp;file&nbsp;from&nbsp;the&nbsp;filesystem.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;filename&nbsp;(str):&nbsp;The&nbsp;path&nbsp;to&nbsp;the&nbsp;file&nbsp;to&nbsp;be&nbsp;deleted.</span></dd></dl>
+
+<dl><dt><a name="Storage-encrypt"><strong>encrypt</strong></a>(data, key)</dt><dd><span class="code">Encrypt&nbsp;the&nbsp;data&nbsp;using&nbsp;the&nbsp;provided&nbsp;key.</span></dd></dl>
+
+<dl><dt><a name="Storage-generate_key"><strong>generate_key</strong></a>()</dt><dd><span class="code">Generate&nbsp;a&nbsp;key&nbsp;for&nbsp;encryption.</span></dd></dl>
+
+<dl><dt><a name="Storage-list_backups"><strong>list_backups</strong></a>(dir=None, print_output=True)</dt><dd><span class="code">List&nbsp;the&nbsp;backup&nbsp;files&nbsp;in&nbsp;the&nbsp;specified&nbsp;directory.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dir&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;directory&nbsp;to&nbsp;search&nbsp;for&nbsp;backup&nbsp;files.&nbsp;Default&nbsp;is&nbsp;None.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;list:&nbsp;A&nbsp;list&nbsp;of&nbsp;the&nbsp;backup&nbsp;files&nbsp;in&nbsp;the&nbsp;directory.</span></dd></dl>
+
+<dl><dt><a name="Storage-load"><strong>load</strong></a>(filename, key=None, user=None, password=None, compression=False, parrallel=False)</dt><dd><span class="code">Load&nbsp;a&nbsp;database&nbsp;from&nbsp;a&nbsp;JSON&nbsp;file.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;filename&nbsp;(str):&nbsp;The&nbsp;path&nbsp;to&nbsp;the&nbsp;JSON&nbsp;file&nbsp;containing&nbsp;the&nbsp;database&nbsp;data.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;key&nbsp;(bytes,&nbsp;optional):&nbsp;The&nbsp;encryption&nbsp;key.&nbsp;If&nbsp;provided,&nbsp;the&nbsp;data&nbsp;will&nbsp;be&nbsp;decrypted&nbsp;after&nbsp;loading.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;compression&nbsp;(bool,&nbsp;optional):&nbsp;If&nbsp;True,&nbsp;the&nbsp;data&nbsp;will&nbsp;be&nbsp;decompressed&nbsp;using&nbsp;zlib&nbsp;after&nbsp;loading.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;parrallel&nbsp;(bool,&nbsp;optional):&nbsp;If&nbsp;True,&nbsp;the&nbsp;data&nbsp;will&nbsp;be&nbsp;loaded&nbsp;in&nbsp;parallel&nbsp;using&nbsp;multiprocessing.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Database">Database</a>:&nbsp;An&nbsp;instance&nbsp;of&nbsp;the&nbsp;<a href="#Database">Database</a>&nbsp;class&nbsp;populated&nbsp;with&nbsp;the&nbsp;data&nbsp;from&nbsp;the&nbsp;JSON&nbsp;file.</span></dd></dl>
+
+<dl><dt><a name="Storage-restore"><strong>restore</strong></a>(db, key=None, compress=False, user=None, password=None, dir=None, backup_name=None)</dt><dd><span class="code">Restore&nbsp;a&nbsp;database&nbsp;from&nbsp;a&nbsp;backup&nbsp;file.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db&nbsp;(<a href="#Database">Database</a>):&nbsp;The&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;be&nbsp;restored.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;key&nbsp;(bytes,&nbsp;optional):&nbsp;The&nbsp;encryption&nbsp;key.&nbsp;If&nbsp;provided,&nbsp;the&nbsp;data&nbsp;will&nbsp;be&nbsp;decrypted&nbsp;after&nbsp;loading.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;compress&nbsp;(bool,&nbsp;optional):&nbsp;If&nbsp;True,&nbsp;the&nbsp;data&nbsp;will&nbsp;be&nbsp;decompressed&nbsp;using&nbsp;zlib&nbsp;after&nbsp;loading.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;user&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;username&nbsp;for&nbsp;authentication.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;password&nbsp;for&nbsp;authentication.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dir&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;directory&nbsp;where&nbsp;the&nbsp;backup&nbsp;is&nbsp;saved.&nbsp;Default&nbsp;is&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;backup_name&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;backup&nbsp;file.&nbsp;Default&nbsp;is&nbsp;None.&nbsp;Will&nbsp;use&nbsp;the&nbsp;latest&nbsp;backup&nbsp;if&nbsp;None.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Database">Database</a>:&nbsp;An&nbsp;instance&nbsp;of&nbsp;the&nbsp;<a href="#Database">Database</a>&nbsp;class&nbsp;populated&nbsp;with&nbsp;the&nbsp;data&nbsp;from&nbsp;the&nbsp;backup&nbsp;file.</span></dd></dl>
+
+<dl><dt><a name="Storage-save"><strong>save</strong></a>(db, filename, key=None, compress=False)</dt><dd><span class="code">Save&nbsp;the&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;a&nbsp;JSON&nbsp;file.&nbsp;&nbsp;<br>
+The&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;is&nbsp;serialized&nbsp;into&nbsp;a&nbsp;JSON&nbsp;format&nbsp;and&nbsp;written&nbsp;to&nbsp;the&nbsp;specified&nbsp;file.&nbsp;&nbsp;<br>
+The&nbsp;JSON&nbsp;structure&nbsp;includes&nbsp;the&nbsp;database&nbsp;name,&nbsp;tables,&nbsp;columns,&nbsp;records,&nbsp;next_id,&nbsp;and&nbsp;constraints.&nbsp;&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db&nbsp;(<a href="#Database">Database</a>):&nbsp;The&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;be&nbsp;saved.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;filename&nbsp;(str):&nbsp;The&nbsp;path&nbsp;to&nbsp;the&nbsp;file&nbsp;where&nbsp;the&nbsp;database&nbsp;will&nbsp;be&nbsp;saved.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;key&nbsp;(bytes,&nbsp;optional):&nbsp;The&nbsp;encryption&nbsp;key.&nbsp;If&nbsp;provided,&nbsp;the&nbsp;data&nbsp;will&nbsp;be&nbsp;encrypted&nbsp;before&nbsp;saving.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;compress&nbsp;(bool,&nbsp;optional):&nbsp;If&nbsp;True,&nbsp;the&nbsp;data&nbsp;will&nbsp;be&nbsp;compressed&nbsp;using&nbsp;zlib&nbsp;before&nbsp;saving.</span></dd></dl>
+
+<dl><dt><a name="Storage-save_table"><strong>save_table</strong></a>(table, filename, format='csv')</dt><dd><span class="code">Save&nbsp;the&nbsp;table&nbsp;to&nbsp;a&nbsp;file&nbsp;in&nbsp;the&nbsp;specified&nbsp;format.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;table&nbsp;(<a href="#Table">Table</a>):&nbsp;The&nbsp;table&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;be&nbsp;saved.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;filename&nbsp;(str):&nbsp;The&nbsp;path&nbsp;to&nbsp;the&nbsp;file&nbsp;where&nbsp;the&nbsp;table&nbsp;will&nbsp;be&nbsp;saved.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;format&nbsp;(str):&nbsp;The&nbsp;format&nbsp;in&nbsp;which&nbsp;the&nbsp;table&nbsp;will&nbsp;be&nbsp;saved.&nbsp;Default&nbsp;is&nbsp;'csv'.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="Table">class <strong>Table</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#Table">Table</a>(name,&nbsp;columns)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="Table-__init__"><strong>__init__</strong></a>(self, name, columns)</dt><dd><span class="code">Initialize&nbsp;a&nbsp;new&nbsp;table&nbsp;with&nbsp;a&nbsp;name&nbsp;and&nbsp;columns.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;table.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;columns&nbsp;(list):&nbsp;A&nbsp;list&nbsp;of&nbsp;column&nbsp;names&nbsp;for&nbsp;the&nbsp;table.<br>
+Attributes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;table.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;columns&nbsp;(list):&nbsp;A&nbsp;list&nbsp;of&nbsp;column&nbsp;names&nbsp;for&nbsp;the&nbsp;table.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;records&nbsp;(list):&nbsp;A&nbsp;list&nbsp;to&nbsp;store&nbsp;the&nbsp;records&nbsp;of&nbsp;the&nbsp;table.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;next_id&nbsp;(int):&nbsp;The&nbsp;ID&nbsp;to&nbsp;be&nbsp;assigned&nbsp;to&nbsp;the&nbsp;next&nbsp;record.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;constraints&nbsp;(dict):&nbsp;A&nbsp;dictionary&nbsp;to&nbsp;store&nbsp;constraints&nbsp;for&nbsp;each&nbsp;column.</span></dd></dl>
+
+<dl><dt><a name="Table-add_constraint"><strong>add_constraint</strong></a>(self, column, constraint, reference_table=None, reference_column=None)</dt><dd><span class="code">Adds&nbsp;a&nbsp;constraint&nbsp;to&nbsp;a&nbsp;specified&nbsp;column&nbsp;in&nbsp;the&nbsp;table.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;column&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;column&nbsp;to&nbsp;which&nbsp;the&nbsp;constraint&nbsp;will&nbsp;be&nbsp;added.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;constraint&nbsp;(str):&nbsp;The&nbsp;constraint&nbsp;to&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;column.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;reference_table&nbsp;(<a href="#Table">Table</a>,&nbsp;optional):&nbsp;The&nbsp;table&nbsp;that&nbsp;the&nbsp;foreign&nbsp;key&nbsp;references.&nbsp;Required&nbsp;for&nbsp;foreign&nbsp;key&nbsp;constraints.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;reference_column&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;column&nbsp;in&nbsp;the&nbsp;reference&nbsp;table&nbsp;that&nbsp;the&nbsp;foreign&nbsp;key&nbsp;references.&nbsp;Required&nbsp;for&nbsp;foreign&nbsp;key&nbsp;constraints.<br>
+Raises:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ValueError:&nbsp;If&nbsp;the&nbsp;specified&nbsp;column&nbsp;does&nbsp;not&nbsp;exist&nbsp;in&nbsp;the&nbsp;table.</span></dd></dl>
+
+<dl><dt><a name="Table-aggregate"><strong>aggregate</strong></a>(self, group_column, agg_column, agg_func)</dt><dd><span class="code">Perform&nbsp;an&nbsp;aggregation&nbsp;on&nbsp;a&nbsp;specified&nbsp;column&nbsp;using&nbsp;the&nbsp;provided&nbsp;aggregation&nbsp;function.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;group_column&nbsp;(str):&nbsp;The&nbsp;column&nbsp;to&nbsp;group&nbsp;by.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;agg_column&nbsp;(str):&nbsp;The&nbsp;column&nbsp;to&nbsp;aggregate.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;agg_func&nbsp;(str):&nbsp;The&nbsp;aggregation&nbsp;function&nbsp;to&nbsp;apply.&nbsp;Supported&nbsp;values&nbsp;are&nbsp;'MIN',&nbsp;'MAX',&nbsp;'COUNT',&nbsp;'SUM',&nbsp;'AVG',&nbsp;'COUNT_DISTINCT'.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Table">Table</a>:&nbsp;A&nbsp;new&nbsp;table&nbsp;containing&nbsp;the&nbsp;result&nbsp;of&nbsp;the&nbsp;aggregation.</span></dd></dl>
+
+<dl><dt><a name="Table-delete"><strong>delete</strong></a>(self, record_id, transaction=None)</dt><dd><span class="code">Deletes&nbsp;a&nbsp;record&nbsp;from&nbsp;the&nbsp;database.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;record_id&nbsp;(int):&nbsp;The&nbsp;ID&nbsp;of&nbsp;the&nbsp;record&nbsp;to&nbsp;delete.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;transaction&nbsp;(<a href="#Transaction">Transaction</a>,&nbsp;optional):&nbsp;An&nbsp;optional&nbsp;transaction&nbsp;<a href="builtins.html#object">object</a>.&nbsp;If&nbsp;provided,&nbsp;the&nbsp;delete&nbsp;operation&nbsp;will&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;transaction.&nbsp;Defaults&nbsp;to&nbsp;None.</span></dd></dl>
+
+<dl><dt><a name="Table-filter"><strong>filter</strong></a>(self, condition)</dt><dd><span class="code">Filter&nbsp;records&nbsp;based&nbsp;on&nbsp;a&nbsp;condition.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;condition&nbsp;(function):&nbsp;A&nbsp;function&nbsp;that&nbsp;takes&nbsp;a&nbsp;record&nbsp;as&nbsp;input&nbsp;and&nbsp;returns&nbsp;True&nbsp;if&nbsp;the&nbsp;record&nbsp;satisfies&nbsp;the&nbsp;condition,&nbsp;False&nbsp;otherwise.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Table">Table</a>:&nbsp;A&nbsp;new&nbsp;table&nbsp;containing&nbsp;the&nbsp;filtered&nbsp;records.</span></dd></dl>
+
+<dl><dt><a name="Table-get_id_by_column"><strong>get_id_by_column</strong></a>(self, column, value)</dt><dd><span class="code">Get&nbsp;the&nbsp;ID&nbsp;of&nbsp;the&nbsp;record&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;in&nbsp;the&nbsp;specified&nbsp;column.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;column&nbsp;(str):&nbsp;The&nbsp;column&nbsp;to&nbsp;search&nbsp;for&nbsp;the&nbsp;value.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;value:&nbsp;The&nbsp;value&nbsp;to&nbsp;search&nbsp;for&nbsp;in&nbsp;the&nbsp;column.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int:&nbsp;The&nbsp;ID&nbsp;of&nbsp;the&nbsp;record&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;in&nbsp;the&nbsp;specified&nbsp;column.</span></dd></dl>
+
+<dl><dt><a name="Table-insert"><strong>insert</strong></a>(self, data, record_type=&lt;class 'segadb.record.Record'&gt;, transaction=None, flex_ids=False)</dt><dd><span class="code">Inserts&nbsp;a&nbsp;new&nbsp;record&nbsp;into&nbsp;the&nbsp;table.&nbsp;&nbsp;<br>
+If&nbsp;a&nbsp;transaction&nbsp;is&nbsp;provided,&nbsp;the&nbsp;operation&nbsp;is&nbsp;added&nbsp;to&nbsp;the&nbsp;transaction.&nbsp;&nbsp;<br>
+If&nbsp;the&nbsp;data&nbsp;contains&nbsp;an&nbsp;"id"&nbsp;field,&nbsp;it&nbsp;is&nbsp;used&nbsp;as&nbsp;the&nbsp;record&nbsp;ID;&nbsp;otherwise,&nbsp;the&nbsp;next&nbsp;available&nbsp;ID&nbsp;is&nbsp;used.&nbsp;&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;(dict):&nbsp;The&nbsp;data&nbsp;to&nbsp;be&nbsp;inserted&nbsp;as&nbsp;a&nbsp;new&nbsp;record.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;transaction&nbsp;(<a href="#Transaction">Transaction</a>,&nbsp;optional):&nbsp;An&nbsp;optional&nbsp;transaction&nbsp;<a href="builtins.html#object">object</a>.&nbsp;If&nbsp;provided,&nbsp;the&nbsp;operation&nbsp;will&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;transaction.<br>
+Raises:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ConstraintError:&nbsp;If&nbsp;the&nbsp;data&nbsp;violates&nbsp;any&nbsp;table&nbsp;constraints.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ValueError:&nbsp;If&nbsp;the&nbsp;ID&nbsp;is&nbsp;already&nbsp;in&nbsp;use.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;None</span></dd></dl>
+
+<dl><dt><a name="Table-join"><strong>join</strong></a>(self, other_table, on_column, other_column)</dt><dd><span class="code">Perform&nbsp;an&nbsp;inner&nbsp;join&nbsp;with&nbsp;another&nbsp;table&nbsp;on&nbsp;specified&nbsp;columns.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;other_table&nbsp;(<a href="#Table">Table</a>):&nbsp;The&nbsp;table&nbsp;to&nbsp;join&nbsp;with.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;on_column&nbsp;(str):&nbsp;The&nbsp;column&nbsp;in&nbsp;the&nbsp;current&nbsp;table&nbsp;to&nbsp;join&nbsp;on.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;other_column&nbsp;(str):&nbsp;The&nbsp;column&nbsp;in&nbsp;the&nbsp;other&nbsp;table&nbsp;to&nbsp;join&nbsp;on.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Table">Table</a>:&nbsp;A&nbsp;new&nbsp;table&nbsp;containing&nbsp;the&nbsp;joined&nbsp;records.</span></dd></dl>
+
+<dl><dt><a name="Table-print_table"><strong>print_table</strong></a>(self, limit=None, pretty=False, index=False)</dt><dd><span class="code">Prints&nbsp;the&nbsp;records&nbsp;in&nbsp;the&nbsp;table.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;limit&nbsp;(int,&nbsp;optional):&nbsp;The&nbsp;maximum&nbsp;number&nbsp;of&nbsp;records&nbsp;to&nbsp;print.&nbsp;If&nbsp;None,&nbsp;all&nbsp;records&nbsp;are&nbsp;printed.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;pretty&nbsp;(bool,&nbsp;optional):&nbsp;If&nbsp;True,&nbsp;prints&nbsp;the&nbsp;table&nbsp;in&nbsp;a&nbsp;pretty&nbsp;format&nbsp;using&nbsp;the&nbsp;tabulate&nbsp;library.&nbsp;Defaults&nbsp;to&nbsp;False.</span></dd></dl>
+
+<dl><dt><a name="Table-select"><strong>select</strong></a>(self, condition)</dt><dd><span class="code">Selects&nbsp;records&nbsp;from&nbsp;the&nbsp;table&nbsp;that&nbsp;satisfy&nbsp;the&nbsp;given&nbsp;condition.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;condition&nbsp;(function):&nbsp;A&nbsp;function&nbsp;that&nbsp;takes&nbsp;a&nbsp;record&nbsp;as&nbsp;input&nbsp;and&nbsp;returns&nbsp;True&nbsp;if&nbsp;the&nbsp;record&nbsp;satisfies&nbsp;the&nbsp;condition,&nbsp;False&nbsp;otherwise.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;list:&nbsp;A&nbsp;list&nbsp;of&nbsp;records&nbsp;that&nbsp;satisfy&nbsp;the&nbsp;condition.</span></dd></dl>
+
+<dl><dt><a name="Table-sort"><strong>sort</strong></a>(self, column, ascending=True)</dt><dd><span class="code">Sorts&nbsp;the&nbsp;records&nbsp;in&nbsp;the&nbsp;table&nbsp;based&nbsp;on&nbsp;the&nbsp;specified&nbsp;column.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;column&nbsp;(str):&nbsp;The&nbsp;column&nbsp;to&nbsp;sort&nbsp;by.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ascending&nbsp;(bool,&nbsp;optional):&nbsp;If&nbsp;True,&nbsp;sorts&nbsp;in&nbsp;ascending&nbsp;order.&nbsp;Defaults&nbsp;to&nbsp;True.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Table">Table</a>:&nbsp;A&nbsp;new&nbsp;table&nbsp;containing&nbsp;the&nbsp;sorted&nbsp;records.</span></dd></dl>
+
+<dl><dt><a name="Table-try_insert"><strong>try_insert</strong></a>(self, data, record_type=&lt;class 'segadb.record.Record'&gt;, transaction=None)</dt><dd><span class="code">Attempts&nbsp;to&nbsp;insert&nbsp;data&nbsp;into&nbsp;the&nbsp;table.&nbsp;If&nbsp;an&nbsp;error&nbsp;occurs&nbsp;during&nbsp;the&nbsp;insertion,it&nbsp;catches&nbsp;the&nbsp;ValueError&nbsp;and&nbsp;prints&nbsp;an&nbsp;error&nbsp;message.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;(dict):&nbsp;The&nbsp;data&nbsp;to&nbsp;be&nbsp;inserted&nbsp;into&nbsp;the&nbsp;table.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;transaction&nbsp;(optional):&nbsp;The&nbsp;transaction&nbsp;context&nbsp;for&nbsp;the&nbsp;insertion.&nbsp;Default&nbsp;is&nbsp;None.<br>
+Raises:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ValueError:&nbsp;If&nbsp;there&nbsp;is&nbsp;an&nbsp;issue&nbsp;with&nbsp;the&nbsp;data&nbsp;insertion.</span></dd></dl>
+
+<dl><dt><a name="Table-update"><strong>update</strong></a>(self, record_id, data, transaction=None)</dt><dd><span class="code">Update&nbsp;a&nbsp;record&nbsp;in&nbsp;the&nbsp;database.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;record_id&nbsp;(int):&nbsp;The&nbsp;ID&nbsp;of&nbsp;the&nbsp;record&nbsp;to&nbsp;update.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;(dict):&nbsp;A&nbsp;dictionary&nbsp;containing&nbsp;the&nbsp;updated&nbsp;data&nbsp;for&nbsp;the&nbsp;record.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;transaction&nbsp;(optional):&nbsp;A&nbsp;transaction&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;add&nbsp;the&nbsp;update&nbsp;operation&nbsp;to.&nbsp;If&nbsp;not&nbsp;provided,&nbsp;the&nbsp;update&nbsp;is&nbsp;performed&nbsp;immediately.<br>
+Raises:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ConstraintError:&nbsp;If&nbsp;the&nbsp;data&nbsp;violates&nbsp;any&nbsp;constraints.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TextRecord">class <strong>TextRecord</strong></a>(<a href="segadb.record.html#Record">Record</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#TextRecord">TextRecord</a>(record_id,&nbsp;text)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt>Method resolution order:</dt>
+<dd><a href="segadb.record.html#TextRecord">TextRecord</a></dd>
+<dd><a href="segadb.record.html#Record">Record</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="TextRecord-__init__"><strong>__init__</strong></a>(self, record_id, text)</dt><dd><span class="code">Initializes&nbsp;a&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;<a href="#TextRecord">TextRecord</a>&nbsp;class.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;record_id&nbsp;(int):&nbsp;The&nbsp;unique&nbsp;identifier&nbsp;for&nbsp;the&nbsp;record.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;text&nbsp;(str):&nbsp;The&nbsp;text&nbsp;data&nbsp;associated&nbsp;with&nbsp;the&nbsp;record.</span></dd></dl>
+
+<dl><dt><a name="TextRecord-to_lowercase"><strong>to_lowercase</strong></a>(self)</dt><dd><span class="code">Converts&nbsp;the&nbsp;text&nbsp;to&nbsp;lowercase.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;The&nbsp;text&nbsp;in&nbsp;lowercase.</span></dd></dl>
+
+<dl><dt><a name="TextRecord-to_uppercase"><strong>to_uppercase</strong></a>(self)</dt><dd><span class="code">Converts&nbsp;the&nbsp;text&nbsp;to&nbsp;uppercase.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;The&nbsp;text&nbsp;in&nbsp;uppercase.</span></dd></dl>
+
+<dl><dt><a name="TextRecord-word_count"><strong>word_count</strong></a>(self)</dt><dd><span class="code">Counts&nbsp;the&nbsp;number&nbsp;of&nbsp;words&nbsp;in&nbsp;the&nbsp;text.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int:&nbsp;The&nbsp;number&nbsp;of&nbsp;words&nbsp;in&nbsp;the&nbsp;text.</span></dd></dl>
+
+<hr>
+Readonly properties defined here:<br>
+<dl><dt><strong>text</strong></dt>
+</dl>
+<hr>
+Methods inherited from <a href="segadb.record.html#Record">Record</a>:<br>
+<dl><dt><a name="TextRecord-add_to_index"><strong>add_to_index</strong></a>(self, key)</dt></dl>
+
+<dl><dt><a name="TextRecord-remove_from_index"><strong>remove_from_index</strong></a>(self, key)</dt></dl>
+
+<hr>
+Readonly properties inherited from <a href="segadb.record.html#Record">Record</a>:<br>
+<dl><dt><strong>index</strong></dt>
+<dd><span class="code">Returns&nbsp;the&nbsp;index&nbsp;of&nbsp;the&nbsp;record.&nbsp;<br>
+@property&nbsp;decorator&nbsp;is&nbsp;used&nbsp;to&nbsp;make&nbsp;the&nbsp;method&nbsp;behave&nbsp;like&nbsp;an&nbsp;attribute.&nbsp;(Read-only)</span></dd>
+</dl>
+<hr>
+Data descriptors inherited from <a href="segadb.record.html#Record">Record</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="TimeSeriesRecord">class <strong>TimeSeriesRecord</strong></a>(<a href="segadb.record.html#Record">Record</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#TimeSeriesRecord">TimeSeriesRecord</a>(record_id,&nbsp;time_series)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt>Method resolution order:</dt>
+<dd><a href="segadb.record.html#TimeSeriesRecord">TimeSeriesRecord</a></dd>
+<dd><a href="segadb.record.html#Record">Record</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="TimeSeriesRecord-__init__"><strong>__init__</strong></a>(self, record_id, time_series)</dt><dd><span class="code">Initializes&nbsp;a&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;class.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;record_id&nbsp;(int):&nbsp;The&nbsp;unique&nbsp;identifier&nbsp;for&nbsp;the&nbsp;record.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;(dict):&nbsp;The&nbsp;data&nbsp;associated&nbsp;with&nbsp;the&nbsp;record.</span></dd></dl>
+
+<dl><dt><a name="TimeSeriesRecord-moving_average"><strong>moving_average</strong></a>(self, window_size)</dt><dd><span class="code">Calculates&nbsp;the&nbsp;moving&nbsp;average&nbsp;of&nbsp;the&nbsp;time&nbsp;series.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;window_size&nbsp;(int):&nbsp;The&nbsp;window&nbsp;size&nbsp;for&nbsp;the&nbsp;moving&nbsp;average.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;list:&nbsp;The&nbsp;moving&nbsp;average&nbsp;of&nbsp;the&nbsp;time&nbsp;series.</span></dd></dl>
+
+<hr>
+Readonly properties defined here:<br>
+<dl><dt><strong>time_series</strong></dt>
+</dl>
+<hr>
+Methods inherited from <a href="segadb.record.html#Record">Record</a>:<br>
+<dl><dt><a name="TimeSeriesRecord-add_to_index"><strong>add_to_index</strong></a>(self, key)</dt></dl>
+
+<dl><dt><a name="TimeSeriesRecord-remove_from_index"><strong>remove_from_index</strong></a>(self, key)</dt></dl>
+
+<hr>
+Readonly properties inherited from <a href="segadb.record.html#Record">Record</a>:<br>
+<dl><dt><strong>index</strong></dt>
+<dd><span class="code">Returns&nbsp;the&nbsp;index&nbsp;of&nbsp;the&nbsp;record.&nbsp;<br>
+@property&nbsp;decorator&nbsp;is&nbsp;used&nbsp;to&nbsp;make&nbsp;the&nbsp;method&nbsp;behave&nbsp;like&nbsp;an&nbsp;attribute.&nbsp;(Read-only)</span></dd>
+</dl>
+<hr>
+Data descriptors inherited from <a href="segadb.record.html#Record">Record</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="Transaction">class <strong>Transaction</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#Transaction">Transaction</a>(database)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="Transaction-__init__"><strong>__init__</strong></a>(self, database)</dt><dd><span class="code">Initializes&nbsp;a&nbsp;new&nbsp;transaction&nbsp;instance.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;database:&nbsp;The&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;associate&nbsp;with&nbsp;this&nbsp;transaction.<br>
+&nbsp;<br>
+Attributes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;database:&nbsp;The&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;associated&nbsp;with&nbsp;this&nbsp;transaction.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;operations:&nbsp;A&nbsp;list&nbsp;to&nbsp;store&nbsp;the&nbsp;operations&nbsp;performed&nbsp;in&nbsp;this&nbsp;transaction.</span></dd></dl>
+
+<dl><dt><a name="Transaction-add_operation"><strong>add_operation</strong></a>(self, operation)</dt><dd><span class="code">Adds&nbsp;an&nbsp;operation&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;operations.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;operation:&nbsp;The&nbsp;operation&nbsp;to&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;list.</span></dd></dl>
+
+<dl><dt><a name="Transaction-begin"><strong>begin</strong></a>(self)</dt><dd><span class="code">Begins&nbsp;a&nbsp;new&nbsp;transaction.&nbsp;&nbsp;<br>
+This&nbsp;method&nbsp;initializes&nbsp;the&nbsp;operations&nbsp;list&nbsp;and&nbsp;creates&nbsp;a&nbsp;shadow&nbsp;copy<br>
+of&nbsp;the&nbsp;current&nbsp;state&nbsp;of&nbsp;the&nbsp;database.&nbsp;The&nbsp;shadow&nbsp;copy&nbsp;is&nbsp;stored&nbsp;in&nbsp;the<br>
+database&nbsp;to&nbsp;allow&nbsp;for&nbsp;rollback&nbsp;if&nbsp;needed.</span></dd></dl>
+
+<dl><dt><a name="Transaction-commit"><strong>commit</strong></a>(self)</dt><dd><span class="code">Commits&nbsp;the&nbsp;current&nbsp;transaction&nbsp;by&nbsp;executing&nbsp;all&nbsp;operations&nbsp;in&nbsp;the&nbsp;transaction.&nbsp;&nbsp;<br>
+This&nbsp;method&nbsp;iterates&nbsp;over&nbsp;the&nbsp;list&nbsp;of&nbsp;operations&nbsp;and&nbsp;executes&nbsp;each&nbsp;one.&nbsp;After&nbsp;all&nbsp;operations<br>
+are&nbsp;executed,&nbsp;it&nbsp;clears&nbsp;the&nbsp;list&nbsp;of&nbsp;operations&nbsp;and&nbsp;discards&nbsp;the&nbsp;shadow&nbsp;copy&nbsp;of&nbsp;the&nbsp;database.</span></dd></dl>
+
+<dl><dt><a name="Transaction-copy"><strong>copy</strong></a>(self)</dt><dd><span class="code">Copies&nbsp;a&nbsp;transaction&nbsp;<a href="builtins.html#object">object</a>.</span></dd></dl>
+
+<dl><dt><a name="Transaction-preview"><strong>preview</strong></a>(self)</dt><dd><span class="code">Previews&nbsp;the&nbsp;operations&nbsp;in&nbsp;the&nbsp;current&nbsp;transaction&nbsp;without&nbsp;committing&nbsp;or&nbsp;rolling&nbsp;back.</span></dd></dl>
+
+<dl><dt><a name="Transaction-rollback"><strong>rollback</strong></a>(self)</dt><dd><span class="code">Reverts&nbsp;the&nbsp;database&nbsp;to&nbsp;its&nbsp;previous&nbsp;state&nbsp;using&nbsp;a&nbsp;shadow&nbsp;copy&nbsp;if&nbsp;available.&nbsp;&nbsp;<br>
+This&nbsp;method&nbsp;restores&nbsp;the&nbsp;database&nbsp;to&nbsp;the&nbsp;state&nbsp;saved&nbsp;in&nbsp;the&nbsp;shadow&nbsp;copy,<br>
+clears&nbsp;the&nbsp;list&nbsp;of&nbsp;operations,&nbsp;and&nbsp;removes&nbsp;the&nbsp;shadow&nbsp;copy&nbsp;reference.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="User">class <strong>User</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#User">User</a>(username,&nbsp;password,&nbsp;roles=None)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="User-__init__"><strong>__init__</strong></a>(self, username, password, roles=None)</dt><dd><span class="code">Initialize&nbsp;a&nbsp;new&nbsp;<a href="#User">User</a>&nbsp;instance.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password&nbsp;(str):&nbsp;The&nbsp;password&nbsp;of&nbsp;the&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;roles&nbsp;(list,&nbsp;optional):&nbsp;A&nbsp;list&nbsp;of&nbsp;roles&nbsp;assigned&nbsp;to&nbsp;the&nbsp;user.&nbsp;Defaults&nbsp;to&nbsp;an&nbsp;empty&nbsp;list.<br>
+Attributes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password_hash&nbsp;(str):&nbsp;The&nbsp;hashed&nbsp;password&nbsp;of&nbsp;the&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;roles&nbsp;(list):&nbsp;A&nbsp;list&nbsp;of&nbsp;roles&nbsp;assigned&nbsp;to&nbsp;the&nbsp;user.</span></dd></dl>
+
+<dl><dt><a name="User-check_password"><strong>check_password</strong></a>(self, password)</dt><dd><span class="code">Check&nbsp;if&nbsp;the&nbsp;provided&nbsp;password&nbsp;matches&nbsp;the&nbsp;stored&nbsp;password&nbsp;hash.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password&nbsp;(str):&nbsp;The&nbsp;plaintext&nbsp;password&nbsp;to&nbsp;check.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bool:&nbsp;True&nbsp;if&nbsp;the&nbsp;password&nbsp;matches&nbsp;the&nbsp;stored&nbsp;hash,&nbsp;False&nbsp;otherwise.</span></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="User-hash_password"><strong>hash_password</strong></a>(password)</dt><dd><span class="code">Hashes&nbsp;a&nbsp;password&nbsp;using&nbsp;bcrypt.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password&nbsp;(str):&nbsp;The&nbsp;password&nbsp;to&nbsp;be&nbsp;hashed.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bytes:&nbsp;The&nbsp;hashed&nbsp;password.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="UserManager">class <strong>UserManager</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#UserManager">UserManager</a>(db)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="UserManager-__init__"><strong>__init__</strong></a>(self, db)</dt><dd><span class="code">Initializes&nbsp;the&nbsp;Users&nbsp;class.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db&nbsp;(<a href="#Database">Database</a>):&nbsp;The&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;use&nbsp;for&nbsp;user&nbsp;management.</span></dd></dl>
+
+<dl><dt><a name="UserManager-authenticate_user"><strong>authenticate_user</strong></a>(self, username, password)</dt><dd><span class="code">Authenticate&nbsp;a&nbsp;user&nbsp;by&nbsp;their&nbsp;username&nbsp;and&nbsp;password.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password&nbsp;(str):&nbsp;The&nbsp;password&nbsp;of&nbsp;the&nbsp;user.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#User">User</a>:&nbsp;The&nbsp;authenticated&nbsp;user&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;username&nbsp;and&nbsp;password&nbsp;are&nbsp;correct.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;None:&nbsp;If&nbsp;the&nbsp;authentication&nbsp;fails.</span></dd></dl>
+
+<dl><dt><a name="UserManager-get_user_permissions"><strong>get_user_permissions</strong></a>(self, username)</dt><dd><span class="code">Get&nbsp;the&nbsp;permissions&nbsp;associated&nbsp;with&nbsp;a&nbsp;user.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;list:&nbsp;A&nbsp;list&nbsp;of&nbsp;permissions&nbsp;associated&nbsp;with&nbsp;the&nbsp;user.</span></dd></dl>
+
+<dl><dt><a name="UserManager-login_user"><strong>login_user</strong></a>(self, username, password)</dt><dd><span class="code">Logs&nbsp;in&nbsp;a&nbsp;user&nbsp;by&nbsp;their&nbsp;username&nbsp;and&nbsp;password.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password&nbsp;(str):&nbsp;The&nbsp;password&nbsp;of&nbsp;the&nbsp;user.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;A&nbsp;session&nbsp;token&nbsp;if&nbsp;login&nbsp;is&nbsp;successful.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;None:&nbsp;If&nbsp;the&nbsp;login&nbsp;fails.</span></dd></dl>
+
+<dl><dt><a name="UserManager-logout_user"><strong>logout_user</strong></a>(self, session_token)</dt><dd><span class="code">Logs&nbsp;out&nbsp;a&nbsp;user&nbsp;by&nbsp;their&nbsp;session&nbsp;token.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;session_token&nbsp;(str):&nbsp;The&nbsp;session&nbsp;token&nbsp;of&nbsp;the&nbsp;user.</span></dd></dl>
+
+<dl><dt><a name="UserManager-register_user"><strong>register_user</strong></a>(self, username, password, roles=None)</dt><dd><span class="code">Registers&nbsp;a&nbsp;new&nbsp;user&nbsp;with&nbsp;the&nbsp;given&nbsp;username,&nbsp;password,&nbsp;and&nbsp;optional&nbsp;roles.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;for&nbsp;the&nbsp;new&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password&nbsp;(str):&nbsp;The&nbsp;password&nbsp;for&nbsp;the&nbsp;new&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;roles&nbsp;(list,&nbsp;optional):&nbsp;A&nbsp;list&nbsp;of&nbsp;roles&nbsp;assigned&nbsp;to&nbsp;the&nbsp;new&nbsp;user.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+Raises:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ValueError:&nbsp;If&nbsp;the&nbsp;username&nbsp;already&nbsp;exists&nbsp;in&nbsp;the&nbsp;users&nbsp;dictionary.</span></dd></dl>
+
+<dl><dt><a name="UserManager-remove_user"><strong>remove_user</strong></a>(self, username)</dt><dd><span class="code">Removes&nbsp;a&nbsp;user&nbsp;from&nbsp;the&nbsp;database.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user&nbsp;to&nbsp;be&nbsp;removed.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="VectorRecord">class <strong>VectorRecord</strong></a>(<a href="segadb.record.html#Record">Record</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#VectorRecord">VectorRecord</a>(record_id,&nbsp;vector)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt>Method resolution order:</dt>
+<dd><a href="segadb.record.html#VectorRecord">VectorRecord</a></dd>
+<dd><a href="segadb.record.html#Record">Record</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="VectorRecord-__init__"><strong>__init__</strong></a>(self, record_id, vector)</dt><dd><span class="code">Initializes&nbsp;a&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;<a href="#VectorRecord">VectorRecord</a>&nbsp;class.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;record_id&nbsp;(int):&nbsp;The&nbsp;unique&nbsp;identifier&nbsp;for&nbsp;the&nbsp;record.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vector&nbsp;(list):&nbsp;The&nbsp;vector&nbsp;data&nbsp;associated&nbsp;with&nbsp;the&nbsp;record.</span></dd></dl>
+
+<dl><dt><a name="VectorRecord-dot_product"><strong>dot_product</strong></a>(self, other_vector)</dt><dd><span class="code">Calculates&nbsp;the&nbsp;dot&nbsp;product&nbsp;with&nbsp;another&nbsp;vector.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;other_vector&nbsp;(list):&nbsp;The&nbsp;other&nbsp;vector&nbsp;to&nbsp;calculate&nbsp;the&nbsp;dot&nbsp;product&nbsp;with.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;float:&nbsp;The&nbsp;dot&nbsp;product&nbsp;of&nbsp;the&nbsp;two&nbsp;vectors.</span></dd></dl>
+
+<dl><dt><a name="VectorRecord-magnitude"><strong>magnitude</strong></a>(self)</dt><dd><span class="code">Calculates&nbsp;the&nbsp;magnitude&nbsp;of&nbsp;the&nbsp;vector.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;float:&nbsp;The&nbsp;magnitude&nbsp;of&nbsp;the&nbsp;vector.</span></dd></dl>
+
+<dl><dt><a name="VectorRecord-normalize"><strong>normalize</strong></a>(self)</dt><dd><span class="code">Normalizes&nbsp;the&nbsp;vector.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;list:&nbsp;The&nbsp;normalized&nbsp;vector.</span></dd></dl>
+
+<hr>
+Readonly properties defined here:<br>
+<dl><dt><strong>vector</strong></dt>
+</dl>
+<hr>
+Methods inherited from <a href="segadb.record.html#Record">Record</a>:<br>
+<dl><dt><a name="VectorRecord-add_to_index"><strong>add_to_index</strong></a>(self, key)</dt></dl>
+
+<dl><dt><a name="VectorRecord-remove_from_index"><strong>remove_from_index</strong></a>(self, key)</dt></dl>
+
+<hr>
+Readonly properties inherited from <a href="segadb.record.html#Record">Record</a>:<br>
+<dl><dt><strong>index</strong></dt>
+<dd><span class="code">Returns&nbsp;the&nbsp;index&nbsp;of&nbsp;the&nbsp;record.&nbsp;<br>
+@property&nbsp;decorator&nbsp;is&nbsp;used&nbsp;to&nbsp;make&nbsp;the&nbsp;method&nbsp;behave&nbsp;like&nbsp;an&nbsp;attribute.&nbsp;(Read-only)</span></dd>
+</dl>
+<hr>
+Data descriptors inherited from <a href="segadb.record.html#Record">Record</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+    
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>__all__</strong> = ['Database', 'Index', 'Record', 'VectorRecord', 'TimeSeriesRecord', 'ImageRecord', 'TextRecord', 'Storage', 'Table', 'Transaction', 'User', 'UserManager', 'Authorization']</td></tr></table>
+</body></html>

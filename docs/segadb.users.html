@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module segadb.users</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title"><a href="segadb.html" class="white">segadb</a>.users</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:c%3A%5Cusers%5Csg670w%5Conedrive%20-%20at%26t%20services%2C%20inc%5Cdocuments%5Cprojects%5Ccustom_database%5Csegadb%5Cusers.py">c:\users\sg670w\onedrive - at&t services, inc\documents\projects\custom_database\segadb\users.py</a></td></tr></table>
+    <p><span class="code">#&nbsp;Imports:&nbsp;Third&nbsp;party</span></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="bcrypt.html">bcrypt</a><br>
+</td><td class="multicolumn"></td><td class="multicolumn"></td><td class="multicolumn"></td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor index-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Classes</strong></td></tr>
+    
+<tr><td class="decor index-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl>
+<dt class="heading-text"><a href="builtins.html#object">builtins.object</a>
+</dt><dd>
+<dl>
+<dt class="heading-text"><a href="segadb.users.html#Authorization">Authorization</a>
+</dt><dt class="heading-text"><a href="segadb.users.html#User">User</a>
+</dt><dt class="heading-text"><a href="segadb.users.html#UserManager">UserManager</a>
+</dt></dl>
+</dd>
+</dl>
+ <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="Authorization">class <strong>Authorization</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#Authorization">Authorization</a>(db)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="Authorization-__init__"><strong>__init__</strong></a>(self, db)</dt><dd><span class="code">Initializes&nbsp;a&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;class.<br>
+Attributes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;permissions&nbsp;(dict):&nbsp;A&nbsp;dictionary&nbsp;to&nbsp;store&nbsp;user&nbsp;permissions.</span></dd></dl>
+
+<dl><dt><a name="Authorization-add_permission"><strong>add_permission</strong></a>(self, username, role)</dt><dd><span class="code">Adds&nbsp;a&nbsp;permission&nbsp;to&nbsp;a&nbsp;specified&nbsp;role.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;role&nbsp;(str):&nbsp;The&nbsp;role&nbsp;to&nbsp;which&nbsp;the&nbsp;permission&nbsp;will&nbsp;be&nbsp;added.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;permission&nbsp;(str):&nbsp;The&nbsp;permission&nbsp;to&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;role.</span></dd></dl>
+
+<dl><dt><a name="Authorization-check_permission"><strong>check_permission</strong></a>(self, username, permission)</dt><dd><span class="code">Check&nbsp;if&nbsp;a&nbsp;user&nbsp;has&nbsp;a&nbsp;specific&nbsp;permission.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;role&nbsp;(str):&nbsp;The&nbsp;role&nbsp;to&nbsp;check&nbsp;for.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bool:&nbsp;True&nbsp;if&nbsp;the&nbsp;user&nbsp;has&nbsp;the&nbsp;permission,&nbsp;False&nbsp;otherwise.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="User">class <strong>User</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#User">User</a>(username,&nbsp;password,&nbsp;roles=None)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="User-__init__"><strong>__init__</strong></a>(self, username, password, roles=None)</dt><dd><span class="code">Initialize&nbsp;a&nbsp;new&nbsp;<a href="#User">User</a>&nbsp;instance.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password&nbsp;(str):&nbsp;The&nbsp;password&nbsp;of&nbsp;the&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;roles&nbsp;(list,&nbsp;optional):&nbsp;A&nbsp;list&nbsp;of&nbsp;roles&nbsp;assigned&nbsp;to&nbsp;the&nbsp;user.&nbsp;Defaults&nbsp;to&nbsp;an&nbsp;empty&nbsp;list.<br>
+Attributes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password_hash&nbsp;(str):&nbsp;The&nbsp;hashed&nbsp;password&nbsp;of&nbsp;the&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;roles&nbsp;(list):&nbsp;A&nbsp;list&nbsp;of&nbsp;roles&nbsp;assigned&nbsp;to&nbsp;the&nbsp;user.</span></dd></dl>
+
+<dl><dt><a name="User-check_password"><strong>check_password</strong></a>(self, password)</dt><dd><span class="code">Check&nbsp;if&nbsp;the&nbsp;provided&nbsp;password&nbsp;matches&nbsp;the&nbsp;stored&nbsp;password&nbsp;hash.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password&nbsp;(str):&nbsp;The&nbsp;plaintext&nbsp;password&nbsp;to&nbsp;check.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bool:&nbsp;True&nbsp;if&nbsp;the&nbsp;password&nbsp;matches&nbsp;the&nbsp;stored&nbsp;hash,&nbsp;False&nbsp;otherwise.</span></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="User-hash_password"><strong>hash_password</strong></a>(password)</dt><dd><span class="code">Hashes&nbsp;a&nbsp;password&nbsp;using&nbsp;bcrypt.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password&nbsp;(str):&nbsp;The&nbsp;password&nbsp;to&nbsp;be&nbsp;hashed.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bytes:&nbsp;The&nbsp;hashed&nbsp;password.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="UserManager">class <strong>UserManager</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#UserManager">UserManager</a>(db)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="UserManager-__init__"><strong>__init__</strong></a>(self, db)</dt><dd><span class="code">Initializes&nbsp;the&nbsp;Users&nbsp;class.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db&nbsp;(Database):&nbsp;The&nbsp;database&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;use&nbsp;for&nbsp;user&nbsp;management.</span></dd></dl>
+
+<dl><dt><a name="UserManager-authenticate_user"><strong>authenticate_user</strong></a>(self, username, password)</dt><dd><span class="code">Authenticate&nbsp;a&nbsp;user&nbsp;by&nbsp;their&nbsp;username&nbsp;and&nbsp;password.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password&nbsp;(str):&nbsp;The&nbsp;password&nbsp;of&nbsp;the&nbsp;user.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#User">User</a>:&nbsp;The&nbsp;authenticated&nbsp;user&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;username&nbsp;and&nbsp;password&nbsp;are&nbsp;correct.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;None:&nbsp;If&nbsp;the&nbsp;authentication&nbsp;fails.</span></dd></dl>
+
+<dl><dt><a name="UserManager-get_user_permissions"><strong>get_user_permissions</strong></a>(self, username)</dt><dd><span class="code">Get&nbsp;the&nbsp;permissions&nbsp;associated&nbsp;with&nbsp;a&nbsp;user.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;list:&nbsp;A&nbsp;list&nbsp;of&nbsp;permissions&nbsp;associated&nbsp;with&nbsp;the&nbsp;user.</span></dd></dl>
+
+<dl><dt><a name="UserManager-login_user"><strong>login_user</strong></a>(self, username, password)</dt><dd><span class="code">Logs&nbsp;in&nbsp;a&nbsp;user&nbsp;by&nbsp;their&nbsp;username&nbsp;and&nbsp;password.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password&nbsp;(str):&nbsp;The&nbsp;password&nbsp;of&nbsp;the&nbsp;user.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;A&nbsp;session&nbsp;token&nbsp;if&nbsp;login&nbsp;is&nbsp;successful.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;None:&nbsp;If&nbsp;the&nbsp;login&nbsp;fails.</span></dd></dl>
+
+<dl><dt><a name="UserManager-logout_user"><strong>logout_user</strong></a>(self, session_token)</dt><dd><span class="code">Logs&nbsp;out&nbsp;a&nbsp;user&nbsp;by&nbsp;their&nbsp;session&nbsp;token.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;session_token&nbsp;(str):&nbsp;The&nbsp;session&nbsp;token&nbsp;of&nbsp;the&nbsp;user.</span></dd></dl>
+
+<dl><dt><a name="UserManager-register_user"><strong>register_user</strong></a>(self, username, password, roles=None)</dt><dd><span class="code">Registers&nbsp;a&nbsp;new&nbsp;user&nbsp;with&nbsp;the&nbsp;given&nbsp;username,&nbsp;password,&nbsp;and&nbsp;optional&nbsp;roles.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;for&nbsp;the&nbsp;new&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password&nbsp;(str):&nbsp;The&nbsp;password&nbsp;for&nbsp;the&nbsp;new&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;roles&nbsp;(list,&nbsp;optional):&nbsp;A&nbsp;list&nbsp;of&nbsp;roles&nbsp;assigned&nbsp;to&nbsp;the&nbsp;new&nbsp;user.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+Raises:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ValueError:&nbsp;If&nbsp;the&nbsp;username&nbsp;already&nbsp;exists&nbsp;in&nbsp;the&nbsp;users&nbsp;dictionary.</span></dd></dl>
+
+<dl><dt><a name="UserManager-remove_user"><strong>remove_user</strong></a>(self, username)</dt><dd><span class="code">Removes&nbsp;a&nbsp;user&nbsp;from&nbsp;the&nbsp;database.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;The&nbsp;username&nbsp;of&nbsp;the&nbsp;user&nbsp;to&nbsp;be&nbsp;removed.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+    
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>PRESET_ROLES</strong> = {'admin': ['create_table', 'delete_table', 'update_table', 'read_table'], 'editor': ['update_table', 'read_table'], 'read_only': ['read_table']}</td></tr></table>
+</body></html>

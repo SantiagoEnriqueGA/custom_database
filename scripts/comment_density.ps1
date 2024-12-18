@@ -1,3 +1,4 @@
+
 # Calculate comment density in Python files, excluding paths containing "__archive"
 Get-ChildItem -Recurse -Filter *.py | Where-Object { 
     -not ($_.FullName -like "*__archive*") 
@@ -13,4 +14,4 @@ Get-ChildItem -Recurse -Filter *.py | Where-Object {
         CommentLines   = $commentLines
         CommentDensity = ("{0:P2}" -f $commentDensity)
     }
-} | Sort-Object -Property {[double]($_.CommentDensity -replace '%')} -Descending | Format-Table -AutoSize
+} | Sort-Object -Property {[double]($_.CommentDensity -replace '%')} -Descending | Tee-Object -FilePath "scripts/comment_density.txt" | Format-Table -AutoSize

@@ -1,0 +1,12 @@
+﻿wrote segadb.database.html
+wrote segadb.index.html
+wrote segadb.record.html
+wrote segadb.storage.html
+wrote segadb.table.html
+wrote segadb.transaction.html
+wrote segadb.users.html
+wrote segadb.__init__.html
+ 
+To view the documentation, run the following command in the terminal:
+python -m pydoc -p 8080
+Then open a web browser and navigate to http://localhost:8080/segadb.html
