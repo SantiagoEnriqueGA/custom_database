@@ -6,6 +6,7 @@ wrote segadb.table.html
 wrote segadb.transaction.html
 wrote segadb.users.html
 wrote segadb.__init__.html
+wrote segadb.html
  
 To view the documentation, run the following command in the terminal:
 python -m pydoc -p 8080

@@ -13,6 +13,9 @@ $files = $files | ForEach-Object {
     "segadb.$_"
 }
 
+# Add the main segadb module to the list of files to document
+$files += "segadb"
+
 # Generate documentation for each Python file
 $files | ForEach-Object {
     Write-Host "Generating documentation for: $_"
