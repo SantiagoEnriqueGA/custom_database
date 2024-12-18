@@ -7,7 +7,7 @@ This project is primarily educational. It is designed to help understand the wor
 - [Features](#features)
 - [Installation](#installation)
 - [File Structure](#file-structure)
-- [Usage Example](#usage-example)
+- [Usage Example](#usage-examples)
 - [Scripts](#scripts)
 - [Documentation](#documentation)
 - [Tests](#tests)
@@ -34,6 +34,8 @@ This project is primarily educational. It is designed to help understand the wor
     - `word_count()`: Counts the number of words in the text.
     - `to_uppercase()`: Converts the text to uppercase.
     - `to_lowercase()`: Converts the text to lowercase.
+- **User Management and Authorization**: Manage users, their roles, and permissions. See [`User`, `UserManager`, and `Authorization`](segadb/users.py).
+
 
 ## Installation
 
@@ -104,8 +106,41 @@ The project directory structure is as follows:
   - [documentation_md.ps1](scripts/documentation_md.ps1): Generates markdown documentation.
 
 
-## Usage Example
-For more varied and detailed examples please see **examples/**.
+## Usage Examples
+
+### Backup and Recovery
+- [example_backupRecovery.py](examples/example_backupRecovery.py): Demonstrates how to create and restore backups.
+
+### Record Management
+- [example_change_ids.py](examples/example_change_ids.py): Demonstrates how to change record IDs, difference between IDs and Index.
+- [example_recordTypes.py](examples/example_recordTypes.py): Demonstrates how to use different record types (VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord).
+
+### Constraints and Keys
+- [example_constraints.py](examples/example_constraints.py): Demonstrates how to add and enforce constraints on table columns.
+- [example_foreignKeys.py](examples/example_foreignKeys.py): Demonstrates how to use foreign key constraints.
+
+### Data Operations
+- [example_databaseDetails.py](examples/example_databaseDetails.py): Demonstrates how to create tables and manage records.
+- [example_dataExport.py](examples/example_dataExport.py): Demonstrates how to export data to different formats: CSV, JSON, SQLite.
+- [example_dataImports.py](examples/example_dataImports.py): Demonstrates how to import data from a CSV file.
+- [example_queries.py](examples/example_queries.py): Demonstrates how to create tables, add constraints, insert data, perform joins, aggregations, and filtering operations.
+
+### Performance
+- [example_millionRowLoad.py](examples/example_millionRowLoad.py): Demonstrates how to load a table with a million rows using multiprocessing.
+
+### Storage
+- [example_storage.py](examples/example_storage.py): Demonstrates how to save and load the database, and check constraints.
+- [example_storageCompression.py](examples/example_storageCompression.py): Demonstrates how to save and load the database with compression.
+- [example_storageCompressionLarge.py](examples/example_storageCompressionLarge.py): Demonstrates how to save and load a large database with compression, using multiprocessing.
+
+### Transactions
+- [example_transactions.py](examples/example_transactions.py): Demonstrates how to use transactions for commit and rollback operations.
+
+### User Management
+- [example_UsersAuth.py](examples/example_UsersAuth.py): Demonstrates user authentication and authorization.
+
+---
+#### Here is a simple example of creating a segadb Database and a table with constraints.
 ```python
 from segadb import *
 
@@ -131,7 +166,6 @@ users_table.insert({"name": "Jane Doe", "email": "jane@example.com"})       # sa
 
 print("\nAfter Insert:")
 users_table.print_table()
-
 
 # Add constraint for unique email
 users_table.add_constraint("email", "UNIQUE")
