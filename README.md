@@ -3,6 +3,15 @@
 SEGADB is a simple database library for Python.
 This project is primarily educational. It is designed to help understand the workings of a simple database system by building it from scratch. The implementations focus on fundamental concepts first and then on optimizing for speed or robustness, using basic Python data structures and custom transaction handling for specific tasks.
 
+<!-- Add Links to Other Sections Here! -->
+- [Features](#features)
+- [Installation](#installation)
+- [File Structure](#file-structure)
+- [Usage Example](#usage-example)
+- [Scripts](#scripts)
+- [Documentation](#documentation)
+- [Tests](#tests)
+
 ## Features
 - **Database Management**: Create, drop, copy, restore, and add constraints to database. See [`Database`](segadb/database.py).
 - **Table Operations**: Insert, update, delete, and select records in a table. See [`Table`](segadb/table.py).
@@ -32,14 +41,8 @@ To set up the project environment, you can use the provided `environment.yml` fi
 
 1. Open a terminal or command prompt.
 2. Navigate to the directory where your repository is located.
-3. Run the following command to create the conda environment:
-```sh
-conda env create -f environment.yml
-```
-4. Activate the newly created environment:
-```sh
-conda activate segadb_env
-```
+3. Run the following command to create the conda environment: `conda env create -f environment.yml`  
+4. Activate the newly created environment: `conda activate segadb_env`
 
 ## File Structure
 The project directory structure is as follows:
@@ -54,6 +57,7 @@ The project directory structure is as follows:
   - [`storage.py`](segadb/storage.py): Implements the `Storage` class for saving and loading the database.
   - [`table.py`](segadb/table.py): Implements the `Table` class for table operations.
   - [`transaction.py`](segadb/transaction.py): Implements the `Transaction` class for transaction handling.
+  - [`users.py`](segadb/users.py): Implements the `User`, `UserManager`, and `Authorization` classes for user management and authorization.
 - **tests/**: Contains unit and performance tests for the database library.
   - [`run_all_tests.py`](tests/run_all_tests.py): Runs all available tests.
   - [`test_utils.py`](tests/test_utils.py): Utility functions for tests.
@@ -63,26 +67,37 @@ The project directory structure is as follows:
   - [`test_record.py`](tests/test_record.py): Unit tests for the `Record` class.
   - [`test_storage.py`](tests/test_storage.py): Unit tests for the `Storage` class.
   - [`test_transaction.py`](tests/test_transaction.py): Unit tests for the `Transaction` class.
+  - [`test_users.py`](tests/test_users.py): Unit tests for the `User`, `UserManager`, and `Authorization` classes.
   - [`test_segadb_performance.py`](tests/test_segadb_performance.py): Performance tests for the segadb package.
   - [`test_examples.py`](tests/test_examples.py): Contains tests for the example scripts.
 - **examples/**: Example usages of the segadb library.
-  - [example_csv.py](examples/example_csv.py): Demonstrates how to create a table from a CSV file.
+  - [example_backupRecovery.py](examples/example_backupRecovery.py): Demonstrates how to create and restore backups.
+  - [example_change_ids.py](examples/example_change_ids.py): Demonstrates how to change record IDs, difference between IDs and Index.
   - [example_constraints.py](examples/example_constraints.py): Demonstrates how to add and enforce constraints on table columns.
-  - [example_transactions.py](examples/example_transactions.py): Demonstrates how to use transactions for commit and rollback operations.
-  - [example_change_ids.py](examples/example_change_ids.py): Demonstrates how to change record IDs, diffrence between IDs and Index.
-  - [example_recordTypes.py](examples/example_recordTypes.py): Demonstrates how to use different record types (VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord).
-  - [example_queries.py](examples/example_queries.py): Demonstrates how to create tables, add constraints, insert data, perform joins, aggregations, and filtering operations.
-  - [example_storage.py](examples/example_storage.py): Demonstrates how to save and load the database, and check constraints.
+  - [example_databaseDetails.py](examples/example_databaseDetails.py): Demonstrates how to create tables and manage records.
+  - [example_dataExport.py](examples/example_dataExport.py): Demonstrates how to export data to different formats: CSV, JSON, SQLite.
+  - [example_dataImports.py](examples/example_dataImports.py): Demonstrates how to import data from a CSV file.
+  - [example_foreignKeys.py](examples/example_foreignKeys.py): Demonstrates how to use foreign key constraints.
   - [example_millionRowLoad.py](examples/example_millionRowLoad.py): Demonstrates how to load a table with a million rows using multiprocessing.
+  - [example_queries.py](examples/example_queries.py): Demonstrates how to create tables, add constraints, insert data, perform joins, aggregations, and filtering operations.
+  - [example_recordTypes.py](examples/example_recordTypes.py): Demonstrates how to use different record types (VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord).
+  - [example_storage.py](examples/example_storage.py): Demonstrates how to save and load the database, and check constraints.
   - [example_storageCompression.py](examples/example_storageCompression.py): Demonstrates how to save and load the database with compression.
   - [example_storageCompressionLarge.py](examples/example_storageCompressionLarge.py): Demonstrates how to save and load a large database with compression, using multiprocessing.
-  - [example_dataImports.py](examples/example_dataImports.py): Demonstrates how to import data from a CSV file.
-  - [example_dataExport.py](examples/example_dataExport.py): Demonstrates how to export data to different formats: CSV, JSON, SQLite.
-  - [example_backupRecovery.py](examples/example_backupRecovery.py): Demonstrates how to create and restore backups.
+  - [example_transactions.py](examples/example_transactions.py): Demonstrates how to use transactions for commit and rollback operations.
   - [example_UsersAuth.py](examples/example_UsersAuth.py): Demonstrates user authentication and authorization.
+- **docs/**: Contains the generated documentation for the segadb library.
+  - [segadb.database.html](docs/segadb.database.html): Documentation for the `Database` class.
+  - [segadb.index.html](docs/segadb.index.html): Documentation for the `Index` class.
+  - [segadb.record.html](docs/segadb.record.html): Documentation for the `Record` class.
+  - [segadb.storage.html](docs/segadb.storage.html): Documentation for the `Storage` class.
+  - [segadb.table.html](docs/segadb.table.html): Documentation for the `Table` class.
+  - [segadb.transaction.html](docs/segadb.transaction.html): Documentation for the `Transaction` class.
+  - [segadb.users.html](docs/segadb.users.html): Documentation for the `User`, `UserManager`, and `Authorization` classes.
+  - [segadb.__init__.html](docs/segadb.__init__.html): Documentation for the `__init__.py` file.
 
-
-## Usage
+## Usage Example
+For more varied and detailed examples please see **examples/**.
 ```python
 from segadb import *
 
@@ -143,16 +158,23 @@ Record ID: 2, Data: {'name': 'Jane Doe', 'email': 'jane@example.com'}
 Record ID: 3, Data: {'name': 'James Doe', 'email': 'james@example.com'}
 ```
 
+## Scripts
+The following PowerShell scripts are included in the `scripts/` folder to help with various tasks:
+
+- **_run_all_scripts.ps1**: Runs all PowerShell scripts in the `scripts/` folder sequentially.
+- **todo_comments.ps1**: Finds and lists all TODO comments in Python files.
+- **documentation.ps1**: Generates documentation for Python files in the `segadb/` folder, and moves the generated HTML files to the `docs/` folder.
+- **count_lines.ps1**: Counts the number of lines in each Python file, sorts the files by line count in descending order, and calculates the total number of lines.
+- **comment_density.ps1**: Calculates the comment density (percentage of lines that are comments) in Python files.
+
+## Documentation
+Pydoc documentation is generated from the PowerShell script `documentation.ps1`.  
+To view the documentation, run the following command in the terminal: `python -m pydoc -p 8080`  
+Then open a web browser and navigate to http://localhost:8080/segadb.html
+
 ## Tests
-To run the tests, use the following command:
-```sh
-python -m unittest discover -s tests
-```
-OR
-Run the all tests file:
-```sh
-python run_all_tests.py
-```
+To run the tests, use the following command: `python -m unittest discover -s tests`  
+Or run the all tests file: `python run_all_tests.py`
 ### Test Results
 The following are the results of running the tests:
 
