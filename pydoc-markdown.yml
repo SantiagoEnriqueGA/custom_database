@@ -1,0 +1,8 @@
+loaders:
+  - type: python
+    search_path: ["segadb"]
+processors:
+  - type: filter
+    expression: "type(obj).__name__ != 'Indirection'"
+renderer:
+  type: markdown

@@ -95,6 +95,14 @@ The project directory structure is as follows:
   - [segadb.transaction.html](docs/segadb.transaction.html): Documentation for the `Transaction` class.
   - [segadb.users.html](docs/segadb.users.html): Documentation for the `User`, `UserManager`, and `Authorization` classes.
   - [segadb.__init__.html](docs/segadb.__init__.html): Documentation for the `__init__.py` file.
+- **scripts/**: PowerShell scripts to help with various tasks.
+  - [_run_all_scripts.ps1](scripts/_run_all_scripts.ps1): Runs all PowerShell scripts in the `scripts/` folder sequentially.
+  - [todo_comments.ps1](scripts/todo_comments.ps1): Finds and lists all TODO comments in Python files.
+  - [count_lines.ps1](scripts/count_lines.ps1): Counts the number of lines in each Python file.
+  - [comment_density.ps1](scripts/comment_density.ps1): Calculates the comment density in Python files.
+  - [documentation_html.ps1](scripts/documentation_html.ps1): Generates HTML documentation.
+  - [documentation_md.ps1](scripts/documentation_md.ps1): Generates markdown documentation.
+
 
 ## Usage Example
 For more varied and detailed examples please see **examples/**.
@@ -163,14 +171,19 @@ The following PowerShell scripts are included in the `scripts/` folder to help w
 
 - **_run_all_scripts.ps1**: Runs all PowerShell scripts in the `scripts/` folder sequentially.
 - **todo_comments.ps1**: Finds and lists all TODO comments in Python files.
-- **documentation.ps1**: Generates documentation for Python files in the `segadb/` folder, and moves the generated HTML files to the `docs/` folder.
 - **count_lines.ps1**: Counts the number of lines in each Python file, sorts the files by line count in descending order, and calculates the total number of lines.
 - **comment_density.ps1**: Calculates the comment density (percentage of lines that are comments) in Python files.
+- **documentation_html.ps1**: Generates HTML documentation for Python files in the `segadb/` folder, and moves the generated HTML files to the `docs/` folder.
+- **documentation_md.ps1**: Generates markdown documentation for Python files in the `segadb/` folder.
+
 
 ## Documentation
-Pydoc documentation is generated from the PowerShell script `documentation.ps1`.  
+Pydoc documentation is generated from the PowerShell script `documentation_html.ps1`.  
 To view the documentation, run the following command in the terminal: `python -m pydoc -p 8080`  
 Then open a web browser and navigate to http://localhost:8080/segadb.html
+
+Pydoc Markdown is also availible and is generated from the PowerShell script `documentation_md.ps1`.  
+The output file is located in [`docs/documentation.md`](docs/documentation.md)
 
 ## Tests
 To run the tests, use the following command: `python -m unittest discover -s tests`  
