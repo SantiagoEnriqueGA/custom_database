@@ -178,10 +178,14 @@ The following PowerShell scripts are included in the `scripts/` folder to help w
 
 
 ## Documentation
+### HTML Documentation
 Pydoc documentation is generated from the PowerShell script `documentation_html.ps1`.  
-To view the documentation, run the following command in the terminal: `python -m pydoc -p 8080`  
+To see live version: https://santiagoenriquega.github.io/custom_database/segadb  
+
+Self host documentation, run the following command in the terminal: `python -m pydoc -p 8080`  
 Then open a web browser and navigate to http://localhost:8080/segadb.html
 
+### Markdown Documentation
 Pydoc Markdown is also availible and is generated from the PowerShell script `documentation_md.ps1`.  
 The output file is located in [`docs/documentation.md`](docs/documentation.md)
 
