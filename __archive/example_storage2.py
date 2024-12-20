@@ -80,7 +80,7 @@ loaded_db = Storage.load("example_storage/database.segadb", user="admin", passwo
 print("\nAfter Loading:")
 print("--------------------------------------------------------------------------------")
 # print(loaded_db)
-db.print_db(views=True, materialized_views=True)
+loaded_db.print_db(views=True, materialized_views=True)
 
 
 # Check constraints
@@ -93,42 +93,3 @@ print("\nCheck constraints - Foreign key constraint violation:")
 print("--------------------------------------------------------------------------------")
 print("Try to insert order with non-existent user_id in orders table:")
 loaded_db.get_table("orders").try_insert({"user_id": 5, "product": "Smartwatch", "order_id": 5, "order_date": "2021-01-05"})
-
-
-
-# Save the database to an encrypted file
-print("\n--------------------------------------------------------------------------------")
-print("Saving to example_storage/database_encrypted.segadb:")
-print("--------------------------------------------------------------------------------")
-
-# Generate a random encryption key and save the database to an encrypted file
-key = Storage.generate_key()
-print(f"Encryption Key: {key}")
-Storage.save(db, "example_storage/database_encrypted.segadb", key=key)
-
-# Show a preview of encrypted file
-with open("example_storage/database_encrypted.segadb", "r") as f:
-    print(f"Encrypted File Preview: {f.read(100)}")
-
-# Load the database from an encrypted file
-loaded_e_db = Storage.load("example_storage/database_encrypted.segadb", key=key,  user="admin", password="password123")
-
-
-# Print the tables after loading
-print("\nAfter Loading:")
-print("--------------------------------------------------------------------------------")
-# print(loaded_db)
-db.print_db(views=True, materialized_views=True)
-
-
-# Check constraints
-print("\nCheck constraints - Unique constraint violation:")
-print("--------------------------------------------------------------------------------")
-print("Try to insert order with non-existent user_id in orders table:")
-loaded_e_db.get_table("users").try_insert({"user_id": 1, "name": "Alice", "email": "alice@abc.com"})
-
-print("\nCheck constraints - Foreign key constraint violation:")
-print("--------------------------------------------------------------------------------")
-print("Try to insert order with non-existent user_id in orders table:")
-loaded_e_db.get_table("orders").try_insert({"user_id": 5, "product": "Smartwatch", "order_id": 5, "order_date": "2021-01-05"})
-

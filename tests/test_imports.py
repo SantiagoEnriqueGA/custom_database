@@ -18,6 +18,8 @@ from segadb.transaction import Transaction as trans
 from segadb.users import User as u
 from segadb.users import UserManager as um
 from segadb.users import Authorization as auth
+from segadb.views import View as v
+from segadb.views import MaterializedView as mv
 
 from segadb import *
 
@@ -47,6 +49,8 @@ class TestImports(unittest.TestCase):
         assert u is not None
         assert um is not None
         assert auth is not None
+        assert v is not None
+        assert mv is not None
 
     def test_wildcard_import(self):
         assert Database is not None
@@ -62,6 +66,8 @@ class TestImports(unittest.TestCase):
         assert User is not None
         assert UserManager is not None
         assert Authorization is not None
+        assert View is not None
+        assert MaterializedView is not None
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,3 +1,5 @@
+import inspect
+
 class View:
     def __init__(self, name, query):
         """
@@ -16,6 +18,14 @@ class View:
             list: The data for the view.
         """
         return self.query()
+    
+    def _query_to_string(self):
+        """
+        Return the source code of the query function as a string.
+        Returns:
+            str: The source code of the query function.
+        """
+        return inspect.getsource(self.query)
     
 class MaterializedView:
     def __init__(self, name, query):
@@ -42,3 +52,11 @@ class MaterializedView:
             list: The data for the materialized view.
         """
         return self.data
+    
+    def _query_to_string(self):
+        """
+        Return the source code of the query function as a string.
+        Returns:
+            str: The source code of the query function.
+        """
+        return inspect.getsource(self.query)

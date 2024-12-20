@@ -1,5 +1,6 @@
 # Imports: Standard Library
 import os
+import types
 from math import inf
 import json
 import zlib
@@ -35,7 +36,6 @@ def _process_chunk(records_chunk, table):
         record_objects.append(r)
     return record_objects
 
-# TODO: Add support for saving and loading views and materialized views
 class Storage:
     """A utility class for saving, loading, and deleting database files."""
     
@@ -166,10 +166,13 @@ class Storage:
         """
         data = {
             "name": db.name,
-            "tables": {}
+            "tables": {},
+            "views": {},
+            "materialized_views": {}
         }
-        for table_name, table in db.tables.items():
-            data["tables"][table_name] = {
+        
+        def serialize_table(table):
+            return {
                 "name": table.name,
                 "columns": table.columns,
                 "records": [{
@@ -187,7 +190,30 @@ class Storage:
                         } for constraint in constraints
                     ] for column, constraints in table.constraints.items()
                 },
+            }
+        
+        # Serialize tables
+        for table_name, table in db.tables.items():
+            data["tables"][table_name] = serialize_table(table)
+        
+        # Serialize views
+        for view_name, view in db.views.items():
+            data["views"][view_name] = {
+                "name": view.name,
+                "query": view._query_to_string(),
                 
+                # Not needed, data is retrieved when the view is called
+                # "data": serialize_table(view.get_data()),
+            }
+        
+        # Serialize materialized views
+        for mv_name, mv in db.materialized_views.items():
+            data["materialized_views"][mv_name] = {
+                "name": mv.name,
+                "query": mv._query_to_string(),
+                
+                # Not needed, data is recalculated when the MV is created 
+                # "data": serialize_table(mv.get_data()),
             }
         
         json_data = json.dumps(data, indent=4)
@@ -225,6 +251,7 @@ class Storage:
         
         db = Database(data["name"])
         
+        # Load tables
         for table_name, table_data in data["tables"].items():
             # If table does not exist, or if it is _users table and there are no users, create it
             if not db.get_table(table_name) or (table_name == "_users" and db.get_table(table_name).records == []):
@@ -247,10 +274,26 @@ class Storage:
                             # Handle other constraints if necessary
                             pass
             
+            # If user and password are provided, and there are users in the _users table, login the user
             if user and password and len(db.get_table("_users").records) > 0 and not db.active_session:
                 user_manager = db.create_user_manager()
                 auth = db.create_authorization()
-                user_manager.login_user(user, password)     
+                user_manager.login_user(user, password)
+                
+        # Load views
+        # Executes the query function in the global namespace, typecasts the result to a function, and creates a view
+        for view_name, view_data in data["views"].items():
+            exec(view_data["query"], globals())
+            globals()[view_name] = eval(view_name)
+            db.create_view(view_name, types.FunctionType(globals()[view_name].__code__, {"db": db}))
+            
+        # Load materialized views
+        # Executes the query function in the global namespace, typecasts the result to a function, and creates a materialized view
+        for mv_name, mv_data in data["materialized_views"].items():
+            exec(mv_data["query"], globals())
+            globals()[mv_name] = eval(mv_name)
+            db.create_materialized_view(mv_name, types.FunctionType(globals()[mv_name].__code__, {"db": db}))
+        
         return db   
         
     @staticmethod

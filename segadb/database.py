@@ -637,13 +637,16 @@ class Database:
         
     # Utility Methods
     # ---------------------------------------------------------------------------------------------
-    def print_db(self, index=False, limit=None):
+    def print_db(self, index=False, limit=None, views=False, materialized_views=False):
         """
         Print the database tables, including their names, columns, constraints, and records.
         Args:
             index (bool, optional): Whether to print the index of each record. Defaults to False.
             limit (int, optional): The maximum number of records to print for each table. Defaults to None.
+            views (bool, optional): Whether to print the views. Defaults to False.
+            materialized_views (bool, optional): Whether to print the materialized views. Defaults to False.
         """
+        # Display database details
         print("DATABASE DETAILS")
         print("-" * 100)
         print(f"Database Name: {self.name}")
@@ -651,8 +654,24 @@ class Database:
         print(f"Tables: {len(self.tables)}")
         print(f"Authorization Required: {self._is_auth_required()}")
         print(f"Active Session: \"{self.get_username_by_session(self.active_session)}:{self.active_session}\"")
+        
+        print(f"Database Objects:")
+        print(f"  --Users: {len(self.tables.get('_users').records)}")
+        for record in self.tables.get("_users").records:
+            print(f"\t{record.data['username']} | Roles: {record.data['roles']}")
+        print(f"  --Tables: {len(self.tables)}")
+        for table_name in self.tables:
+            if table_name != "_users":
+                print(f"\t{table_name} | Length: {len(self.tables.get(table_name).records)}")
+        print(f"  --Materialized Views: {len(self.materialized_views)}")
+        for view_name in self.materialized_views:
+            print(f"\t{view_name}")
+        print(f"  --Views: {len(self.views)}")
+        for view_name in self.views:
+            print(f"\t{view_name}")
         print("-" * 100)
         
+        # Display table details
         print("\n\nTABLE DETAILS")
         print("-" * 100)
         for table_name, table in self.tables.items():
@@ -673,6 +692,38 @@ class Database:
             print(f"Constraints: {consts if consts else 'None'}")
                 
             table.print_table(pretty=True, index=index, limit=limit)
+            
+        if materialized_views and self.materialized_views:
+            # Display materialized view details
+            print("\n\nMATERIALIZED VIEW DETAILS")
+            print("-" * 100)
+            first_view = True
+            for view_name, view in self.materialized_views.items():
+                if not first_view: print("")
+                
+                print(f"View: {view_name}")
+                print(f"Records: {len(view.data.records)}")
+                print(f"Columns: {view.data.columns}")
+                view.data.print_table(pretty=True, index=index, limit=limit)
+                
+                first_view = False
+        
+        if views and self.views:
+            # Display view details
+            print("\n\nVIEW DETAILS")
+            print("-" * 100)
+            first_view = True
+            for view_name, view in self.views.items():
+                if not first_view: print("")
+                
+                view = view.get_data()
+                
+                print(f"View: {view_name}")
+                print(f"Records: {len(view.records)}")
+                print(f"Columns: {view.columns}")
+                view.print_table(pretty=True, index=index, limit=limit)
+                
+                first_view = False
             
     def copy(self):
         """

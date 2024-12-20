@@ -56,7 +56,6 @@ v_laptopOrders = db.get_view("laptop_view")
 print("\nLaptop View:")
 v_laptopOrders.get_data().print_table(pretty=True)
 
-
 # Example usage, create a view of users with orders
 # ----------------------------------------------------------------------------------
 def users_with_orders_view():

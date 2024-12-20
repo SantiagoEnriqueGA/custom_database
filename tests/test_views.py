@@ -1,6 +1,3 @@
-
-import unittest
-from unittest.mock import Mock
 import unittest
 from unittest.mock import Mock
 import sys
@@ -17,6 +14,7 @@ class TestViews(unittest.TestCase):
     Methods:
     - test_view_initialization: Tests the initialization of a View instance.
     - test_view_get_data: Tests the get_data method of a View instance.
+    - test_view_query_to_string: Tests the _query_to_string method of a View instance.
     """
     def test_view_initialization(self):
         query = Mock(return_value=[{"id": 1, "name": "Alice"}])
@@ -31,6 +29,14 @@ class TestViews(unittest.TestCase):
         self.assertEqual(data, [{"id": 1, "name": "Alice"}])
         query.assert_called_once()
 
+    def test_view_query_to_string(self):
+        def sample_query():
+            return [{"id": 1, "name": "Alice"}]
+        view = View("TestView", sample_query)
+        query_string = view._query_to_string()
+        self.assertIn("def sample_query", query_string)
+        self.assertIn("return [{\"id\": 1, \"name\": \"Alice\"}]", query_string)
+
 class TestMaterializedView(TestViews):
     """
     Unit tests for the MaterializedView class.
@@ -38,6 +44,7 @@ class TestMaterializedView(TestViews):
     - test_materialized_view_initialization: Tests the initialization of a MaterializedView instance.
     - test_materialized_view_get_data: Tests the get_data method of a MaterializedView instance.
     - test_materialized_view_refresh: Tests the refresh method of a MaterializedView instance.
+    - test_materialized_view_query_to_string: Tests the _query_to_string method of a MaterializedView instance.
     """
     def test_materialized_view_initialization(self):
         query = Mock(return_value=[{"id": 1, "name": "Alice"}])
@@ -58,6 +65,14 @@ class TestMaterializedView(TestViews):
         query.return_value = [{"id": 2, "name": "Bob"}]
         mview.refresh()
         self.assertEqual(mview.data, [{"id": 2, "name": "Bob"}])
+
+    def test_materialized_view_query_to_string(self):
+        def sample_query():
+            return [{"id": 1, "name": "Alice"}]
+        mview = MaterializedView("TestMaterializedView", sample_query)
+        query_string = mview._query_to_string()
+        self.assertIn("def sample_query", query_string)
+        self.assertIn("return [{\"id\": 1, \"name\": \"Alice\"}]", query_string)
 
 if __name__ == '__main__':
     unittest.main()
