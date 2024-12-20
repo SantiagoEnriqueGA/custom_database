@@ -56,6 +56,8 @@ def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_nam
             pbar.close()
     return rows
 
+# TODO: Add support for stored procedures.
+# TODO: Create sample databases for testing and demonstration purposes.
 class Database:  
     # Initialization and Configuration
     # ---------------------------------------------------------------------------------------------

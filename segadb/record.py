@@ -9,6 +9,7 @@ from PIL import Image
 # Imports: Local
 from .index import Index
 
+# TODO: Add support for encrypting data at rest 
 class Record:
     def __init__(self, record_id, data):
         """
