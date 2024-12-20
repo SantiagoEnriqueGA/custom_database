@@ -71,10 +71,10 @@ v_usersWtOrders.get_data().print_table(pretty=True)
 
 # Example usage, create a materialized view of Orders by User 2
 # ----------------------------------------------------------------------------------
-def orders_by_user_2_view():
+def mv_ordersUser2():
     return db.filter_table("orders", lambda record: record.data["user_id"] == 2)
 
-db.create_materialized_view("mv_ordersUser2", orders_by_user_2_view)
+db.create_materialized_view("mv_ordersUser2", mv_ordersUser2)
 
 # Retrieve the data for the materialized view
 mv_ordersUser2 = db.get_materialized_view("mv_ordersUser2")

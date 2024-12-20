@@ -236,22 +236,23 @@ The following are the results of running the tests:
 
 ```sh
 Testing Database Class
-...........................Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_UsersAuth.py
-.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_backupRecovery.py
-.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_change_ids.py
-.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_constraints.py
-.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_dataExport.py
-.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_dataImports.py
-.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_databaseDetails.py
-.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_foreignKeys.py
-.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_millionRowLoad.py
-.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_queries.py
-.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_recordTypes.py
-.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_storage.py
-.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_storageCompression.py
-.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_storageCompressionLarge.py
-.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_transactions.py
-.Testing file: C:\Users\sg670w\OneDrive - AT&T Services, Inc\Documents\Projects\custom_database\tests\..\examples\example_views.py
+..........................
+.Testing file: ...\custom_database\tests\..\examples\example_UsersAuth.py
+.Testing file: ...\custom_database\tests\..\examples\example_backupRecovery.py
+.Testing file: ...\custom_database\tests\..\examples\example_change_ids.py
+.Testing file: ...\custom_database\tests\..\examples\example_constraints.py
+.Testing file: ...\custom_database\tests\..\examples\example_dataExport.py
+.Testing file: ...\custom_database\tests\..\examples\example_dataImports.py
+.Testing file: ...\custom_database\tests\..\examples\example_databaseDetails.py
+.Testing file: ...\custom_database\tests\..\examples\example_foreignKeys.py
+.Testing file: ...\custom_database\tests\..\examples\example_millionRowLoad.py
+.Testing file: ...\custom_database\tests\..\examples\example_queries.py
+.Testing file: ...\custom_database\tests\..\examples\example_recordTypes.py
+.Testing file: ...\custom_database\tests\..\examples\example_storage.py
+.Testing file: ...\custom_database\tests\..\examples\example_storageCompression.py
+.Testing file: ...\custom_database\tests\..\examples\example_storageCompressionLarge.py
+.Testing file: ...\custom_database\tests\..\examples\example_transactions.py
+.Testing file: ...\custom_database\tests\..\examples\example_views.py
 .Testing Imports
 ..Testing Index Class
 ..Testing Record Class

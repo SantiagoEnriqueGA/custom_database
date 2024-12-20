@@ -564,8 +564,14 @@ class Database:
             view_name (str): The name of the view.
             query (function): A function that returns the data for the view.
         """
+        # If the view already exists, raise an error
         if view_name in self.views:
             raise ValueError(f"View {view_name} already exists.")
+        
+        # If the query function does not have the same name as the view, raise an error
+        if query.__name__ != view_name:
+            raise ValueError(f"Query function name must match the view name: {view_name}")
+        
         self.views[view_name] = View(view_name, query)
 
     def get_view(self, view_name):
@@ -599,8 +605,14 @@ class Database:
             view_name (str): The name of the materialized view.
             query (function): A function that returns the data for the materialized view.
         """
+        # If the materialized view already exists, raise an error
         if view_name in self.materialized_views:
             raise ValueError(f"Materialized view {view_name} already exists.")
+        
+        # If the query function does not have the same name as the view, raise an error
+        if query.__name__ != view_name:
+            raise ValueError(f"Query function name must match the view name: {view_name}")
+        
         self.materialized_views[view_name] = MaterializedView(view_name, query)
 
     def get_materialized_view(self, view_name):
