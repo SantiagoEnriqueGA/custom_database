@@ -53,6 +53,8 @@ td.singlecolumn { width: 100%; }
 </style>
 "@
 
+# Move all generated .html files to the docs/ folder
+$generatedDocs = Get-ChildItem -Recurse -Filter *.html
 $generatedDocs | ForEach-Object {
     $htmlContent = Get-Content -Path $_.FullName
     $htmlContent = $htmlContent -replace "(<head>)", "`$1`n$cssContent"
@@ -60,8 +62,6 @@ $generatedDocs | ForEach-Object {
     Set-Content -Path $_.FullName -Value $htmlContent
 }
 
-# Move all generated .html files to the docs/ folder
-$generatedDocs = Get-ChildItem -Recurse -Filter *.html
 $destinationFolder = "docs/"
 if (-not (Test-Path -Path $destinationFolder)) {
     New-Item -ItemType Directory -Path $destinationFolder
