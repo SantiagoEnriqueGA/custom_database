@@ -1,4 +1,4 @@
-name: segadb_env2
+name: segadb_env
 channels:
   - conda-forge
   - defaults
@@ -46,5 +46,36 @@ dependencies:
   - zlib=1.2.13
   - zstd=1.5.6
   - pip:
+      - black==23.12.1
+      - certifi==2024.12.14
+      - charset-normalizer==3.4.0
+      - click==8.1.7
+      - databind==4.5.2
+      - databind-core==4.5.2
+      - databind-json==4.5.2
+      - deprecated==1.2.15
+      - docspec==2.2.1
+      - docspec-python==2.2.1
+      - docstring-parser==0.11
+      - idna==3.10
+      - jinja2==3.1.4
+      - markupsafe==3.0.2
+      - mypy-extensions==1.0.0
+      - nr-date==2.1.0
+      - nr-stream==1.1.5
+      - nr-util==0.8.12
+      - packaging==24.2
+      - pathspec==0.12.1
+      - platformdirs==4.3.6
       - polars==1.17.1
-
+      - pydoc-markdown==4.8.2
+      - pyyaml==6.0.2
+      - requests==2.32.3
+      - tomli==2.2.1
+      - tomli-w==1.1.0
+      - typeapi==2.2.3
+      - typing-extensions==4.12.2
+      - urllib3==2.2.3
+      - watchdog==6.0.0
+      - wrapt==1.17.0
+      - yapf==0.43.0
