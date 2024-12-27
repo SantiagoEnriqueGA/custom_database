@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+body { background-color: #f0f0f8; }
+table.heading tr { background-color: #7799ee; }
+.decor { color: #ffffff; }
+.title-decor { background-color: #ffc8d8; color: #000000; }
+.pkg-content-decor { background-color: #aa55cc; }
+.index-decor { background-color: #ee77aa; }
+.functions-decor { background-color: #eeaa77; }
+.data-decor { background-color: #55aa55; }
+.author-decor { background-color: #7799ee; }
+.credits-decor { background-color: #7799ee; }
+.error-decor { background-color: #bb0000; }
+.grey { color: #909090; }
+.white { color: #ffffff; }
+.repr { color: #c040c0; }
+table.heading tr td.title, table.heading tr td.extra { vertical-align: bottom; }
+table.heading tr td.extra { text-align: right; }
+.heading-text { font-family: helvetica, arial; }
+.bigsection { font-size: larger; }
+.title { font-size: x-large; }
+.code { font-family: monospace; }
+table { width: 100%; border-spacing: 0; border-collapse: collapse; border: 0; }
+td { padding: 2; }
+td.section-title, td.multicolumn { vertical-align: bottom; }
+td.multicolumn { width: 25%; }
+td.singlecolumn { width: 100%; }
+</style>
+<meta charset="utf-8">
+<title>Python: module segadb.crypto</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title"><a href="segadb.html" class="white">segadb</a>.crypto</strong></td>
+</tr></table>
+    <p></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="cryptography.hazmat.primitives.ciphers.algorithms.html">cryptography.hazmat.primitives.ciphers.algorithms</a><br>
+<a href="base64.html">base64</a><br>
+</td><td class="multicolumn"><a href="cryptography.hazmat.primitives.ciphers.modes.html">cryptography.hazmat.primitives.ciphers.modes</a><br>
+<a href="os.html">os</a><br>
+</td><td class="multicolumn"><a href="cryptography.hazmat.primitives.padding.html">cryptography.hazmat.primitives.padding</a><br>
+</td><td class="multicolumn"></td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor index-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Classes</strong></td></tr>
+    
+<tr><td class="decor index-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl>
+<dt class="heading-text"><a href="builtins.html#object">builtins.object</a>
+</dt><dd>
+<dl>
+<dt class="heading-text"><a href="segadb.crypto.html#CustomFernet">CustomFernet</a>
+</dt></dl>
+</dd>
+</dl>
+ <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="CustomFernet">class <strong>CustomFernet</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#CustomFernet">CustomFernet</a>(key)<br>
+&nbsp;<br>
+A&nbsp;custom&nbsp;implementation&nbsp;of&nbsp;the&nbsp;Fernet&nbsp;symmetric&nbsp;encryption&nbsp;using&nbsp;AES&nbsp;in&nbsp;CBC&nbsp;mode.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="CustomFernet-__init__"><strong>__init__</strong></a>(self, key)</dt><dd><span class="code">Initializes&nbsp;the&nbsp;Crypto&nbsp;class&nbsp;with&nbsp;the&nbsp;given&nbsp;key.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;key&nbsp;(str):&nbsp;The&nbsp;base64&nbsp;encoded&nbsp;key&nbsp;used&nbsp;for&nbsp;encryption&nbsp;and&nbsp;decryption.<br>
+Attributes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;key&nbsp;(bytes):&nbsp;The&nbsp;decoded&nbsp;key&nbsp;used&nbsp;for&nbsp;encryption&nbsp;and&nbsp;decryption.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;backend&nbsp;(<a href="builtins.html#object">object</a>):&nbsp;The&nbsp;backend&nbsp;used&nbsp;for&nbsp;cryptographic&nbsp;operations.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;block_size&nbsp;(int):&nbsp;The&nbsp;block&nbsp;size&nbsp;for&nbsp;the&nbsp;AES&nbsp;algorithm&nbsp;in&nbsp;bytes.</span></dd></dl>
+
+<dl><dt><a name="CustomFernet-decrypt"><strong>decrypt</strong></a>(self, token)</dt><dd><span class="code">Decrypts&nbsp;the&nbsp;given&nbsp;token&nbsp;using&nbsp;AES&nbsp;encryption&nbsp;in&nbsp;CBC&nbsp;mode.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;token&nbsp;(str):&nbsp;The&nbsp;base64&nbsp;encoded&nbsp;string&nbsp;to&nbsp;be&nbsp;decrypted.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;The&nbsp;decrypted&nbsp;data&nbsp;as&nbsp;a&nbsp;string.</span></dd></dl>
+
+<dl><dt><a name="CustomFernet-encrypt"><strong>encrypt</strong></a>(self, data)</dt><dd><span class="code">Encrypts&nbsp;the&nbsp;provided&nbsp;data&nbsp;using&nbsp;AES&nbsp;encryption&nbsp;with&nbsp;CBC&nbsp;mode&nbsp;and&nbsp;PKCS7&nbsp;padding.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;(str):&nbsp;The&nbsp;plaintext&nbsp;data&nbsp;to&nbsp;be&nbsp;encrypted.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;The&nbsp;encrypted&nbsp;data&nbsp;encoded&nbsp;in&nbsp;URL-safe&nbsp;base64&nbsp;format.</span></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="CustomFernet-generate_key"><strong>generate_key</strong></a>()</dt><dd><span class="code">Generates&nbsp;a&nbsp;secure&nbsp;random&nbsp;key.&nbsp;&nbsp;<br>
+This&nbsp;function&nbsp;generates&nbsp;a&nbsp;32-byte&nbsp;secure&nbsp;random&nbsp;key&nbsp;and&nbsp;encodes&nbsp;it&nbsp;using&nbsp;URL-safe&nbsp;Base64&nbsp;encoding.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;A&nbsp;URL-safe&nbsp;Base64&nbsp;encoded&nbsp;string&nbsp;representing&nbsp;the&nbsp;secure&nbsp;random&nbsp;key.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

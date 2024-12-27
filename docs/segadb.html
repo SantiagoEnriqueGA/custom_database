@@ -43,15 +43,16 @@ td.singlecolumn { width: 100%; }
 <td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Package Contents</strong></td></tr>
     
 <tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
-<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="segadb.database.html">database</a><br>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="segadb.crypto.html">crypto</a><br>
+<a href="segadb.database.html">database</a><br>
 <a href="segadb.index.html">index</a><br>
 </td><td class="multicolumn"><a href="segadb.record.html">record</a><br>
 <a href="segadb.storage.html">storage</a><br>
-</td><td class="multicolumn"><a href="segadb.table.html">table</a><br>
-<a href="segadb.transaction.html">transaction</a><br>
-</td><td class="multicolumn"><a href="segadb.users.html">users</a><br>
+<a href="segadb.table.html">table</a><br>
+</td><td class="multicolumn"><a href="segadb.transaction.html">transaction</a><br>
+<a href="segadb.users.html">users</a><br>
 <a href="segadb.views.html">views</a><br>
-</td></tr></table></td></tr></table><p>
+</td><td class="multicolumn"></td></tr></table></td></tr></table><p>
 <table class="section">
 <tr class="decor index-decor heading-text">
 <td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Classes</strong></td></tr>
@@ -61,7 +62,8 @@ td.singlecolumn { width: 100%; }
 <dt class="heading-text"><a href="builtins.html#object">builtins.object</a>
 </dt><dd>
 <dl>
-<dt class="heading-text"><a href="segadb.database.html#Database">segadb.database.Database</a>
+<dt class="heading-text"><a href="segadb.crypto.html#CustomFernet">segadb.crypto.CustomFernet</a>
+</dt><dt class="heading-text"><a href="segadb.database.html#Database">segadb.database.Database</a>
 </dt><dt class="heading-text"><a href="segadb.index.html#Index">segadb.index.Index</a>
 </dt><dt class="heading-text"><a href="segadb.record.html#Record">segadb.record.Record</a>
 </dt><dd>
@@ -121,12 +123,59 @@ Data descriptors defined here:<br>
 </td></tr></table> <p>
 <table class="section">
 <tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="CustomFernet">class <strong>CustomFernet</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#CustomFernet">CustomFernet</a>(key)<br>
+&nbsp;<br>
+A&nbsp;custom&nbsp;implementation&nbsp;of&nbsp;the&nbsp;Fernet&nbsp;symmetric&nbsp;encryption&nbsp;using&nbsp;AES&nbsp;in&nbsp;CBC&nbsp;mode.<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="CustomFernet-__init__"><strong>__init__</strong></a>(self, key)</dt><dd><span class="code">Initializes&nbsp;the&nbsp;Crypto&nbsp;class&nbsp;with&nbsp;the&nbsp;given&nbsp;key.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;key&nbsp;(str):&nbsp;The&nbsp;base64&nbsp;encoded&nbsp;key&nbsp;used&nbsp;for&nbsp;encryption&nbsp;and&nbsp;decryption.<br>
+Attributes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;key&nbsp;(bytes):&nbsp;The&nbsp;decoded&nbsp;key&nbsp;used&nbsp;for&nbsp;encryption&nbsp;and&nbsp;decryption.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;backend&nbsp;(<a href="builtins.html#object">object</a>):&nbsp;The&nbsp;backend&nbsp;used&nbsp;for&nbsp;cryptographic&nbsp;operations.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;block_size&nbsp;(int):&nbsp;The&nbsp;block&nbsp;size&nbsp;for&nbsp;the&nbsp;AES&nbsp;algorithm&nbsp;in&nbsp;bytes.</span></dd></dl>
+
+<dl><dt><a name="CustomFernet-decrypt"><strong>decrypt</strong></a>(self, token)</dt><dd><span class="code">Decrypts&nbsp;the&nbsp;given&nbsp;token&nbsp;using&nbsp;AES&nbsp;encryption&nbsp;in&nbsp;CBC&nbsp;mode.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;token&nbsp;(str):&nbsp;The&nbsp;base64&nbsp;encoded&nbsp;string&nbsp;to&nbsp;be&nbsp;decrypted.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;The&nbsp;decrypted&nbsp;data&nbsp;as&nbsp;a&nbsp;string.</span></dd></dl>
+
+<dl><dt><a name="CustomFernet-encrypt"><strong>encrypt</strong></a>(self, data)</dt><dd><span class="code">Encrypts&nbsp;the&nbsp;provided&nbsp;data&nbsp;using&nbsp;AES&nbsp;encryption&nbsp;with&nbsp;CBC&nbsp;mode&nbsp;and&nbsp;PKCS7&nbsp;padding.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;(str):&nbsp;The&nbsp;plaintext&nbsp;data&nbsp;to&nbsp;be&nbsp;encrypted.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;The&nbsp;encrypted&nbsp;data&nbsp;encoded&nbsp;in&nbsp;URL-safe&nbsp;base64&nbsp;format.</span></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="CustomFernet-generate_key"><strong>generate_key</strong></a>()</dt><dd><span class="code">Generates&nbsp;a&nbsp;secure&nbsp;random&nbsp;key.&nbsp;&nbsp;<br>
+This&nbsp;function&nbsp;generates&nbsp;a&nbsp;32-byte&nbsp;secure&nbsp;random&nbsp;key&nbsp;and&nbsp;encodes&nbsp;it&nbsp;using&nbsp;URL-safe&nbsp;Base64&nbsp;encoding.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;A&nbsp;URL-safe&nbsp;Base64&nbsp;encoded&nbsp;string&nbsp;representing&nbsp;the&nbsp;secure&nbsp;random&nbsp;key.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
 <td class="section-title" colspan=3>&nbsp;<br><a name="Database">class <strong>Database</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
     
 <tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
 <td class="decor title-decor" colspan=2><span class="code"><a href="#Database">Database</a>(name)<br>
 &nbsp;<br>
-<br>&nbsp;</span></td></tr>
+#&nbsp;TODO:&nbsp;Add&nbsp;support&nbsp;for&nbsp;stored&nbsp;procedures.<br>
+#&nbsp;TODO:&nbsp;Create&nbsp;sample&nbsp;databases&nbsp;for&nbsp;testing&nbsp;and&nbsp;demonstration&nbsp;purposes.<br>&nbsp;</span></td></tr>
 <tr><td>&nbsp;</td>
 <td class="singlecolumn">Methods defined here:<br>
 <dl><dt><a name="Database-__init__"><strong>__init__</strong></a>(self, name)</dt><dd><span class="code">Initializes&nbsp;a&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;database&nbsp;with&nbsp;the&nbsp;given&nbsp;name.<br>
@@ -487,7 +536,7 @@ Data descriptors defined here:<br>
 <tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
 <td class="decor title-decor" colspan=2><span class="code"><a href="#Record">Record</a>(record_id,&nbsp;data)<br>
 &nbsp;<br>
-<br>&nbsp;</span></td></tr>
+#&nbsp;TODO:&nbsp;Add&nbsp;support&nbsp;for&nbsp;encrypting&nbsp;data&nbsp;at&nbsp;rest<br>&nbsp;</span></td></tr>
 <tr><td>&nbsp;</td>
 <td class="singlecolumn">Methods defined here:<br>
 <dl><dt><a name="Record-__init__"><strong>__init__</strong></a>(self, record_id, data)</dt><dd><span class="code">Initializes&nbsp;a&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;class.<br>
@@ -1075,5 +1124,5 @@ Data descriptors defined here:<br>
 <td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
     
 <tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
-<td class="singlecolumn"><strong>__all__</strong> = ['Database', 'Index', 'Record', 'VectorRecord', 'TimeSeriesRecord', 'ImageRecord', 'TextRecord', 'Storage', 'Table', 'Transaction', 'User', 'UserManager', 'Authorization', 'View', 'MaterializedView']</td></tr></table>
+<td class="singlecolumn"><strong>__all__</strong> = ['Database', 'Index', 'Record', 'VectorRecord', 'TimeSeriesRecord', 'ImageRecord', 'TextRecord', 'Storage', 'Table', 'Transaction', 'User', 'UserManager', 'Authorization', 'View', 'MaterializedView', 'CustomFernet']</td></tr></table>
 </body></html>
