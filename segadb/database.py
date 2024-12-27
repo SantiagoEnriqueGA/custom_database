@@ -56,7 +56,6 @@ def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_nam
             pbar.close()
     return rows
 
-# TODO: Add support for stored procedures.
 # TODO: Create sample databases for testing and demonstration purposes.
 class Database:  
     # Initialization and Configuration
@@ -73,6 +72,7 @@ class Database:
         self.materialized_views = {}
         self.sessions = {}
         self.active_session = None
+        self.stored_procedures = {}
         self.create_table("_users" , ["username", "password_hash", "roles"])
         
     def create_user_manager(self):
@@ -92,6 +92,45 @@ class Database:
         """
         self.authorization = Authorization(self)
         return self.authorization
+    
+    # TODO: Add tests for stored procedures.
+    # TODO: Add stored procedures to save/load database.
+    # Stored Procedures Management
+    # ---------------------------------------------------------------------------------------------
+    def add_stored_procedure(self, name, procedure):
+        """
+        Add a new stored procedure to the database.
+        Args:
+            name (str): The name of the stored procedure.
+            procedure (function): The function representing the stored procedure.
+        """
+        if name in self.stored_procedures:
+            raise ValueError(f"Stored procedure {name} already exists.")
+        self.stored_procedures[name] = procedure
+
+    def execute_stored_procedure(self, name, *args, **kwargs):
+        """
+        Execute a stored procedure.
+        Args:
+            name (str): The name of the stored procedure.
+            *args: Positional arguments to pass to the stored procedure.
+            **kwargs: Keyword arguments to pass to the stored procedure.
+        Returns:
+            The result of the stored procedure execution.
+        """
+        if name not in self.stored_procedures:
+            raise ValueError(f"Stored procedure {name} does not exist.")
+        return self.stored_procedures[name](self, *args, **kwargs)
+
+    def delete_stored_procedure(self, name):
+        """
+        Delete a stored procedure from the database.
+        Args:
+            name (str): The name of the stored procedure.
+        """
+        if name not in self.stored_procedures:
+            raise ValueError(f"Stored procedure {name} does not exist.")
+        del self.stored_procedures[name]
 
     # Connection and Session Management
     # ---------------------------------------------------------------------------------------------
