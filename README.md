@@ -235,38 +235,41 @@ Or run the all tests file: `python run_all_tests.py`
 The following are the results of running the tests:
 
 ```sh
-Testing Database Class
+Testing CustomFernet Class
+...Testing Database Class
 ..........................
-.Testing file: ...\custom_database\tests\..\examples\example_UsersAuth.py
-.Testing file: ...\custom_database\tests\..\examples\example_backupRecovery.py
-.Testing file: ...\custom_database\tests\..\examples\example_change_ids.py
-.Testing file: ...\custom_database\tests\..\examples\example_constraints.py
-.Testing file: ...\custom_database\tests\..\examples\example_dataExport.py
-.Testing file: ...\custom_database\tests\..\examples\example_dataImports.py
-.Testing file: ...\custom_database\tests\..\examples\example_databaseDetails.py
-.Testing file: ...\custom_database\tests\..\examples\example_foreignKeys.py
-.Testing file: ...\custom_database\tests\..\examples\example_millionRowLoad.py
-.Testing file: ...\custom_database\tests\..\examples\example_queries.py
-.Testing file: ...\custom_database\tests\..\examples\example_recordTypes.py
-.Testing file: ...\custom_database\tests\..\examples\example_storage.py
-.Testing file: ...\custom_database\tests\..\examples\example_storageCompression.py
-.Testing file: ...\custom_database\tests\..\examples\example_storageCompressionLarge.py
-.Testing file: ...\custom_database\tests\..\examples\example_transactions.py
-.Testing file: ...\custom_database\tests\..\examples\example_views.py
+.Testing file: example_UsersAuth.py
+.Testing file: example_backupRecovery.py
+.Testing file: example_change_ids.py
+.Testing file: example_constraints.py
+.Testing file: example_dataExport.py
+.Testing file: example_dataImports.py
+.Testing file: example_databaseDetails.py
+.Testing file: example_foreignKeys.py
+.Testing file: example_millionRowLoad.py
+.Testing file: example_queries.py
+.Testing file: example_recordTypes.py
+.Testing file: example_storage.py
+.Testing file: example_storageCompression.py
+.Testing file: example_storageCompressionLarge.py
+.Testing file: example_transactions.py
+.Testing file: example_views.py
 .Testing Imports
 ..Testing Index Class
 ..Testing Record Class
 .....Delete performance on 5000 [id, name, email] records: 0.011 seconds.
-.Insert performance for 5000 [id, name, email] records: 0.97 seconds.
-.Load performance for 5000 records: 0.86 seconds.
+.Insert performance for 5000 [id, name, email] records: 1.0 seconds.
+.Load performance for 5000 records: 0.97 seconds.
 .Restore performance for 5000 records: 0.0 seconds.
-.Save performance for 5000 records: 0.12 seconds.
-.Select performance of 1 out of 5000 [id, name, email] records: 0.002 seconds.
-.Update performance on 5000 [id, name, email] records: 0.45 seconds.
+.Save performance for 5000 records: 0.17 seconds.
+.Select performance of 1 out of 5000 [id, name, email] records: 0.003 seconds.
+.Update performance on 5000 [id, name, email] records: 0.58 seconds.
 .Testing Storage Class
 ............Testing Table Class
 ........Testing Transaction Class
-....................
+.......................
 ----------------------------------------------------------------------
-Ran 99 tests in 125.892s
+Ran 105 tests in 129.384s
+
+OK
 ```

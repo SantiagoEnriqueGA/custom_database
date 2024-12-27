@@ -12,6 +12,12 @@ from test_utils import suppress_print
 # Change the working directory to the parent directory to allow importing the segadb package.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+def strip_file_path(file_path):
+    """
+    Strips the file path and returns the file name.
+    """
+    return os.path.basename(file_path)
+
 class TestExampleExceptions(unittest.TestCase):
     """
     Test case for the example file 'example_millionRowLoad.py'.
@@ -20,19 +26,19 @@ class TestExampleExceptions(unittest.TestCase):
         
         if 'example_millionRowLoad.py' in example_file:
             from examples.example_millionRowLoad import main    
-            print(f"Testing file: {example_file}")
+            print(f"Testing file: {strip_file_path(example_file)}")
             with suppress_print():
                 main()
         
         if 'example_storageCompression.py' in example_file:
             from examples.example_storageCompression import main
-            print(f"Testing file: {example_file}")
+            print(f"Testing file: {strip_file_path(example_file)}")
             with suppress_print():
                 main()
         
         if 'example_storageCompressionLarge.py' in example_file:
             from examples.example_storageCompressionLarge import main
-            print(f"Testing file: {example_file}")
+            print(f"Testing file: {strip_file_path(example_file)}")
             with suppress_print():
                 main()
 
@@ -65,7 +71,7 @@ def load_tests(loader, tests, pattern):
         
         def test_func(self, example_file=example_file):
             """Tests the functionality of a given example file by importing it as a module and executing it."""
-            print(f"Testing file: {example_file}")
+            print(f"Testing file: {strip_file_path(example_file)}")
             
             # Import the example file as a module and execute it.
             spec = importlib.util.spec_from_file_location("module.name", example_file)

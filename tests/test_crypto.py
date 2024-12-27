@@ -16,6 +16,10 @@ class TestCustomFernet(unittest.TestCase):
     - test_encrypt: Tests the encryption of data.
     - test_decrypt: Tests the decryption of data.
     """
+    @classmethod
+    def setUpClass(cls):
+        print("Testing CustomFernet Class")
+    
     def setUp(self):
         self.key = CustomFernet.generate_key()
         self.fernet = CustomFernet(self.key)
