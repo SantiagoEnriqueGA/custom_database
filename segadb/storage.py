@@ -8,6 +8,7 @@ import multiprocessing as mp
 from datetime import datetime
 
 # Imports: Third Party
+# TODO: Create own encryption module
 from cryptography.fernet import Fernet
 
 # Imports: Local
@@ -400,16 +401,17 @@ class Storage:
         """
         import sqlite3
         import os
-
+    
         # Delete the file if it already exists
         if os.path.exists(filename):
             os.remove(filename)
-
+    
         conn = sqlite3.connect(filename)
         c = conn.cursor()
         c.execute(f"CREATE TABLE {table.name} ({', '.join([f'{column} TEXT' for column in table.columns])})")
         for record in table.records:
-            c.execute(f"INSERT INTO {table.name} VALUES ({', '.join([f'\"{record.data[column]}\"' for column in table.columns])})")
+            values = ', '.join([f'"{record.data[column]}"' for column in table.columns])
+            c.execute(f"INSERT INTO {table.name} VALUES ({values})")
         conn.commit()
         conn.close()
 
