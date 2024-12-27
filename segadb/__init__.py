@@ -8,6 +8,7 @@ from .table import Table
 from .transaction import Transaction
 from .users import User, UserManager, Authorization
 from .views import View, MaterializedView
+from .crypto import CustomFernet
 
 __all__ = [
     "Database",
@@ -25,4 +26,5 @@ __all__ = [
     "Authorization",
     "View",
     "MaterializedView",
+    "CustomFernet"
 ]
