@@ -7,11 +7,8 @@ import zlib
 import multiprocessing as mp
 from datetime import datetime
 
-# Imports: Third Party
-# TODO: Create own encryption module
-from cryptography.fernet import Fernet
-
 # Imports: Local
+from .crypto import CustomFernet
 from .database import Database
 from .record import Record
 from .index import Index
@@ -45,19 +42,19 @@ class Storage:
     @staticmethod
     def generate_key():
         """Generate a key for encryption."""
-        return Fernet.generate_key()
+        return CustomFernet.generate_key()
 
     @staticmethod
     def encrypt(data, key):
         """Encrypt the data using the provided key."""
-        fernet = Fernet(key)
-        return fernet.encrypt(data.encode())
+        fernet = CustomFernet(key)
+        return fernet.encrypt(data)
 
     @staticmethod
     def decrypt(data, key):
         """Decrypt the data using the provided key."""
-        fernet = Fernet(key)
-        return fernet.decrypt(data).decode()
+        fernet = CustomFernet(key)
+        return fernet.decrypt(data)
     
     # Database Operations
     # ---------------------------------------------------------------------------------------------
@@ -224,7 +221,9 @@ class Storage:
         with open(filename, 'wb' if compress or key else 'w') as f:
             if key:
                 json_data = Storage.encrypt(json_data, key)
-            f.write(json_data)
+                f.write(json_data.encode())  # Ensure data is written as bytes
+            else:
+                f.write(json_data)
 
     @staticmethod
     def load(filename, key=None, user=None, password=None, compression=False, parrallel=False):
@@ -483,6 +482,5 @@ class Storage:
         if chunk_size == 0:
             chunk_size = 1
         chunks = [records[i:i + chunk_size] for i in range(0, len(records), chunk_size)]
-        return chunks  
-    
-    
+        return chunks
+

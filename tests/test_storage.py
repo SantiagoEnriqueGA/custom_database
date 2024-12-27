@@ -1,4 +1,3 @@
-
 import unittest
 from unittest.mock import Mock
 import sys
@@ -95,7 +94,7 @@ class TestStorage(unittest.TestCase):
 
     def test_generate_key(self):
         key = Storage.generate_key()
-        self.assertIsInstance(key, bytes)
+        self.assertIsInstance(key, str)
         self.assertEqual(len(key), 44)  # Fernet keys are 44 bytes long
 
     def test_encrypt_decrypt(self):
