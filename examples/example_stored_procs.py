@@ -117,5 +117,6 @@ loaded_db = Storage.load("example_storage/database.segadb", user="admin", passwo
 # Print the tables after loading
 print("\nAfter Loading:")
 print("--------------------------------------------------------------------------------")
-# print(loaded_db)
-db.print_db(views=True, materialized_views=True)
+
+db.print_db(views=True, materialized_views=True, tables=False)
+loaded_db.print_db(views=True, materialized_views=True, tables=False)

@@ -690,12 +690,13 @@ class Database:
         
     # Utility Methods
     # ---------------------------------------------------------------------------------------------
-    def print_db(self, index=False, limit=None, views=False, materialized_views=False):
+    def print_db(self, index=False, limit=None, tables=True, views=False, materialized_views=False):
         """
         Print the database tables, including their names, columns, constraints, and records.
         Args:
             index (bool, optional): Whether to print the index of each record. Defaults to False.
             limit (int, optional): The maximum number of records to print for each table. Defaults to None.
+            tables (bool, optional): Whether to print the tables. Defaults to True.
             views (bool, optional): Whether to print the views. Defaults to False.
             materialized_views (bool, optional): Whether to print the materialized views. Defaults to False.
         """
@@ -722,29 +723,37 @@ class Database:
         print(f"  --Views: {len(self.views)}")
         for view_name in self.views:
             print(f"\t{view_name}")
+        print(f"  --Stored Procedures: {len(self.stored_procedures)}")
+        for procedure_name in self.stored_procedures:
+            if self.stored_procedures[procedure_name].__doc__:
+                doc = self.stored_procedures[procedure_name].__doc__.split('\n')[1].strip()
+                print(f"\t{procedure_name} | {doc}")
+            else:
+                print(f"\t{procedure_name}")
         print("-" * 100)
         
         # Display table details
-        print("\n\nTABLE DETAILS")
-        print("-" * 100)
-        for table_name, table in self.tables.items():
-            if table_name == "_users":
-                print(f"Table: {table_name} (User management table)")                
-                print(f"Registered Users: {len(table.records)}")
-            
-            else:
-                print(f"\nTable: {table_name}")
-                print(f"Records: {len(table.records)}")
-                print(f"Columns: {table.columns}")
-            
-            consts = []
-            for constraint in table.constraints:
-                if len(table.constraints[constraint]) == 1:
-                    consts.append(f"{constraint}: {table.constraints[constraint][0].__name__}")
+        if tables:
+            print("\n\nTABLE DETAILS")
+            print("-" * 100)
+            for table_name, table in self.tables.items():
+                if table_name == "_users":
+                    print(f"Table: {table_name} (User management table)")                
+                    print(f"Registered Users: {len(table.records)}")
                 
-            print(f"Constraints: {consts if consts else 'None'}")
+                else:
+                    print(f"\nTable: {table_name}")
+                    print(f"Records: {len(table.records)}")
+                    print(f"Columns: {table.columns}")
                 
-            table.print_table(pretty=True, index=index, limit=limit)
+                consts = []
+                for constraint in table.constraints:
+                    if len(table.constraints[constraint]) == 1:
+                        consts.append(f"{constraint}: {table.constraints[constraint][0].__name__}")
+                    
+                print(f"Constraints: {consts if consts else 'None'}")
+                    
+                table.print_table(pretty=True, index=index, limit=limit)
             
         if materialized_views and self.materialized_views:
             # Display materialized view details
@@ -813,4 +822,3 @@ class Database:
             for record in table.records:
                 total_size += sum(len(str(value)) for value in record.data.values())
         return total_size
-    
