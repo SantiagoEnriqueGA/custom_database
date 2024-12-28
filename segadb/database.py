@@ -486,6 +486,7 @@ class Database:
         # Combine the records from each chunk
         return [record for chunk in chunk_rows for record in chunk]       
     
+    # TODO: Add triggers for table operations.
     # Table Operations
     # ---------------------------------------------------------------------------------------------    
     def add_constraint(self, table_name, column, constraint, reference_table_name=None, reference_column=None):
@@ -557,7 +558,7 @@ class Database:
             return table.filter(condition)
         else:
             raise ValueError(f"Table {table_name} does not exist.")
-
+     
     # TODO: Add tests for stored procedures.
     # Stored Procedures Management
     # ---------------------------------------------------------------------------------------------
