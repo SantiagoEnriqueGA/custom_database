@@ -166,7 +166,8 @@ class Storage:
             "name": db.name,
             "tables": {},
             "views": {},
-            "materialized_views": {}
+            "materialized_views": {},
+            "stored_procedures": {}
         }
         
         def serialize_table(table):
@@ -212,6 +213,15 @@ class Storage:
                 
                 # Not needed, data is recalculated when the MV is created 
                 # "data": serialize_table(mv.get_data()),
+            }
+            
+        # Serialize stored procedures
+        for sp_name, sp in db.stored_procedures.items():
+            query = db._stored_procedure_to_string(sp)
+            
+            data["stored_procedures"][sp_name] = {
+                "name": sp_name,
+                "query": query,
             }
         
         json_data = json.dumps(data, indent=4)
@@ -293,6 +303,14 @@ class Storage:
             exec(mv_data["query"], globals())
             globals()[mv_name] = eval(mv_name)
             db.create_materialized_view(mv_name, types.FunctionType(globals()[mv_name].__code__, {"db": db}))
+            
+        # Load stored procedures
+        # Executes the query function in the global namespace, typecasts the result to a function, and creates a stored procedure
+        if data.get("stored_procedures"):    
+            for sp_name, sp_data in data["stored_procedures"].items():
+                exec(sp_data["query"], globals())
+                globals()[sp_name] = eval(sp_name)
+                db.add_stored_procedure(sp_name, types.FunctionType(globals()[sp_name].__code__, {"db": db}))
         
         return db   
         

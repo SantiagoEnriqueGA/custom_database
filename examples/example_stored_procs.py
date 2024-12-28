@@ -120,3 +120,6 @@ print("-------------------------------------------------------------------------
 
 db.print_db(views=True, materialized_views=True, tables=False)
 loaded_db.print_db(views=True, materialized_views=True, tables=False)
+
+# Execute the stored procedure from the loaded database
+loaded_db.execute_stored_procedure("get_orders_by_user", 2).print_table(pretty=True)

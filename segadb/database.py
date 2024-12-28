@@ -4,6 +4,7 @@ import csv
 import uuid
 from math import inf
 import multiprocessing as mp
+import inspect
 
 # Imports: Third Party
 import bcrypt
@@ -91,46 +92,7 @@ class Database:
             Authorization: A new instance of the Authorization class.
         """
         self.authorization = Authorization(self)
-        return self.authorization
-    
-    # TODO: Add tests for stored procedures.
-    # TODO: Add stored procedures to save/load database.
-    # Stored Procedures Management
-    # ---------------------------------------------------------------------------------------------
-    def add_stored_procedure(self, name, procedure):
-        """
-        Add a new stored procedure to the database.
-        Args:
-            name (str): The name of the stored procedure.
-            procedure (function): The function representing the stored procedure.
-        """
-        if name in self.stored_procedures:
-            raise ValueError(f"Stored procedure {name} already exists.")
-        self.stored_procedures[name] = procedure
-
-    def execute_stored_procedure(self, name, *args, **kwargs):
-        """
-        Execute a stored procedure.
-        Args:
-            name (str): The name of the stored procedure.
-            *args: Positional arguments to pass to the stored procedure.
-            **kwargs: Keyword arguments to pass to the stored procedure.
-        Returns:
-            The result of the stored procedure execution.
-        """
-        if name not in self.stored_procedures:
-            raise ValueError(f"Stored procedure {name} does not exist.")
-        return self.stored_procedures[name](self, *args, **kwargs)
-
-    def delete_stored_procedure(self, name):
-        """
-        Delete a stored procedure from the database.
-        Args:
-            name (str): The name of the stored procedure.
-        """
-        if name not in self.stored_procedures:
-            raise ValueError(f"Stored procedure {name} does not exist.")
-        del self.stored_procedures[name]
+        return self.authorization        
 
     # Connection and Session Management
     # ---------------------------------------------------------------------------------------------
@@ -595,6 +557,66 @@ class Database:
             return table.filter(condition)
         else:
             raise ValueError(f"Table {table_name} does not exist.")
+
+    # TODO: Add tests for stored procedures.
+    # Stored Procedures Management
+    # ---------------------------------------------------------------------------------------------
+    def add_stored_procedure(self, name, procedure):
+        """
+        Add a new stored procedure to the database.
+        Args:
+            name (str): The name of the stored procedure.
+            procedure (function): The function representing the stored procedure.
+        """
+        if name in self.stored_procedures:
+            raise ValueError(f"Stored procedure {name} already exists.")
+        self.stored_procedures[name] = procedure
+
+    def execute_stored_procedure(self, name, *args, **kwargs):
+        """
+        Execute a stored procedure.
+        Args:
+            name (str): The name of the stored procedure.
+            *args: Positional arguments to pass to the stored procedure.
+            **kwargs: Keyword arguments to pass to the stored procedure.
+        Returns:
+            The result of the stored procedure execution.
+        """
+        if name not in self.stored_procedures:
+            raise ValueError(f"Stored procedure {name} does not exist.")
+        return self.stored_procedures[name](self, *args, **kwargs)
+
+    def delete_stored_procedure(self, name):
+        """
+        Delete a stored procedure from the database.
+        Args:
+            name (str): The name of the stored procedure.
+        """
+        if name not in self.stored_procedures:
+            raise ValueError(f"Stored procedure {name} does not exist.")
+        del self.stored_procedures[name]
+        
+    def get_stored_procedure(self, name):
+        """
+        Retrieve a stored procedure by name.
+        Args:
+            name (str): The name of the stored procedure.
+        Returns:
+            function: The stored procedure function.
+        """
+        if name not in self.stored_procedures:
+            raise ValueError(f"Stored procedure {name} does not exist.")
+        return self.stored_procedures[name]
+    
+    def _stored_procedure_to_string(self, procedure):
+        """
+        Return the source code of a stored procedure function as a string.
+        Args:
+            procedure (function): The stored procedure function.
+        Returns:
+            str: The source code of the stored procedure function.
+        """
+        return inspect.getsource(procedure)
         
     # View Management
     # ---------------------------------------------------------------------------------------------
