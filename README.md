@@ -61,6 +61,7 @@ The project directory structure is as follows:
   - [`transaction.py`](segadb/transaction.py): Implements the `Transaction` class for transaction handling.
   - [`users.py`](segadb/users.py): Implements the `User`, `UserManager`, and `Authorization` classes for user management and authorization.
   - [`views.py`](segadb/views.py): Implements the `View` and `MaterializedView` classes for view management.
+  - ['crypto.py'](segadb/crypto.py): Implements the `CustomFernet` class for encryption and decryption.
 - **tests/**: Contains unit and performance tests for the database library.
   - [`run_all_tests.py`](tests/run_all_tests.py): Runs all available tests.
   - [`test_utils.py`](tests/test_utils.py): Utility functions for tests.
@@ -71,6 +72,8 @@ The project directory structure is as follows:
   - [`test_storage.py`](tests/test_storage.py): Unit tests for the `Storage` class.
   - [`test_transaction.py`](tests/test_transaction.py): Unit tests for the `Transaction` class.
   - [`test_users.py`](tests/test_users.py): Unit tests for the `User`, `UserManager`, and `Authorization` classes.
+  - [`test_views.py`](tests/test_views.py): Unit tests for the `View` and `MaterializedView` classes.
+  - [`test_crypto.py`](tests/test_crypto.py): Unit tests for the `CustomFernet` class.
   - [`test_segadb_performance.py`](tests/test_segadb_performance.py): Performance tests for the segadb package.
   - [`test_examples.py`](tests/test_examples.py): Contains tests for the example scripts.
 - **examples/**: Example usages of the segadb library.
@@ -90,6 +93,7 @@ The project directory structure is as follows:
   - [example_transactions.py](examples/example_transactions.py): Demonstrates how to use transactions for commit and rollback operations.
   - [example_UsersAuth.py](examples/example_UsersAuth.py): Demonstrates user authentication and authorization.
   - [example_views.py](examples/example_views.py): Demonstrates how to create, retrieve, refresh, and delete views and materialized views.
+  - [example_stored_procs.py'](examples/example_stored_procs.py): Demonstrates how to create and use stored procedures.
 - **docs/**: Contains the generated documentation for the segadb library.
   - [segadb.database.html](docs/segadb.database.html): Documentation for the `Database` class.
   - [segadb.index.html](docs/segadb.index.html): Documentation for the `Index` class.
@@ -98,6 +102,8 @@ The project directory structure is as follows:
   - [segadb.table.html](docs/segadb.table.html): Documentation for the `Table` class.
   - [segadb.transaction.html](docs/segadb.transaction.html): Documentation for the `Transaction` class.
   - [segadb.users.html](docs/segadb.users.html): Documentation for the `User`, `UserManager`, and `Authorization` classes.
+  - [segadb.views.html](docs/segadb.views.html): Documentation for the `View` and `MaterializedView` classes.
+  - [segadb.crypto.html](docs/segadb.crypto.html): Documentation for the `CustomFernet` class.
   - [segadb.__init__.html](docs/segadb.__init__.html): Documentation for the `__init__.py` file.
 - **scripts/**: PowerShell scripts to help with various tasks.
   - [_run_all_scripts.ps1](scripts/_run_all_scripts.ps1): Runs all PowerShell scripts in the `scripts/` folder sequentially.
