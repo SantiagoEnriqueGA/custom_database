@@ -67,12 +67,6 @@ def get_orders_by_user(db, user_id):
 # Add the stored procedure to the database
 db.add_stored_procedure("get_orders_by_user", get_orders_by_user)
 
-# Execute the stored procedure
-orders_by_user_2 = db.execute_stored_procedure("get_orders_by_user", 2)
-
-print("\n\nOrders for User 2:")
-orders_by_user_2.print_table(pretty=True)
-
 
 # Define a stored procedure to drop users with no orders
 # ----------------------------------------------------------------------------------
@@ -98,6 +92,34 @@ def drop_users_with_no_orders(db):
 # Add the stored procedure to the database
 db.add_stored_procedure("drop_users_with_no_orders", drop_users_with_no_orders)
 
+
+# Trigger Functions
+# ----------------------------------------------------------------------------------
+# Define a trigger function to log before executing a stored procedure
+def log_before_procedure(db, procedure_name, *args, **kwargs):
+    print(f"Log before executing stored procedure: {procedure_name} with args: {args} and kwargs: {kwargs}")
+
+# Define a trigger function to log after executing a stored procedure
+def log_after_procedure(db, procedure_name, *args, **kwargs):
+    print(f"Log after executing stored procedure: {procedure_name} with args: {args} and kwargs: {kwargs}")
+
+# Add triggers for the stored procedure
+db.add_trigger("get_orders_by_user", "before", log_before_procedure)
+db.add_trigger("get_orders_by_user", "after", log_after_procedure)
+
+# Add triggers for the stored procedure
+db.add_trigger("drop_users_with_no_orders", "before", log_before_procedure)
+db.add_trigger("drop_users_with_no_orders", "after", log_after_procedure)
+
+
+# Execute the stored procedures
+# ----------------------------------------------------------------------------------
+# Execute the stored procedure
+orders_by_user_2 = db.execute_stored_procedure("get_orders_by_user", 2)
+
+print("\n\nOrders for User 2:")
+orders_by_user_2.print_table(pretty=True)
+
 print("\n\nUsers before dropping users with no orders:")
 db.get_table("users").print_table(pretty=True)
 
@@ -108,6 +130,8 @@ print("\nUsers after dropping users with no orders:")
 db.get_table("users").print_table(pretty=True)
 
 
+# Save and Load the database
+# ----------------------------------------------------------------------------------
 # Save the database to a file
 Storage.save(db, "example_storage/database.segadb")
 

@@ -2,6 +2,7 @@
 import unittest
 from unittest.mock import Mock
 from unittest.mock import MagicMock
+import logging
 import sys
 import os
 
@@ -15,38 +16,54 @@ class TestDatabase(unittest.TestCase):
     """
     Unit tests for the Database class.
     Methods:
-    - test_create_table: Tests the creation of a table in the database.
-    - test_drop_table: Tests the deletion of a table from the database.
-    - test_get_table: Tests retrieving a table from the database.
-    - test_copy: Tests copying the database.
-    - test_restore: Tests restoring the database from a copy.
-    - test_create_table_from_csv: Tests creating a table from a CSV file.
-    - test_add_constraint: Tests adding a constraint to a table.
-    - test_add_foreign_key_constraint: Tests adding a foreign key constraint to a table.
-    - test_join_tables: Tests joining two tables.
-    - test_aggregate_table: Tests aggregating data in a table.
-    - test_filter_table: Tests filtering data in a table.
-    - test_process_file_chunk: Tests processing a file chunk.
-    - test_create_table_from_csv_mp: Tests creating a table from a CSV file using multiprocessing.
-    - test_get_file_chunks: Tests getting file chunks for multiprocessing.
-    - test_process_file: Tests processing a file using multiprocessing.
-    - test_create_view: Tests creating a view in the database.
-    - test_create_view_existing: Tests creating a view that already exists.
-    - test_get_view_nonexistent: Tests retrieving a view that does not exist.
-    - test_delete_view: Tests deleting a view from the database.
-    - test_delete_view_nonexistent: Tests deleting a view that does not exist.
-    - test_create_materialized_view: Tests creating a materialized view in the database.
-    - test_create_materialized_view_existing: Tests creating a materialized view that already exists.
-    - test_get_materialized_view_nonexistent: Tests retrieving a materialized view that does not exist.
-    - test_refresh_materialized_view: Tests refreshing a materialized view.
-    - test_refresh_materialized_view_nonexistent: Tests refreshing a materialized view that does not exist.
-    - test_delete_materialized_view: Tests deleting a materialized view from the database.
-    - test_delete_materialized_view_nonexistent: Tests deleting a materialized view that does not exist.
+    # Initialization and Configuration
+        - test_create_table: Tests the creation of a table in the database.
+        - test_drop_table: Tests the deletion of a table from the database.
+        - test_get_table: Tests retrieving a table from the database.
+        - test_copy: Tests copying the database.
+        - test_restore: Tests restoring the database from a copy.
+        - test_create_table_from_csv: Tests creating a table from a CSV file.
+    # Table Management
+        - test_add_constraint: Tests adding a constraint to a table.
+        - test_add_foreign_key_constraint: Tests adding a foreign key constraint to a table.
+        - test_join_tables: Tests joining two tables.
+        - test_aggregate_table: Tests aggregating data in a table.
+        - test_filter_table: Tests filtering data in a table.
+    # Parallel Processing
+        - test_process_file_chunk: Tests processing a file chunk.
+        - test_create_table_from_csv_mp: Tests creating a table from a CSV file using multiprocessing.
+        - test_get_file_chunks: Tests getting file chunks for multiprocessing.
+        - test_process_file: Tests processing a file using multiprocessing.
+    # View Management
+        - test_create_view: Tests creating a view in the database.
+        - test_create_view_existing: Tests creating a view that already exists.
+        - test_get_view_nonexistent: Tests retrieving a view that does not exist.
+        - test_delete_view: Tests deleting a view from the database.
+        - test_delete_view_nonexistent: Tests deleting a view that does not exist.
+    # Materialized View Management
+        - test_create_materialized_view: Tests creating a materialized view in the database.
+        - test_create_materialized_view_existing: Tests creating a materialized view that already exists.
+        - test_get_materialized_view_nonexistent: Tests retrieving a materialized view that does not exist.
+        - test_refresh_materialized_view: Tests refreshing a materialized view.
+        - test_refresh_materialized_view_nonexistent: Tests refreshing a materialized view that does not exist.
+        - test_delete_materialized_view: Tests deleting a materialized view from the database.
+        - test_delete_materialized_view_nonexistent: Tests deleting a materialized view that does not exist.
+    # Stored Procedures Management
+        - test_add_stored_procedure: Tests adding a stored procedure to the database.
+        - test_execute_stored_procedure: Tests executing a stored procedure.
+        - test_delete_stored_procedure: Tests deleting a stored procedure from the database.
+        - test_get_stored_procedure: Tests retrieving a stored procedure from the database.
+    # Trigger Management
+        - test_add_trigger: Tests adding a trigger to the database.
+        - test_execute_triggers: Tests executing triggers.
+        - test_delete_trigger: Tests deleting a trigger from the database.
     """
     @classmethod
     def setUpClass(cls):
         print("Testing Database Class")
 
+    # Initialization and Configuration
+    # ---------------------------------------------------------------------------------------------
     def test_create_table(self):
         db = Database("TestDB")
         db.create_table("Users", ["id", "name", "email"])
@@ -100,6 +117,8 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(len(table.records), 2)
         os.remove(csvfile_path)
 
+    # Table Management
+    # ---------------------------------------------------------------------------------------------
     def test_add_constraint(self):
         db = Database("TestDB")
         db.create_table("Users", ["id", "name", "email"])
@@ -190,6 +209,8 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(filtered_table.records[0].data["user_id"], 2)
         self.assertEqual(filtered_table.records[1].data["user_id"], 2)
 
+    # Parallel Processing
+    # ---------------------------------------------------------------------------------------------
     def test_process_file_chunk(self):
         import tempfile
         import csv
@@ -254,7 +275,9 @@ class TestDatabase(unittest.TestCase):
         records = db._process_file(cpu_count, chunks, delim=',', column_names=["id", "name", "email"], col_types=[int, str, str], progress=False, headers=True)
         self.assertEqual(len(records), 100)
         os.remove(csvfile_path)
-        
+
+    # View Management
+    # ---------------------------------------------------------------------------------------------
     def test_create_view(self):
         db = Database("TestDB")
         def UserView():
@@ -291,6 +314,8 @@ class TestDatabase(unittest.TestCase):
         with self.assertRaises(ValueError):
             db.delete_view("NonExistentView")
 
+    # Materialized View Management
+    # ---------------------------------------------------------------------------------------------
     def test_create_materialized_view(self):
         db = Database("TestDB")
         def UserMaterializedView():
@@ -339,6 +364,74 @@ class TestDatabase(unittest.TestCase):
         db = Database("TestDB")
         with self.assertRaises(ValueError):
             db.delete_materialized_view("NonExistentMaterializedView")
-            
+    
+    # Stored Procedures Management
+    # ---------------------------------------------------------------------------------------------
+    def test_add_stored_procedure(self):
+        db = Database("TestDB")
+        def sample_procedure(db, x, y):
+            return x + y
+        db.add_stored_procedure("sample_procedure", sample_procedure)
+        self.assertIn("sample_procedure", db.stored_procedures)
+
+    def test_execute_stored_procedure(self):
+        db = Database("TestDB")
+        def sample_procedure(db, x, y):
+            return x + y
+        db.add_stored_procedure("sample_procedure", sample_procedure)
+        result = db.execute_stored_procedure("sample_procedure", 1, 2)
+        self.assertEqual(result, 3)
+
+    def test_delete_stored_procedure(self):
+        db = Database("TestDB")
+        def sample_procedure(db, x, y):
+            return x + y
+        db.add_stored_procedure("sample_procedure", sample_procedure)
+        db.delete_stored_procedure("sample_procedure")
+        self.assertNotIn("sample_procedure", db.stored_procedures)
+
+    def test_get_stored_procedure(self):
+        db = Database("TestDB")
+        def sample_procedure(db, x, y):
+            return x + y
+        db.add_stored_procedure("sample_procedure", sample_procedure)
+        procedure = db.get_stored_procedure("sample_procedure")
+        self.assertEqual(procedure, sample_procedure)
+
+    # Trigger Management
+    # ---------------------------------------------------------------------------------------------
+    def test_add_trigger(self):
+        db = Database("TestDB")
+        def sample_procedure(db, x, y):
+            return x + y
+        def before_trigger(db, procedure_name, *args, **kwargs):
+            print(f"Before {procedure_name}")
+        db.add_stored_procedure("sample_procedure", sample_procedure)
+        db.add_trigger("sample_procedure", "before", before_trigger)
+        self.assertIn("sample_procedure", db.triggers["before"])
+
+    def test_execute_triggers(self):
+        db = Database("TestDB")
+        def sample_procedure(db, x, y):
+            return x + y
+        def before_trigger(db, procedure_name, *args, **kwargs):
+            logging.info(f"Before {procedure_name}")
+        db.add_stored_procedure("sample_procedure", sample_procedure)
+        db.add_trigger("sample_procedure", "before", before_trigger)
+        with self.assertLogs(level='INFO') as log:
+            db.execute_stored_procedure("sample_procedure", 1, 2)
+            self.assertIn("INFO:root:Before sample_procedure", log.output)
+
+    def test_delete_trigger(self):
+        db = Database("TestDB")
+        def sample_procedure(db, x, y):
+            return x + y
+        def before_trigger(db, procedure_name, *args, **kwargs):
+            print(f"Before {procedure_name}")
+        db.add_stored_procedure("sample_procedure", sample_procedure)
+        db.add_trigger("sample_procedure", "before", before_trigger)
+        db.delete_trigger("sample_procedure", "before", before_trigger)
+        self.assertNotIn("sample_procedure", db.triggers["before"])
+
 if __name__ == '__main__':
     unittest.main()

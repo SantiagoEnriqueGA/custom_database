@@ -1,4 +1,5 @@
 # Imports: Standard Library
+import re
 import os
 import types
 from math import inf
@@ -167,7 +168,8 @@ class Storage:
             "tables": {},
             "views": {},
             "materialized_views": {},
-            "stored_procedures": {}
+            "stored_procedures": {},
+            "triggers": {"before": {}, "after": {}}
         }
         
         def serialize_table(table):
@@ -223,6 +225,11 @@ class Storage:
                 "name": sp_name,
                 "query": query,
             }
+        
+        # Serialize triggers
+        for trigger_type in db.triggers:
+            for proc_name, triggers in db.triggers[trigger_type].items():
+                data["triggers"][trigger_type][proc_name] = [db._stored_procedure_to_string(trigger) for trigger in triggers]
         
         json_data = json.dumps(data, indent=4)
         if compress:
@@ -311,6 +318,18 @@ class Storage:
                 exec(sp_data["query"], globals())
                 globals()[sp_name] = eval(sp_name)
                 db.add_stored_procedure(sp_name, types.FunctionType(globals()[sp_name].__code__, {"db": db}))
+        
+        # Load triggers
+        if data.get("triggers"):
+            for trigger_type in data["triggers"]:
+                for proc_name, triggers in data["triggers"][trigger_type].items():
+                    for trigger_data in triggers:
+                        exec(trigger_data, globals())
+                        trigger_name_match = re.search(r'def (\w+)', trigger_data)
+                        if trigger_name_match:
+                            trigger_name = trigger_name_match.group(1)
+                            trigger_function = eval(trigger_name)
+                            db.add_trigger(proc_name, trigger_type, types.FunctionType(trigger_function.__code__, {"db": db}))
         
         return db   
         

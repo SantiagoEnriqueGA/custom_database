@@ -74,7 +74,9 @@ class Database:
         self.sessions = {}
         self.active_session = None
         self.stored_procedures = {}
-        self.create_table("_users" , ["username", "password_hash", "roles"])
+        self.triggers = {"before": {}, "after": {}}
+
+        self.create_table("_users" , ["username", "password_hash", "roles"])        
         
     def create_user_manager(self):
         """
@@ -485,8 +487,7 @@ class Database:
         
         # Combine the records from each chunk
         return [record for chunk in chunk_rows for record in chunk]       
-    
-    # TODO: Add triggers for table operations.
+        
     # Table Operations
     # ---------------------------------------------------------------------------------------------    
     def add_constraint(self, table_name, column, constraint, reference_table_name=None, reference_column=None):
@@ -559,7 +560,6 @@ class Database:
         else:
             raise ValueError(f"Table {table_name} does not exist.")
      
-    # TODO: Add tests for stored procedures.
     # Stored Procedures Management
     # ---------------------------------------------------------------------------------------------
     def add_stored_procedure(self, name, procedure):
@@ -572,7 +572,7 @@ class Database:
         if name in self.stored_procedures:
             raise ValueError(f"Stored procedure {name} already exists.")
         self.stored_procedures[name] = procedure
-
+        
     def execute_stored_procedure(self, name, *args, **kwargs):
         """
         Execute a stored procedure.
@@ -585,7 +585,17 @@ class Database:
         """
         if name not in self.stored_procedures:
             raise ValueError(f"Stored procedure {name} does not exist.")
-        return self.stored_procedures[name](self, *args, **kwargs)
+        
+        # Execute 'before' triggers
+        self.execute_triggers(name, "before", *args, **kwargs)
+        
+        # Execute the stored procedure
+        result = self.stored_procedures[name](self, *args, **kwargs)
+        
+        # Execute 'after' triggers
+        self.execute_triggers(name, "after", *args, **kwargs)
+        
+        return result
 
     def delete_stored_procedure(self, name):
         """
@@ -618,7 +628,51 @@ class Database:
             str: The source code of the stored procedure function.
         """
         return inspect.getsource(procedure)
-        
+    
+    # Trigger Management
+    # ---------------------------------------------------------------------------------------------
+    def add_trigger(self, procedure_name, trigger_type, trigger_function):
+        """
+        Add a trigger for a stored procedure.
+        Args:
+            procedure_name (str): The name of the stored procedure.
+            trigger_type (str): The type of trigger ('before' or 'after').
+            trigger_function (function): The function to be executed as the trigger.
+        """
+        if trigger_type not in ["before", "after"]:
+            raise ValueError("Trigger type must be 'before' or 'after'.")
+        if procedure_name not in self.stored_procedures:
+            raise ValueError(f"Stored procedure {procedure_name} does not exist.")
+        if procedure_name not in self.triggers[trigger_type]:
+            self.triggers[trigger_type][procedure_name] = []
+        self.triggers[trigger_type][procedure_name].append(trigger_function)
+
+    def execute_triggers(self, procedure_name, trigger_type, *args, **kwargs):
+        """
+        Execute triggers for a stored procedure.
+        Args:
+            procedure_name (str): The name of the stored procedure.
+            trigger_type (str): The type of trigger ('before' or 'after').
+            *args: Positional arguments to pass to the trigger function.
+            **kwargs: Keyword arguments to pass to the trigger function.
+        """
+        if procedure_name in self.triggers[trigger_type]:
+            for trigger in self.triggers[trigger_type][procedure_name]:
+                trigger(self, procedure_name, *args, **kwargs)
+
+    def delete_trigger(self, procedure_name, trigger_type, trigger_function):
+        """
+        Delete a trigger for a stored procedure.
+        Args:
+            procedure_name (str): The name of the stored procedure.
+            trigger_type (str): The type of trigger ('before' or 'after').
+            trigger_function (function): The function to be removed as the trigger.
+        """
+        if procedure_name in self.triggers[trigger_type]:
+            self.triggers[trigger_type][procedure_name].remove(trigger_function)
+            if not self.triggers[trigger_type][procedure_name]:
+                del self.triggers[trigger_type][procedure_name]
+            
     # View Management
     # ---------------------------------------------------------------------------------------------
     def create_view(self, view_name, query):
@@ -733,19 +787,24 @@ class Database:
         print(f"Active Session: \"{self.get_username_by_session(self.active_session)}:{self.active_session}\"")
         
         print(f"Database Objects:")
+        
         print(f"  --Users: {len(self.tables.get('_users').records)}")
         for record in self.tables.get("_users").records:
             print(f"\t{record.data['username']} | Roles: {record.data['roles']}")
+        
         print(f"  --Tables: {len(self.tables)}")
         for table_name in self.tables:
             if table_name != "_users":
                 print(f"\t{table_name} | Length: {len(self.tables.get(table_name).records)}")
+        
         print(f"  --Materialized Views: {len(self.materialized_views)}")
         for view_name in self.materialized_views:
             print(f"\t{view_name}")
+        
         print(f"  --Views: {len(self.views)}")
         for view_name in self.views:
             print(f"\t{view_name}")
+        
         print(f"  --Stored Procedures: {len(self.stored_procedures)}")
         for procedure_name in self.stored_procedures:
             if self.stored_procedures[procedure_name].__doc__:
@@ -753,7 +812,14 @@ class Database:
                 print(f"\t{procedure_name} | {doc}")
             else:
                 print(f"\t{procedure_name}")
+        
+        print(f"  --Triggers: {len(self.triggers['before']) + len(self.triggers['after'])}")
+        for trigger_type in self.triggers:
+            for trigger_name in self.triggers[trigger_type]:
+                print(f"\t{trigger_name} | {trigger_type.capitalize()} Triggers: {len(self.triggers[trigger_type][trigger_name])}")
+        
         print("-" * 100)
+        
         
         # Display table details
         if tables:
@@ -809,6 +875,9 @@ class Database:
                 view.print_table(pretty=True, index=index, limit=limit)
                 
                 first_view = False
+                
+        # TODO: Add option to display stored procedure functions
+        # TODO: Add option to display trigger functions
             
     def copy(self):
         """
