@@ -14,6 +14,7 @@ from .database import Database
 from .record import Record
 from .index import Index
 from .record import ImageRecord
+from .table import Table
 
 def _process_chunk(records_chunk, table):
     """
@@ -450,6 +451,57 @@ class Storage:
             c.execute(f"INSERT INTO {table.name} VALUES ({values})")
         conn.commit()
         conn.close()
+        
+    @staticmethod
+    def _load_table_from_db_file(filename, table_name, db, key=None, user=None, password=None, compression=False):
+        """
+        Load a table from a segadb database file. Only the table data is loaded, not the entire database.
+        Args:
+            filename (str): The path to the JSON file containing the database data.
+            table_name (str): The name of the table to load.
+            db (Database): The database object to which the table will be added.
+            key (bytes, optional): The encryption key. If provided, the data will be decrypted after loading.
+            compression (bool, optional): If True, the data will be decompressed using zlib after loading.
+        Returns:
+            Table: The loaded table object.
+        """
+        with open(filename, 'rb' if compression or key else 'r') as f:
+            json_data = f.read()
+            if key:
+                json_data = Storage.decrypt(json_data, key)
+            if compression:
+                json_data = zlib.decompress(json_data).decode()
+
+            data = json.loads(json_data)
+        
+        # Find the table data in the database file
+        table_data = None
+        for table in data["tables"]:
+            if table == table_name:
+                table_data = data["tables"][table]
+                break
+        if table_data is None:
+            raise ValueError(f"Table '{table_name}' not found in database file")
+        
+        table = Table(table_name, table_data["columns"])
+        table.next_id = table_data["next_id"]
+        for record in table_data["records"]:
+            record_data = {k: (v.encode() if isinstance(v, str) and k == "password_hash" else v) for k, v in record["data"].items()}
+            table.insert(record_data, record_type=Record, flex_ids = True)
+            table.records[-1].id = record["id"]
+        for column, constraints in table_data["constraints"].items():
+            for constraint in constraints:
+                if constraint["name"] == "unique_constraint":
+                    table.add_constraint(column, "UNIQUE")
+                elif constraint["name"] == "foreign_key_constraint":
+                    reference_table = db.get_table(constraint["reference_table"])
+                    reference_column = constraint["reference_column"]
+                    table.add_constraint(column, "FOREIGN_KEY", reference_table, reference_column)
+                else:
+                    # Handle other constraints if necessary
+                    pass
+        
+        return table
 
     # Utility Functions
     # ---------------------------------------------------------------------------------------------
