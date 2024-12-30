@@ -767,7 +767,11 @@ class Database:
         
     # Utility Methods
     # ---------------------------------------------------------------------------------------------
-    def print_db(self, index=False, limit=None, tables=True, views=False, materialized_views=False):
+    def print_db(self, index=False, 
+                 limit=None, tables=True, 
+                 views=False, materialized_views=False,
+                 stored_procedures=False, triggers=False
+                 ):
         """
         Print the database tables, including their names, columns, constraints, and records.
         Args:
@@ -876,8 +880,23 @@ class Database:
                 
                 first_view = False
                 
-        # TODO: Add option to display stored procedure functions
-        # TODO: Add option to display trigger functions
+        if stored_procedures and self.stored_procedures:
+            # Display stored procedure details
+            print("\n\nSTORED PROCEDURE DETAILS")
+            print("-" * 100)
+            for procedure_name, procedure in self.stored_procedures.items():
+                print(f"Procedure: {procedure_name}")
+                print(f"Source Code:\n{self._stored_procedure_to_string(procedure)}")
+        
+        if triggers and (self.triggers['before'] or self.triggers['after']):
+            # Display trigger details
+            print("\n\nTRIGGER DETAILS")
+            print("-" * 100)
+            for trigger_type in self.triggers:
+                for trigger_name in self.triggers[trigger_type]:
+                    print(f"{trigger_type.capitalize()} Trigger: {trigger_name}")
+                    for trigger in self.triggers[trigger_type][trigger_name]:
+                        print(f"Source Code:\n{self._stored_procedure_to_string(trigger)}")
             
     def copy(self):
         """
