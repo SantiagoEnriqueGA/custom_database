@@ -502,6 +502,59 @@ class Storage:
                     pass
         
         return table
+    
+    @staticmethod
+    def _load_viewsProcs_from_db_file(filename, db, key=None, user=None, password=None, compression=False):
+        """
+        Load views from a segadb database file. Only the view data is loaded, not the entire database.
+        Args:
+            filename (str): The path to the JSON file containing the database data.
+            db (Database): The database object to which the views will be added.
+            key (bytes, optional): The encryption key. If provided, the data will be decrypted after loading.
+            compression (bool, optional): If True, the data will be decompressed using zlib after loading.
+        """
+        with open(filename, 'rb' if compression or key else 'r') as f:
+            json_data = f.read()
+            if key:
+                json_data = Storage.decrypt(json_data, key)
+            if compression:
+                json_data = zlib.decompress(json_data).decode()
+
+            data = json.loads(json_data)
+        
+        # Load views
+        # Executes the query function in the global namespace, typecasts the result to a function, and creates a view
+        for view_name, view_data in data["views"].items():
+            exec(view_data["query"].strip(), globals())
+            globals()[view_name] = eval(view_name)
+            db.create_view(view_name, types.FunctionType(globals()[view_name].__code__, {"db": db}))
+            
+        # Load materialized views
+        # Executes the query function in the global namespace, typecasts the result to a function, and creates a materialized view
+        for mv_name, mv_data in data["materialized_views"].items():
+            exec(mv_data["query"].strip(), globals())
+            globals()[mv_name] = eval(mv_name)
+            db.create_materialized_view(mv_name, types.FunctionType(globals()[mv_name].__code__, {"db": db}))
+            
+        # Load stored procedures
+        # Executes the query function in the global namespace, typecasts the result to a function, and creates a stored procedure
+        if data.get("stored_procedures"):    
+            for sp_name, sp_data in data["stored_procedures"].items():
+                exec(sp_data["query"].strip(), globals())
+                globals()[sp_name] = eval(sp_name)
+                db.add_stored_procedure(sp_name, types.FunctionType(globals()[sp_name].__code__, {"db": db}))
+        
+        # Load triggers
+        if data.get("triggers"):
+            for trigger_type in data["triggers"]:
+                for proc_name, triggers in data["triggers"][trigger_type].items():
+                    for trigger_data in triggers:
+                        exec(trigger_data.strip(), globals())
+                        trigger_name_match = re.search(r'def (\w+)', trigger_data)
+                        if trigger_name_match:
+                            trigger_name = trigger_name_match.group(1)
+                            trigger_function = eval(trigger_name)
+                            db.add_trigger(proc_name, trigger_type, types.FunctionType(trigger_function.__code__, {"db": db}))
 
     # Utility Functions
     # ---------------------------------------------------------------------------------------------

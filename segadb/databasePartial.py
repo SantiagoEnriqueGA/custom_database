@@ -12,6 +12,10 @@ class PartialDatabase(Database):
         
         # Load _users table
         self.loaded_tables["_users"] = self._load_table_from_storage("_users")
+        
+        # Load views, materialized views, stored procedures, and triggers
+        Storage._load_viewsProcs_from_db_file(self.file_path, self)
+        
 
     def get_table(self, table_name, session_token=None):
         """
