@@ -1,4 +1,5 @@
 # Imports: Standard Library
+import random
 import os
 import csv
 import uuid
@@ -9,12 +10,14 @@ import inspect
 # Imports: Third Party
 import bcrypt
 from tqdm import tqdm
+from faker import Faker
 
 # Imports: Local
 from .users import User, UserManager, Authorization, PRESET_ROLES
 from .table import Table
 from .record import Record
 from .views import View, MaterializedView
+
 
 # Helper function for processing file chunks in parallel (cannot be defined within the Database class)
 def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_names=None, col_types=None, progress=False, headers=False):
@@ -57,7 +60,6 @@ def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_nam
             pbar.close()
     return rows
 
-# TODO: Create sample databases for testing and demonstration purposes.
 class Database:  
     # Initialization and Configuration
     # ---------------------------------------------------------------------------------------------
@@ -933,3 +935,151 @@ class Database:
             for record in table.records:
                 total_size += sum(len(str(value)) for value in record.data.values())
         return total_size
+
+    # Example Databases
+    # ---------------------------------------------------------------------------------------------
+    def _create_orders_table(self, num_records=100):
+        """
+        Create a sample orders table with random data.
+        Args:
+            num_records (int): The number of records to generate.
+        """
+        columns = ["order_id", "user_id", "product", "price", "order_date"]
+        self.create_table("orders", columns)
+        for i in range(num_records):
+            self.tables["orders"].insert({
+                "order_id": i + 1,
+                "user_id": random.randint(1, num_records),
+                "product": random.choice(["Laptop", "Phone", "Tablet", "Smartwatch"]),
+                "price": random.randint(500, 2000),
+                "order_date": f"{random.randint(2010, 2021)}-{random.randint(1, 12)}-{random.randint(1, 28)}"
+            })
+    
+    def _create_users_table(self, num_records=10):
+        """
+        Create a sample users table with random data.
+        columns = ["user_id", "name", "email"]
+            num_records (int): The number of records to generate.
+        """
+        columns = ["user_id", "name", "email"]
+        self.create_table("users", columns)
+        fake = Faker()  # Create an instance of Faker
+    
+        for i in range(num_records):
+            self.tables["users"].insert({
+                "user_id": i + 1,
+                "name": fake.name(),  # Use the instance to generate data
+                "email": fake.email()  # Use the instance to generate data
+            })
+    
+    @staticmethod
+    def load_sample_database(name="SampleDB", num_users=10, num_orders=100):
+        """
+        Create a sample database with predefined tables and data for testing and demonstration purposes.
+        Args:
+            name (str): The name of the sample database.
+        Returns:
+            Database: An instance of the Database class populated with sample data.
+        """
+        # Create a new database
+        db = Database(name)
+        user_manager = db.create_user_manager()
+        auth = db.create_authorization()
+
+        # Register users with different roles
+        user_manager.register_user("admin", "password123", roles=["admin"])
+        user_manager.register_user("user1", "password123", roles=["read_only"])
+
+        # Log in as admin
+        admin_session = user_manager.login_user("admin", "password123")
+
+        # Create two tables: users and orders
+        db._create_orders_table(num_records=num_orders)
+        db._create_users_table(num_records=num_users)
+
+        # Add a unique constraint to the users t;able on the id column
+        db.add_constraint("users", "user_id", "UNIQUE")
+
+        # Add a foreign key constraint to the orders table on the user_id column (user_id in orders must exist in users)
+        db.add_constraint("orders", "user_id", "FOREIGN_KEY", reference_table_name="users", reference_column="user_id")
+
+        # Example usage, create a view of laptops
+        # ----------------------------------------------------------------------------------
+        def laptop_view():
+            return db.filter_table("orders", lambda record: record.data["product"] == "Laptop")
+
+        db.create_view("laptop_view", laptop_view)
+
+        # Example usage, create a view of users with orders
+        # ----------------------------------------------------------------------------------
+        def users_with_orders_view():
+            return db.join_tables("users", "orders", "user_id", "user_id")
+
+        db.create_view("users_with_orders_view", users_with_orders_view)
+
+        # Example usage, create a materialized view of Orders by User 2
+        # ----------------------------------------------------------------------------------
+        def mv_ordersUser2():
+            return db.filter_table("orders", lambda record: record.data["user_id"] == 2)
+
+        db.create_materialized_view("mv_ordersUser2", mv_ordersUser2)
+        
+        # Define a stored procedure to get orders by user
+        # ----------------------------------------------------------------------------------
+        def get_orders_by_user(db, user_id):
+            """
+            Retrieve orders for a specific user.
+            Args:
+                db (Database): The database instance.
+                user_id (int): The ID of the user.
+            Returns:
+                list: A list of orders for the specified user.
+            """
+            return db.filter_table("orders", lambda record: record.data["user_id"] == user_id)
+
+        # Add the stored procedure to the database
+        db.add_stored_procedure("get_orders_by_user", get_orders_by_user)
+
+        # Define a stored procedure to drop users with no orders
+        # ----------------------------------------------------------------------------------
+        def drop_users_with_no_orders(db):
+            """
+            Drop users who have no orders.
+            Args:
+                db (Database): The database instance.
+            """
+            orders = db.get_table("orders")
+            users = db.get_table("users")
+            users_to_drop = set()
+            for user in users.records:
+                user_orders = orders.filter(lambda record: record.data["user_id"] == user.data["user_id"])
+                if len(user_orders.records) == 0:
+                    users_to_drop.add(user.data["user_id"])
+            
+            print(f"\nDropping users with no orders:")
+            for user_id in users_to_drop:
+                print(f"\tDropping user with ID: {user_id}")
+                users.delete(user_id)
+                
+        # Add the stored procedure to the database
+        db.add_stored_procedure("drop_users_with_no_orders", drop_users_with_no_orders)
+
+        # Trigger Functions
+        # ----------------------------------------------------------------------------------
+        # Define a trigger function to log before executing a stored procedure
+        def log_before_procedure(db, procedure_name, *args, **kwargs):
+            print(f"Log before executing stored procedure: {procedure_name} with args: {args} and kwargs: {kwargs}")
+
+        # Define a trigger function to log after executing a stored procedure
+        def log_after_procedure(db, procedure_name, *args, **kwargs):
+            print(f"Log after executing stored procedure: {procedure_name} with args: {args} and kwargs: {kwargs}")
+
+        # Add triggers for the stored procedure
+        db.add_trigger("get_orders_by_user", "before", log_before_procedure)
+        db.add_trigger("get_orders_by_user", "after", log_after_procedure)
+
+        # Add triggers for the stored procedure
+        db.add_trigger("drop_users_with_no_orders", "before", log_before_procedure)
+        db.add_trigger("drop_users_with_no_orders", "after", log_after_procedure)
+
+        return db

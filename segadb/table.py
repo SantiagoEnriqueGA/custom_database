@@ -341,4 +341,6 @@ class Table:
         else:
             print(tabulate(table, headers=["ID", "Data"]))
 
+        if limit is not None and len(self.records) > limit:
+            print(f"--Showing first {limit} of {len(self.records)} records.--")
     

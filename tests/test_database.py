@@ -432,6 +432,26 @@ class TestDatabase(unittest.TestCase):
         db.add_trigger("sample_procedure", "before", before_trigger)
         db.delete_trigger("sample_procedure", "before", before_trigger)
         self.assertNotIn("sample_procedure", db.triggers["before"])
+        
+    # Loading Sample Database
+    def test_load_sample_database(self):
+        db = Database.load_sample_database()
+        self.assertGreater(len(db.tables), 0)
+        self.assertGreater(len(db.views), 0)
+        self.assertGreater(len(db.materialized_views), 0)
+        self.assertGreater(len(db.stored_procedures), 0)
+        self.assertGreater(len(db.triggers), 0)
+        
+    def test_load_sample_database_custom(self):
+        db = Database.load_sample_database(num_users=100, num_orders=200)
+        self.assertEqual(len(db.get_table("users").records), 100)
+        self.assertEqual(len(db.get_table("orders").records), 200)
+        
+    def test_load_sample_database_exec(self):
+        db = Database.load_sample_database()
+        with suppress_print():
+            db.execute_stored_procedure("drop_users_with_no_orders")
+        self.assertGreater(len(db.get_table("users").records), 0)
 
 if __name__ == '__main__':
     unittest.main()
