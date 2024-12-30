@@ -1,14 +1,14 @@
 ﻿Lines per Python file, sorted by descending order:
 ____________________________________________________________________________________________________
-	custom_database\segadb\database.py                                             :   807
-	custom_database\segadb\storage.py                                              :   492
+	custom_database\segadb\database.py                                             :   874
+	custom_database\segadb\storage.py                                              :   511
 	custom_database\example_datasets\createMeasurements.py                         :   465
+	custom_database\tests\test_database.py                                         :   392
 	custom_database\segadb\table.py                                                :   328
-	custom_database\tests\test_database.py                                         :   307
 	custom_database\segadb\record.py                                               :   188
 	custom_database\segadb\users.py                                                :   154
 	custom_database\tests\test_storage.py                                          :   131
-	custom_database\examples\example_stored_procs.py                               :    98
+	custom_database\examples\example_stored_procs.py                               :   116
 	custom_database\examples\example_storage.py                                    :    97
 	custom_database\tests\test_segadb_performance.py                               :    95
 	custom_database\tests\test_users.py                                            :    89
@@ -45,5 +45,5 @@ ________________________________________________________________________________
 	custom_database\examples\example_dataImports.py                                :    13
 	custom_database\tests\run_all_tests.py                                         :    11
 ____________________________________________________________________________________________________
-Total lines                                                                            :  4871
+Total lines                                                                            :  5060
  

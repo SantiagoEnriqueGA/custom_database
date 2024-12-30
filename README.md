@@ -36,6 +36,7 @@ This project is primarily educational. It is designed to help understand the wor
     - `to_lowercase()`: Converts the text to lowercase.
 - **User Management and Authorization**: Manage users, their roles, and permissions. See [`User`, `UserManager`, and `Authorization`](segadb/users.py).
 - **View and Materialized View Management**: Create, retrieve, refresh, and delete views and materialized views. See [`View`](segadb/views.py).
+- **Cryptographic Support**: Encrypt and decrypt data using a custom Fernet implementation. See [`CustomFernet`](segadb/crypto.py).
 
 ## Installation
 
@@ -61,7 +62,7 @@ The project directory structure is as follows:
   - [`transaction.py`](segadb/transaction.py): Implements the `Transaction` class for transaction handling.
   - [`users.py`](segadb/users.py): Implements the `User`, `UserManager`, and `Authorization` classes for user management and authorization.
   - [`views.py`](segadb/views.py): Implements the `View` and `MaterializedView` classes for view management.
-  - ['crypto.py'](segadb/crypto.py): Implements the `CustomFernet` class for encryption and decryption.
+  - [`crypto.py`](segadb/crypto.py): Implements the `CustomFernet` class for encryption and decryption.
 - **tests/**: Contains unit and performance tests for the database library.
   - [`run_all_tests.py`](tests/run_all_tests.py): Runs all available tests.
   - [`test_utils.py`](tests/test_utils.py): Utility functions for tests.
@@ -93,7 +94,7 @@ The project directory structure is as follows:
   - [example_transactions.py](examples/example_transactions.py): Demonstrates how to use transactions for commit and rollback operations.
   - [example_UsersAuth.py](examples/example_UsersAuth.py): Demonstrates user authentication and authorization.
   - [example_views.py](examples/example_views.py): Demonstrates how to create, retrieve, refresh, and delete views and materialized views.
-  - [example_stored_procs.py'](examples/example_stored_procs.py): Demonstrates how to create and use stored procedures.
+  - [example_stored_procs.py'](examples/example_stored_procs.py): Demonstrates how to create and use stored procedures and triggers.
 - **docs/**: Contains the generated documentation for the segadb library.
   - [segadb.database.html](docs/segadb.database.html): Documentation for the `Database` class.
   - [segadb.index.html](docs/segadb.index.html): Documentation for the `Index` class.
@@ -132,6 +133,7 @@ The project directory structure is as follows:
 - [example_dataExport.py](examples/example_dataExport.py): Demonstrates how to export data to different formats: CSV, JSON, SQLite.
 - [example_dataImports.py](examples/example_dataImports.py): Demonstrates how to import data from a CSV file.
 - [example_queries.py](examples/example_queries.py): Demonstrates how to create tables, add constraints, insert data, perform joins, aggregations, and filtering operations.
+- [example_stored_procs.py'](examples/example_stored_procs.py): Demonstrates how to create and use stored procedures and triggers.
 
 ### Performance
 - [example_millionRowLoad.py](examples/example_millionRowLoad.py): Demonstrates how to load a table with a million rows using multiprocessing.
@@ -243,8 +245,7 @@ The following are the results of running the tests:
 ```sh
 Testing CustomFernet Class
 ...Testing Database Class
-..........................
-.Testing file: example_UsersAuth.py
+..................................Testing file: example_UsersAuth.py
 .Testing file: example_backupRecovery.py
 .Testing file: example_change_ids.py
 .Testing file: example_constraints.py
@@ -258,24 +259,25 @@ Testing CustomFernet Class
 .Testing file: example_storage.py
 .Testing file: example_storageCompression.py
 .Testing file: example_storageCompressionLarge.py
+.Testing file: example_stored_procs.py
 .Testing file: example_transactions.py
 .Testing file: example_views.py
 .Testing Imports
 ..Testing Index Class
 ..Testing Record Class
 .....Delete performance on 5000 [id, name, email] records: 0.011 seconds.
-.Insert performance for 5000 [id, name, email] records: 1.0 seconds.
-.Load performance for 5000 records: 0.97 seconds.
+.Insert performance for 5000 [id, name, email] records: 1.3 seconds.
+.Load performance for 5000 records: 1.2 seconds.
 .Restore performance for 5000 records: 0.0 seconds.
-.Save performance for 5000 records: 0.17 seconds.
-.Select performance of 1 out of 5000 [id, name, email] records: 0.003 seconds.
-.Update performance on 5000 [id, name, email] records: 0.58 seconds.
+.Save performance for 5000 records: 0.2 seconds.
+.Select performance of 1 out of 5000 [id, name, email] records: 0.0 seconds.
+.Update performance on 5000 [id, name, email] records: 0.71 seconds.
 .Testing Storage Class
 ............Testing Table Class
 ........Testing Transaction Class
 .......................
 ----------------------------------------------------------------------
-Ran 105 tests in 129.384s
+Ran 113 tests in 153.012s
 
 OK
 ```

@@ -203,6 +203,12 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;stored&nbsp;procedure.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;procedure&nbsp;(function):&nbsp;The&nbsp;function&nbsp;representing&nbsp;the&nbsp;stored&nbsp;procedure.</span></dd></dl>
 
+<dl><dt><a name="Database-add_trigger"><strong>add_trigger</strong></a>(self, procedure_name, trigger_type, trigger_function)</dt><dd><span class="code">Add&nbsp;a&nbsp;trigger&nbsp;for&nbsp;a&nbsp;stored&nbsp;procedure.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;procedure_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;stored&nbsp;procedure.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;trigger_type&nbsp;(str):&nbsp;The&nbsp;type&nbsp;of&nbsp;trigger&nbsp;('before'&nbsp;or&nbsp;'after').<br>
+&nbsp;&nbsp;&nbsp;&nbsp;trigger_function&nbsp;(function):&nbsp;The&nbsp;function&nbsp;to&nbsp;be&nbsp;executed&nbsp;as&nbsp;the&nbsp;trigger.</span></dd></dl>
+
 <dl><dt><a name="Database-aggregate_table"><strong>aggregate_table</strong></a>(self, table_name, group_column, agg_column, agg_func)</dt><dd><span class="code">Perform&nbsp;an&nbsp;aggregation&nbsp;on&nbsp;a&nbsp;specified&nbsp;column&nbsp;in&nbsp;a&nbsp;table&nbsp;using&nbsp;the&nbsp;provided&nbsp;aggregation&nbsp;function.<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;table_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;table.<br>
@@ -296,6 +302,12 @@ Args:<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;stored&nbsp;procedure.</span></dd></dl>
 
+<dl><dt><a name="Database-delete_trigger"><strong>delete_trigger</strong></a>(self, procedure_name, trigger_type, trigger_function)</dt><dd><span class="code">Delete&nbsp;a&nbsp;trigger&nbsp;for&nbsp;a&nbsp;stored&nbsp;procedure.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;procedure_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;stored&nbsp;procedure.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;trigger_type&nbsp;(str):&nbsp;The&nbsp;type&nbsp;of&nbsp;trigger&nbsp;('before'&nbsp;or&nbsp;'after').<br>
+&nbsp;&nbsp;&nbsp;&nbsp;trigger_function&nbsp;(function):&nbsp;The&nbsp;function&nbsp;to&nbsp;be&nbsp;removed&nbsp;as&nbsp;the&nbsp;trigger.</span></dd></dl>
+
 <dl><dt><a name="Database-delete_view"><strong>delete_view</strong></a>(self, view_name)</dt><dd><span class="code">Delete&nbsp;a&nbsp;view&nbsp;by&nbsp;name.<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;view_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;view.</span></dd></dl>
@@ -312,6 +324,13 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;**kwargs:&nbsp;Keyword&nbsp;arguments&nbsp;to&nbsp;pass&nbsp;to&nbsp;the&nbsp;stored&nbsp;procedure.<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;result&nbsp;of&nbsp;the&nbsp;stored&nbsp;procedure&nbsp;execution.</span></dd></dl>
+
+<dl><dt><a name="Database-execute_triggers"><strong>execute_triggers</strong></a>(self, procedure_name, trigger_type, *args, **kwargs)</dt><dd><span class="code">Execute&nbsp;triggers&nbsp;for&nbsp;a&nbsp;stored&nbsp;procedure.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;procedure_name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;stored&nbsp;procedure.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;trigger_type&nbsp;(str):&nbsp;The&nbsp;type&nbsp;of&nbsp;trigger&nbsp;('before'&nbsp;or&nbsp;'after').<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*args:&nbsp;Positional&nbsp;arguments&nbsp;to&nbsp;pass&nbsp;to&nbsp;the&nbsp;trigger&nbsp;function.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs:&nbsp;Keyword&nbsp;arguments&nbsp;to&nbsp;pass&nbsp;to&nbsp;the&nbsp;trigger&nbsp;function.</span></dd></dl>
 
 <dl><dt><a name="Database-filter_table"><strong>filter_table</strong></a>(self, table_name, condition)</dt><dd><span class="code">Filter&nbsp;records&nbsp;in&nbsp;a&nbsp;table&nbsp;based&nbsp;on&nbsp;a&nbsp;condition.<br>
 Args:<br>
