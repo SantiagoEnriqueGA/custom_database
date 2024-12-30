@@ -7,6 +7,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from segadb.database import Database
 from segadb.storage import Storage
+from segadb.record import Record, VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord
 
 class TestStorage(unittest.TestCase):
     """
@@ -26,6 +27,10 @@ class TestStorage(unittest.TestCase):
     - test_backup: Tests creating a backup of the database.
     - test_list_backups: Tests listing the backups of the database.
     - test_restore: Tests restoring the database from a backup.
+    - test_store_vectorRecord: Tests storing VectorRecord objects in the database.
+    - test_store_timeSeriesRecord: Tests storing TimeSeriesRecord objects in the database.
+    - test_store_imageRecord: Tests storing ImageRecord objects in the database.
+    - test_store_textRecord: Tests storing TextRecord objects in the database.
     """
     @classmethod
     def setUpClass(cls):
@@ -138,6 +143,60 @@ class TestStorage(unittest.TestCase):
         Storage.restore(self.db, dir="tests_backups_restore")
         self.assertTrue(os.path.exists("tests_backups_restore/TestDB_backup_0.segadb"))
         os.remove(sys.path[0] + "/tests_backups_restore/TestDB_backup_0.segadb")
+        
+    def test_store_vectorRecord(self):
+        self.db.create_table("VectorRecords", ["vector"])
+        VectorRecords = self.db.get_table("VectorRecords")
+        VectorRecords.insert({"vector": [1.0, 2.0, 3.0]}, record_type=VectorRecord)
+        VectorRecords.insert({"vector": [4.0, 5.0, 6.0]}, record_type=VectorRecord)
+        VectorRecords.insert({"vector": [7.0, 8.0, 9.0]}, record_type=VectorRecord)
+        VectorRecords.insert({"vector": [5.0, 5.0, 5.0]}, record_type=VectorRecord)
+        
+        Storage.save(self.db, self.filename)
+        loaded_db = Storage.load(self.filename)
+        self.assertEqual(loaded_db.name, "TestDB")
+        self.assertEqual(loaded_db.tables.keys(), self.db.tables.keys())
+        self.assertEqual(loaded_db.get_table("VectorRecords").columns, self.db.get_table("VectorRecords").columns)
+        self.assertEqual(len(loaded_db.get_table("VectorRecords").records), len(self.db.get_table("VectorRecords").records))
 
+    def test_store_timeSeriesRecord(self):
+        self.db.create_table("TimeSeriesRecords", ["time_series"])
+        TimeSeriesRecords = self.db.get_table("TimeSeriesRecords")
+        TimeSeriesRecords.insert({"time_series": [1, 2, 3, 4, 5]}, record_type=TimeSeriesRecord)
+        TimeSeriesRecords.insert({"time_series": [6, 7, 8, 9, 10]}, record_type=TimeSeriesRecord)
+        
+        Storage.save(self.db, self.filename)
+        loaded_db = Storage.load(self.filename)
+        self.assertEqual(loaded_db.name, "TestDB")
+        self.assertEqual(loaded_db.tables.keys(), self.db.tables.keys())
+        self.assertEqual(loaded_db.get_table("TimeSeriesRecords").columns, self.db.get_table("TimeSeriesRecords").columns)
+        self.assertEqual(len(loaded_db.get_table("TimeSeriesRecords").records), len(self.db.get_table("TimeSeriesRecords").records))
+
+    def test_store_imageRecord(self):
+        self.db.create_table("ImageRecords", ["image_data", "image_path"])
+        ImageRecords = self.db.get_table("ImageRecords")
+        ImageRecords.insert({"image_data": 'example_datasets/cube.png'}, record_type=ImageRecord)
+        ImageRecords.insert({"image_data": 'example_datasets/cube.png'}, record_type=ImageRecord)
+        
+        Storage.save(self.db, self.filename)
+        loaded_db = Storage.load(self.filename)
+        self.assertEqual(loaded_db.name, "TestDB")
+        self.assertEqual(loaded_db.tables.keys(), self.db.tables.keys())
+        self.assertEqual(loaded_db.get_table("ImageRecords").columns, self.db.get_table("ImageRecords").columns)
+        self.assertEqual(len(loaded_db.get_table("ImageRecords").records), len(self.db.get_table("ImageRecords").records))
+
+    def test_store_textRecord(self):
+        self.db.create_table("TextRecords", ["text"])
+        TextRecords = self.db.get_table("TextRecords")
+        TextRecords.insert({"text": "Hello, world!"}, record_type=TextRecord)
+        TextRecords.insert({"text": "Another text record."}, record_type=TextRecord)
+        
+        Storage.save(self.db, self.filename)
+        loaded_db = Storage.load(self.filename)
+        self.assertEqual(loaded_db.name, "TestDB")
+        self.assertEqual(loaded_db.tables.keys(), self.db.tables.keys())
+        self.assertEqual(loaded_db.get_table("TextRecords").columns, self.db.get_table("TextRecords").columns)
+        self.assertEqual(len(loaded_db.get_table("TextRecords").records), len(self.db.get_table("TextRecords").records))   
+        
 if __name__ == '__main__':
     unittest.main()

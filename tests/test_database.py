@@ -17,6 +17,7 @@ class TestDatabase(unittest.TestCase):
     Unit tests for the Database class.
     Methods:
     # Initialization and Configuration
+        - test_database: Tests the initialization of a database object.
         - test_create_table: Tests the creation of a table in the database.
         - test_drop_table: Tests the deletion of a table from the database.
         - test_get_table: Tests retrieving a table from the database.
@@ -64,6 +65,15 @@ class TestDatabase(unittest.TestCase):
 
     # Initialization and Configuration
     # ---------------------------------------------------------------------------------------------
+    def test_database(self):
+        db = Database("TestDB")
+        self.assertEqual(db.name, "TestDB")
+        self.assertGreater(len(db.tables), 0)
+        self.assertEqual(db.views, {})
+        self.assertEqual(db.materialized_views, {})
+        self.assertEqual(db.stored_procedures, {})
+        self.assertEqual(db.triggers, {'after': {}, 'before': {}})
+        
     def test_create_table(self):
         db = Database("TestDB")
         db.create_table("Users", ["id", "name", "email"])
