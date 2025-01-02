@@ -504,7 +504,61 @@ class Storage:
         return table
     
     @staticmethod
-    def _load_viewsProcs_from_db_file(filename, db, key=None, user=None, password=None, compression=False):
+    def _save_table_to_db_file(filename, table, key=None, compression=False):
+        """
+        Save a table to a segadb database file. Only the table data is updated, not the entire database.
+        Args:
+            filename (str): The path to the JSON file where the table will be saved.
+            table (Table): The table object to be saved.
+            key (bytes, optional): The encryption key. If provided, the data will be encrypted before saving.
+            compression (bool, optional): If True, the data will be compressed using zlib before saving.
+        """
+        # Read the existing JSON file
+        with open(filename, 'rb' if compression or key else 'r') as f:
+            json_data = f.read()
+            if key:
+                json_data = Storage.decrypt(json_data, key)
+            if compression:
+                json_data = zlib.decompress(json_data).decode()
+            data = json.loads(json_data)
+        
+        def serialize_table(table):
+            return {
+                "name": table.name,
+                "columns": table.columns,
+                "records": [{
+                    "id": record.id,
+                    "data": record.to_dict() if isinstance(record, ImageRecord) else {k: (v.decode() if isinstance(v, bytes) else v) for k, v in record.data.items()},
+                    "index": record.index.to_dict(),
+                } for record in table.records],
+                "next_id": table.next_id,
+                "constraints": {
+                    column: [
+                        {
+                            "name": constraint.__name__,
+                            "reference_table": getattr(constraint, "reference_table", None),
+                            "reference_column": getattr(constraint, "reference_column", None)
+                        } for constraint in constraints
+                    ] for column, constraints in table.constraints.items()
+                },
+            }
+            
+        # Update the table data
+        data["tables"][table.name] = serialize_table(table)
+        
+        # Convert the data back to JSON
+        json_data = json.dumps(data)
+        if compression:
+            json_data = zlib.compress(json_data.encode())
+        if key:
+            json_data = Storage.encrypt(json_data, key)
+
+        # Write the updated JSON back to the file
+        with open(filename, 'wb' if compression or key else 'w') as f:
+            f.write(json_data)
+    
+    @staticmethod
+    def _load_viewsProcs_from_db_file(filename, db, key=None, user=None, password=None, compression=False, views=True, materialized_views=True, stored_procedures=True, triggers=True):
         """
         Load views from a segadb database file. Only the view data is loaded, not the entire database.
         Args:
@@ -512,6 +566,10 @@ class Storage:
             db (Database): The database object to which the views will be added.
             key (bytes, optional): The encryption key. If provided, the data will be decrypted after loading.
             compression (bool, optional): If True, the data will be decompressed using zlib after loading.
+            views (bool, optional): If True, load views. Default is True.
+            materialized_views (bool, optional): If True, load materialized views. Default is True.
+            stored_procedures (bool, optional): If True, load stored procedures. Default is True.
+            triggers (bool, optional): If True, load triggers. Default is True.
         """
         with open(filename, 'rb' if compression or key else 'r') as f:
             json_data = f.read()
@@ -524,37 +582,41 @@ class Storage:
         
         # Load views
         # Executes the query function in the global namespace, typecasts the result to a function, and creates a view
-        for view_name, view_data in data["views"].items():
-            exec(view_data["query"].strip(), globals())
-            globals()[view_name] = eval(view_name)
-            db.create_view(view_name, types.FunctionType(globals()[view_name].__code__, {"db": db}))
+        if views:
+            for view_name, view_data in data["views"].items():
+                exec(view_data["query"].strip(), globals())
+                globals()[view_name] = eval(view_name)
+                db.create_view(view_name, types.FunctionType(globals()[view_name].__code__, {"db": db}))
             
         # Load materialized views
         # Executes the query function in the global namespace, typecasts the result to a function, and creates a materialized view
-        for mv_name, mv_data in data["materialized_views"].items():
-            exec(mv_data["query"].strip(), globals())
-            globals()[mv_name] = eval(mv_name)
-            db.create_materialized_view(mv_name, types.FunctionType(globals()[mv_name].__code__, {"db": db}))
+        if materialized_views:
+            for mv_name, mv_data in data["materialized_views"].items():
+                exec(mv_data["query"].strip(), globals())
+                globals()[mv_name] = eval(mv_name)
+                db.create_materialized_view(mv_name, types.FunctionType(globals()[mv_name].__code__, {"db": db}))
             
         # Load stored procedures
         # Executes the query function in the global namespace, typecasts the result to a function, and creates a stored procedure
-        if data.get("stored_procedures"):    
-            for sp_name, sp_data in data["stored_procedures"].items():
-                exec(sp_data["query"].strip(), globals())
-                globals()[sp_name] = eval(sp_name)
-                db.add_stored_procedure(sp_name, types.FunctionType(globals()[sp_name].__code__, {"db": db}))
+        if stored_procedures:
+            if data.get("stored_procedures"):    
+                for sp_name, sp_data in data["stored_procedures"].items():
+                    exec(sp_data["query"].strip(), globals())
+                    globals()[sp_name] = eval(sp_name)
+                    db.add_stored_procedure(sp_name, types.FunctionType(globals()[sp_name].__code__, {"db": db}))
         
         # Load triggers
-        if data.get("triggers"):
-            for trigger_type in data["triggers"]:
-                for proc_name, triggers in data["triggers"][trigger_type].items():
-                    for trigger_data in triggers:
-                        exec(trigger_data.strip(), globals())
-                        trigger_name_match = re.search(r'def (\w+)', trigger_data)
-                        if trigger_name_match:
-                            trigger_name = trigger_name_match.group(1)
-                            trigger_function = eval(trigger_name)
-                            db.add_trigger(proc_name, trigger_type, types.FunctionType(trigger_function.__code__, {"db": db}))
+        if triggers:
+            if data.get("triggers"):
+                for trigger_type in data["triggers"]:
+                    for proc_name, triggers in data["triggers"][trigger_type].items():
+                        for trigger_data in triggers:
+                            exec(trigger_data.strip(), globals())
+                            trigger_name_match = re.search(r'def (\w+)', trigger_data)
+                            if trigger_name_match:
+                                trigger_name = trigger_name_match.group(1)
+                                trigger_function = eval(trigger_name)
+                                db.add_trigger(proc_name, trigger_type, types.FunctionType(trigger_function.__code__, {"db": db}))
 
     # Utility Functions
     # ---------------------------------------------------------------------------------------------

@@ -5,7 +5,17 @@ from .record import Record
 from .storage import Storage
 
 class PartialDatabase(Database):
-    def __init__(self, name, file_path):
+    def __init__(self, name, file_path, views=True, materialized_views=True, stored_procedures=True, triggers=True):
+        """
+        Initialize a new partial database object.
+        Args:
+            name (str): The name of the database.
+            file_path (str): The path to the database file.
+            views (bool, optional): Whether to load views. Defaults to None.
+            materialized_views (bool, optional): Whether to load materialized views. Defaults to None.
+            stored_procedures (bool, optional): Whether to load stored procedures. Defaults to None.
+            triggers (bool, optional): Whether to load triggers. Defaults to None.
+        """
         super().__init__(name)
         self.file_path = file_path
         self.loaded_tables = {}
@@ -14,9 +24,9 @@ class PartialDatabase(Database):
         self.loaded_tables["_users"] = self._load_table_from_storage("_users")
         
         # Load views, materialized views, stored procedures, and triggers
-        Storage._load_viewsProcs_from_db_file(self.file_path, self)
+        Storage._load_viewsProcs_from_db_file(self.file_path, self, 
+                                              views=views, materialized_views=materialized_views, stored_procedures=stored_procedures, triggers=triggers)
         
-
     def get_table(self, table_name, session_token=None):
         """
         Retrieve a table from the database by its name. Load the table into memory if it is not already loaded.
@@ -50,6 +60,16 @@ class PartialDatabase(Database):
             list: A list of table names.
         """
         return list(self.loaded_tables.keys())
+    
+    def deactivate_table(self, table_name):
+        """
+        Move a table from active memory to dormant storage.
+        Args:
+            table_name (str): The name of the table to move.
+        """
+        if table_name in self.loaded_tables:
+            Storage._save_table_to_db_file(self.file_path, self.loaded_tables[table_name])
+            del self.loaded_tables[table_name]
     
     def dormant_tables(self):
         """

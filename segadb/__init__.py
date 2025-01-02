@@ -1,6 +1,7 @@
 # segadb/__init__.py
 
 from .database import Database
+from .databasePartial import PartialDatabase
 from .index import Index
 from .record import Record, VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord
 from .storage import Storage
@@ -12,6 +13,7 @@ from .crypto import CustomFernet
 
 __all__ = [
     "Database",
+    "PartialDatabase",
     "Index",
     "Record",
     "VectorRecord",

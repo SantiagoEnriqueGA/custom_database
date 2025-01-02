@@ -1,5 +1,6 @@
 ﻿wrote segadb.crypto.html
 wrote segadb.database.html
+wrote segadb.databasePartial.html
 wrote segadb.index.html
 wrote segadb.record.html
 wrote segadb.storage.html

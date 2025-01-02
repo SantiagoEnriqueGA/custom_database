@@ -14,6 +14,7 @@ This project is primarily educational. It is designed to help understand the wor
 
 ## Features
 - **Database Management**: Create, drop, copy, restore, and add constraints to database. See [`Database`](segadb/database.py).
+- **Partial Database Loading**: Load only the necessary tables from a database file into memory. See [`DatabasePartial`](segadb/databasePartial.py).
 - **Table Operations**: Insert, update, delete, and select records in a table. See [`Table`](segadb/table.py).
 - **Transaction Handling**: Support for transactions with commit and rollback functionality. See [`Transaction`](segadb/transaction.py).
 - **Indexing**: Create and manage indexes for efficient data retrieval. See [`Index`](segadb/index.py).
@@ -54,6 +55,7 @@ The project directory structure is as follows:
 - **segadb/**: Contains the main database library code.
   - [`__init__.py`](segadb/__init__.py): Initializes the segadb package.
   - [`database.py`](segadb/database.py): Implements the `Database` class for managing tables.
+  - [`databasePartial.py`](segadb/databasePartial.py): Implements the `DatabasePartial` class for partial database loading.
   - [`index.py`](segadb/index.py): Implements the `Index` class for indexing records.
   - [`main.py`](segadb/main.py): Main entry point for the database operations.
   - [`record.py`](segadb/record.py): Implements the `Record` class for individual records.
@@ -67,6 +69,7 @@ The project directory structure is as follows:
   - [`run_all_tests.py`](tests/run_all_tests.py): Runs all available tests.
   - [`test_utils.py`](tests/test_utils.py): Utility functions for tests.
   - [`test_database.py`](tests/test_database.py): Unit tests for the `Database` class.
+  - [`test_databasePartial.py`](tests/test_databasePartial.py): Unit tests for the `DatabasePartial` class.
   - [`test_table.py`](tests/test_table.py): Unit tests for the `Table` class.
   - [`test_index.py`](tests/test_index.py): Unit tests for the `Index` class.
   - [`test_record.py`](tests/test_record.py): Unit tests for the `Record` class.
@@ -95,8 +98,10 @@ The project directory structure is as follows:
   - [example_UsersAuth.py](examples/example_UsersAuth.py): Demonstrates user authentication and authorization.
   - [example_views.py](examples/example_views.py): Demonstrates how to create, retrieve, refresh, and delete views and materialized views.
   - [example_stored_procs.py'](examples/example_stored_procs.py): Demonstrates how to create and use stored procedures and triggers.
+  - [example_partialDB.py](examples/example_partialDB.py): Demonstrates how to load only the necessary tables from a database file into memory.
 - **docs/**: Contains the generated documentation for the segadb library.
   - [segadb.database.html](docs/segadb.database.html): Documentation for the `Database` class.
+  - [segadb.databasePartial.html](docs/segadb.databasePartial.html): Documentation for the `DatabasePartial` class.
   - [segadb.index.html](docs/segadb.index.html): Documentation for the `Index` class.
   - [segadb.record.html](docs/segadb.record.html): Documentation for the `Record` class.
   - [segadb.storage.html](docs/segadb.storage.html): Documentation for the `Storage` class.
@@ -113,7 +118,6 @@ The project directory structure is as follows:
   - [comment_density.ps1](scripts/comment_density.ps1): Calculates the comment density in Python files.
   - [documentation_html.ps1](scripts/documentation_html.ps1): Generates HTML documentation.
   - [documentation_md.ps1](scripts/documentation_md.ps1): Generates markdown documentation.
-
 
 ## Usage Examples
 
@@ -137,6 +141,7 @@ The project directory structure is as follows:
 
 ### Performance
 - [example_millionRowLoad.py](examples/example_millionRowLoad.py): Demonstrates how to load a table with a million rows using multiprocessing.
+- [example_partialDB.py](examples/example_partialDB.py): Demonstrates how to load only the necessary tables from a database file into memory.
 
 ### Storage
 - [example_storage.py](examples/example_storage.py): Demonstrates how to save and load the database, and check constraints.
@@ -243,9 +248,11 @@ Or run the all tests file: `python run_all_tests.py`
 The following are the results of running the tests:
 
 ```sh
+(segadb_env) PS ...\custom_database> python .\tests\run_all_tests.py
 Testing CustomFernet Class
 ...Testing Database Class
-..................................Testing file: example_UsersAuth.py
+......................................Testing DatabasePartial Class
+.....Testing file: example_UsersAuth.py
 .Testing file: example_backupRecovery.py
 .Testing file: example_change_ids.py
 .Testing file: example_constraints.py
@@ -254,8 +261,10 @@ Testing CustomFernet Class
 .Testing file: example_databaseDetails.py
 .Testing file: example_foreignKeys.py
 .Testing file: example_millionRowLoad.py
+.Testing file: example_partialDB.py
 .Testing file: example_queries.py
 .Testing file: example_recordTypes.py
+.Testing file: example_sampleDB.py
 .Testing file: example_storage.py
 .Testing file: example_storageCompression.py
 .Testing file: example_storageCompressionLarge.py
@@ -265,19 +274,19 @@ Testing CustomFernet Class
 .Testing Imports
 ..Testing Index Class
 ..Testing Record Class
-.....Delete performance on 5000 [id, name, email] records: 0.011 seconds.
-.Insert performance for 5000 [id, name, email] records: 1.3 seconds.
+.....Delete performance on 5000 [id, name, email] records: 0.012 seconds.
+.Insert performance for 5000 [id, name, email] records: 1.0 seconds.
 .Load performance for 5000 records: 1.2 seconds.
 .Restore performance for 5000 records: 0.0 seconds.
-.Save performance for 5000 records: 0.2 seconds.
-.Select performance of 1 out of 5000 [id, name, email] records: 0.0 seconds.
-.Update performance on 5000 [id, name, email] records: 0.71 seconds.
+.Save performance for 5000 records: 0.14 seconds.
+.Select performance of 1 out of 5000 [id, name, email] records: 0.012 seconds.
+.Update performance on 5000 [id, name, email] records: 0.67 seconds.
 .Testing Storage Class
-............Testing Table Class
+................Testing Table Class
 ........Testing Transaction Class
 .......................
 ----------------------------------------------------------------------
-Ran 113 tests in 153.012s
+Ran 128 tests in 161.125s
 
 OK
 ```
