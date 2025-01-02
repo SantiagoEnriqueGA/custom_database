@@ -29,7 +29,7 @@ class TestDatabasePartial(unittest.TestCase):
         print("Testing DatabasePartial Class")
 
     def setUp(self):
-        db = Database.load_sample_database(num_users=100, num_orders=200)
+        db = Database.load_sample_database(n_users=100, n_orders=200)
         Storage.save(db, "example_storage/database_partial.db")
         self.db = PartialDatabase("Partial Database", "example_storage/database_partial.db")
         self.db._load_table_from_storage = MagicMock()

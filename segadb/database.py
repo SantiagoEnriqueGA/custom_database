@@ -972,8 +972,76 @@ class Database:
                 "email": fake.email()  # Use the instance to generate data
             })
     
+    def _create_products_table(self, num_records=50):
+        """
+        Create a sample products table with random data.
+        Args:
+            num_records (int): The number of records to generate.
+        """
+        columns = ["product_id", "name", "category", "price"]
+        self.create_table("products", columns)
+        fake = Faker()
+        for i in range(num_records):
+            self.tables["products"].insert({
+                "product_id": i + 1,
+                "name": fake.word(),
+                "category": random.choice(["Electronics", "Clothing", "Home", "Sports"]),
+                "price": random.uniform(10.0, 500.0)
+            })
+
+    def _create_reviews_table(self, num_records=200):
+        """
+        Create a sample reviews table with random data.
+        Args:
+            num_records (int): The number of records to generate.
+        """
+        columns = ["review_id", "product_id", "user_id", "rating", "comment"]
+        self.create_table("reviews", columns)
+        fake = Faker()
+        for i in range(num_records):
+            self.tables["reviews"].insert({
+                "review_id": i + 1,
+                "product_id": random.randint(1, 50),
+                "user_id": random.randint(1, 10),
+                "rating": random.randint(1, 5),
+                "comment": fake.sentence()
+            })
+
+    def _create_categories_table(self, num_records=10):
+        """
+        Create a sample categories table with random data.
+        Args:
+            num_records (int): The number of records to generate.
+        """
+        columns = ["category_id", "name", "description"]
+        self.create_table("categories", columns)
+        fake = Faker()
+        for i in range(num_records):
+            self.tables["categories"].insert({
+                "category_id": i + 1,
+                "name": fake.word(),
+                "description": fake.sentence()
+            })
+
+    def _create_suppliers_table(self, num_records=20):
+        """
+        Create a sample suppliers table with random data.
+        Args:
+            num_records (int): The number of records to generate.
+        """
+        columns = ["supplier_id", "name", "contact_name", "contact_email"]
+        self.create_table("suppliers", columns)
+        fake = Faker()
+        for i in range(num_records):
+            self.tables["suppliers"].insert({
+                "supplier_id": i + 1,
+                "name": fake.company(),
+                "contact_name": fake.name(),
+                "contact_email": fake.email()
+            })
+
     @staticmethod
-    def load_sample_database(name="SampleDB", num_users=10, num_orders=100):
+    def load_sample_database(name="SampleDB", n_users=10, n_orders=100, n_products=50, n_reviews=200, n_categories=10, n_suppliers=20):
         """
         Create a sample database with predefined tables and data for testing and demonstration purposes.
         Args:
@@ -994,14 +1062,31 @@ class Database:
         admin_session = user_manager.login_user("admin", "password123")
 
         # Create two tables: users and orders
-        db._create_orders_table(num_records=num_orders)
-        db._create_users_table(num_records=num_users)
+        db._create_orders_table(num_records=n_orders)
+        db._create_users_table(num_records=n_users)
 
         # Add a unique constraint to the users t;able on the id column
         db.add_constraint("users", "user_id", "UNIQUE")
 
         # Add a foreign key constraint to the orders table on the user_id column (user_id in orders must exist in users)
         db.add_constraint("orders", "user_id", "FOREIGN_KEY", reference_table_name="users", reference_column="user_id")
+        
+        # Create tables: products and reviews
+        db._create_products_table(num_records=n_products)
+        db._create_reviews_table(num_records=n_reviews)
+
+        # Add a foreign key constraint to the reviews table on the product_id column (product_id in reviews must exist in products)
+        db.add_constraint("reviews", "product_id", "FOREIGN_KEY", reference_table_name="products", reference_column="product_id")
+
+        # Add a foreign key constraint to the reviews table on the user_id column (user_id in reviews must exist in users)
+        db.add_constraint("reviews", "user_id", "FOREIGN_KEY", reference_table_name="users", reference_column="user_id")
+
+        # Create additional tables: categories and suppliers
+        db._create_categories_table(num_records=n_categories)
+        db._create_suppliers_table(num_records=n_suppliers)
+
+        # Add a foreign key constraint to the products table on the category column (category in products must exist in categories)
+        db.add_constraint("products", "category", "FOREIGN_KEY", reference_table_name="categories", reference_column="name")
 
         # Example usage, create a view of laptops
         # ----------------------------------------------------------------------------------

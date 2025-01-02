@@ -453,7 +453,7 @@ class TestDatabase(unittest.TestCase):
         self.assertGreater(len(db.triggers), 0)
         
     def test_load_sample_database_custom(self):
-        db = Database.load_sample_database(num_users=100, num_orders=200)
+        db = Database.load_sample_database(n_users=100, n_orders=200)
         self.assertEqual(len(db.get_table("users").records), 100)
         self.assertEqual(len(db.get_table("orders").records), 200)
         

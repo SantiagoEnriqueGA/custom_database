@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from segadb import *
 
 # Load and print a sample database
-db = Database.load_sample_database(num_users=3, num_orders=3)
+db = Database.load_sample_database(n_users=3, n_orders=3)
 
 # Save the database to a file
 Storage.save(db, "example_storage/database_partial.db")
