@@ -22,7 +22,7 @@ BaseRecords.insert({"name": "John3 Doe", "email": "john@example.com"})
 
 print("\n" + "-" * 80)
 print("BaseRecords Table:")
-BaseRecords.print_table()
+BaseRecords.print_table(pretty=True)
 
 
 # Create a new table for VectorRecords
@@ -38,7 +38,7 @@ VectorRecords.insert({"vector": [5.0, 5.0, 5.0]}, record_type=VectorRecord)
 
 print("\n" + "-" * 80)
 print("VectorRecords Table:")
-VectorRecords.print_table()
+VectorRecords.print_table(pretty=True)
 
 vr1 = VectorRecords.records[0]
 
@@ -60,7 +60,7 @@ TimeSeriesRecords.insert({"time_series": [5, 6, 7, 8]}, record_type=TimeSeriesRe
 
 print("\n" + "-" * 80)
 print("TimeSeriesRecords Table:")
-TimeSeriesRecords.print_table()
+TimeSeriesRecords.print_table(pretty=True)
 
 time1 = TimeSeriesRecords.records[0]
 
@@ -82,7 +82,7 @@ TextRecords.insert({"text": "Goodbye, world!"}, record_type=TextRecord)
 
 print("\n" + "-" * 80)
 print("TextRecords Table:")
-TextRecords.print_table()
+TextRecords.print_table(pretty=True)
 
 text1 = TextRecords.records[0]
 
@@ -115,3 +115,27 @@ image1.get_image()
 print(f"ImageRecord Resize (50%):")
 # image1.resize(0.5).show()
 image1.resize(0.5)
+
+
+# Create a new table for EncryptedRecords
+# ----------------------------------------------------------------------------------
+db.create_table("EncryptedRecords", ["encrypted_data"])
+
+# TEMP: Add to init
+from segadb.record import EncryptedRecord
+
+# Insert encrypted records
+key = CustomFernet.generate_key()
+EncryptedRecords = db.get_table("EncryptedRecords")
+EncryptedRecords.insert({"data": "secret message", "key": key}, record_type=EncryptedRecord)
+EncryptedRecords.insert({"data": "another secret message", "key": key}, record_type=EncryptedRecord)
+
+print("\n" + "-" * 80)
+print("EncryptedRecords Table:")
+EncryptedRecords.print_table(pretty=True)
+
+# Example usage of EncryptedRecord methods
+encrypted1 = EncryptedRecords.records[0]
+print(f"\nExample usage of EncryptedRecord Methods on record: {encrypted1}:")
+print(f"EncryptedRecord Decrypted (Incorrect Key): {encrypted1.decrypt('incorrect_key')}")
+print(f"EncryptedRecord Decrypted: {encrypted1.decrypt(key)}")

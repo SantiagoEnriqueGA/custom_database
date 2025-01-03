@@ -3,7 +3,7 @@
 from .database import Database
 from .databasePartial import PartialDatabase
 from .index import Index
-from .record import Record, VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord
+from .record import Record, VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord, EncryptedRecord
 from .storage import Storage
 from .table import Table
 from .transaction import Transaction
@@ -20,6 +20,7 @@ __all__ = [
     "TimeSeriesRecord",
     "ImageRecord",
     "TextRecord",
+    "EncryptedRecord",
     "Storage",
     "Table",
     "Transaction",
@@ -28,5 +29,5 @@ __all__ = [
     "Authorization",
     "View",
     "MaterializedView",
-    "CustomFernet"
+    "CustomFernet",
 ]

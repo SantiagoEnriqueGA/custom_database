@@ -12,6 +12,7 @@ from segadb.record import VectorRecord as vr
 from segadb.record import TimeSeriesRecord as tsr
 from segadb.record import ImageRecord as ir
 from segadb.record import TextRecord as tr
+from segadb.record import EncryptedRecord as er
 from segadb.storage import Storage as s
 from segadb.table import Table as tbl
 from segadb.transaction import Transaction as trans 
@@ -44,6 +45,7 @@ class TestImports(unittest.TestCase):
         assert tsr is not None
         assert ir is not None
         assert tr is not None
+        assert er is not None
         assert s is not None
         assert tbl is not None
         assert trans is not None
@@ -62,6 +64,7 @@ class TestImports(unittest.TestCase):
         assert TimeSeriesRecord is not None
         assert ImageRecord is not None
         assert TextRecord is not None
+        assert EncryptedRecord is not None
         assert Storage is not None
         assert Table is not None
         assert Transaction is not None

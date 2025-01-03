@@ -8,8 +8,8 @@ from PIL import Image
 
 # Imports: Local
 from .index import Index
+from .crypto import CustomFernet
 
-# TODO: Add support for encrypting data at rest 
 class Record:
     def __init__(self, record_id, data):
         """
@@ -207,3 +207,31 @@ class TextRecord(Record):
             str: The text in lowercase.
         """
         return self.text.lower()
+    
+class EncryptedRecord(Record):
+    def __init__(self, record_id, data):
+        """
+        Initializes a new instance of the EncryptedRecord class.
+        Args:
+            record_id (int): The unique identifier for the record.
+            data (str): The data associated with the record. Must contain a 'data' and 'key' field.
+        """
+        # Create a CustomFernet object with the key and encrypt the data
+        fernet = CustomFernet(data["key"])
+        self._encrypted_data = fernet.encrypt(data["data"])
+        
+        super().__init__(record_id, {"data": self._encrypted_data})
+
+    def decrypt(self, key):
+        """
+        Decrypts the data using the encryption key.
+        Args:
+            key (str): The key used for decryption
+        Returns:
+            str: The decrypted data.
+        """
+        try:
+            fernet = CustomFernet(key)
+            return fernet.decrypt(self._encrypted_data)
+        except Exception as e:
+            return f"Decryption Error: {e}"
