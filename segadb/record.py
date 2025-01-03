@@ -36,6 +36,9 @@ class Record:
     def remove_from_index(self, key):
         self._index.remove(key, self)
         
+    def _type(self):
+        return "Record"
+        
 class VectorRecord(Record):
     def __init__(self, record_id, vector):
         """
@@ -79,6 +82,9 @@ class VectorRecord(Record):
         """
         return sum(x * y for x, y in zip(self.vector, other_vector))
     
+    def _type(self):
+        return "VectorRecord"
+    
         
 class TimeSeriesRecord(Record):
     def __init__(self, record_id, time_series):
@@ -97,7 +103,9 @@ class TimeSeriesRecord(Record):
             list: The moving average of the time series.
         """
         return [sum(self.time_series[i:i+window_size]) / window_size for i in range(len(self.time_series) - window_size + 1)]
-
+    
+    def _type(self):
+        return "TimeSeriesRecord"
 
 class ImageRecord(Record):
     def __init__(self, record_id, image_path):
@@ -169,6 +177,9 @@ class ImageRecord(Record):
         data = self.data.copy()
         data["image_data"] = self._convert_to_base64()
         return data
+    
+    def _type(self):
+        return "ImageRecord"
         
 class TextRecord(Record):
     def __init__(self, record_id, text):
@@ -208,6 +219,9 @@ class TextRecord(Record):
         """
         return self.text.lower()
     
+    def _type(self):
+        return "TextRecord"
+    
 class EncryptedRecord(Record):
     def __init__(self, record_id, data):
         """
@@ -235,3 +249,6 @@ class EncryptedRecord(Record):
             return fernet.decrypt(self._encrypted_data)
         except Exception as e:
             return f"Decryption Error: {e}"
+        
+    def _type(self):
+        return "EncryptedRecord"

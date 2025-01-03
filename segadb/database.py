@@ -839,6 +839,7 @@ class Database:
                 else:
                     print(f"\nTable: {table_name}")
                     print(f"Records: {len(table.records)}")
+                    print(f"Record Types: {table.records[0]._type()}")
                     print(f"Columns: {table.columns}")
                 
                 consts = []
