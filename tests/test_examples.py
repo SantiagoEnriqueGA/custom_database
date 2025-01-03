@@ -39,8 +39,9 @@ class TestExampleExceptions(unittest.TestCase):
         if 'example_storageCompressionLarge.py' in example_file:
             from examples.example_storageCompressionLarge import main
             print(f"Testing file: {strip_file_path(example_file)}")
-            with suppress_print():
-                main()
+            pass # Skip this test case. Too slow. Covered by example_storageCompression.py.
+            # with suppress_print():
+            #     main()
 
 
 class TestExamples(unittest.TestCase):

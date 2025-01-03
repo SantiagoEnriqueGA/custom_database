@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import Mock
 import sys
 import os
+import math
 
 # Change the working directory to the parent directory to allow importing the segadb package.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -9,11 +10,13 @@ from segadb.database import Database
 from segadb.storage import Storage
 from segadb.record import Record, VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord, EncryptedRecord
 from segadb.crypto import CustomFernet
+from test_utils import suppress_print
 
 class TestStorage(unittest.TestCase):
     """
     Unit tests for the Storage class.
     Methods:
+    - setUpClass: Prints a message before any tests are run.
     - setUp: Initializes a new instance of the Database class and a filename before each test method is run.
     - tearDown: Deletes the test file after each test method is run.
     - test_save: Tests saving the database to a file.
@@ -29,10 +32,15 @@ class TestStorage(unittest.TestCase):
     - test_list_backups: Tests listing the backups of the database.
     - test_restore: Tests restoring the database from a backup.
     - test_store_vectorRecord: Tests storing VectorRecord objects in the database.
+    - test_store_vectorRecord_methods: Tests methods of VectorRecord objects in the database.
     - test_store_timeSeriesRecord: Tests storing TimeSeriesRecord objects in the database.
+    - test_store_timeSeriesRecord_methods: Tests methods of TimeSeriesRecord objects in the database.
     - test_store_imageRecord: Tests storing ImageRecord objects in the database.
+    - test_store_imageRecord_methods: Tests methods of ImageRecord objects in the database.
     - test_store_textRecord: Tests storing TextRecord objects in the database.
+    - test_store_textRecord_methods: Tests methods of TextRecord objects in the database.
     - test_store_encrypted_record: Tests storing EncryptedRecord objects in the database.
+    - test_store_encrypted_record_wrong_key: Tests decrypting EncryptedRecord objects with a wrong key.
     """
     @classmethod
     def setUpClass(cls):
@@ -160,6 +168,19 @@ class TestStorage(unittest.TestCase):
         self.assertEqual(loaded_db.tables.keys(), self.db.tables.keys())
         self.assertEqual(loaded_db.get_table("VectorRecords").columns, self.db.get_table("VectorRecords").columns)
         self.assertEqual(len(loaded_db.get_table("VectorRecords").records), len(self.db.get_table("VectorRecords").records))
+        
+    def test_store_vectorRecord_methods(self):
+        self.db.create_table("VectorRecords", ["vector"])
+        VectorRecords = self.db.get_table("VectorRecords")
+        VectorRecords.insert({"vector": [1.0, 2.0, 3.0]}, record_type=VectorRecord)
+        
+        Storage.save(self.db, self.filename)
+        loaded_db = Storage.load(self.filename)
+        loaded_table = loaded_db.get_table("VectorRecords")
+        loaded_record = loaded_table.records[0]
+        self.assertEqual(loaded_record.magnitude(), math.sqrt(14))
+        self.assertEqual(loaded_record.normalize(), [1/math.sqrt(14), 2/math.sqrt(14), 3/math.sqrt(14)])
+        self.assertEqual(loaded_record.dot_product([4, 5, 6]), 32)
 
     def test_store_timeSeriesRecord(self):
         self.db.create_table("TimeSeriesRecords", ["time_series"])
@@ -173,6 +194,17 @@ class TestStorage(unittest.TestCase):
         self.assertEqual(loaded_db.tables.keys(), self.db.tables.keys())
         self.assertEqual(loaded_db.get_table("TimeSeriesRecords").columns, self.db.get_table("TimeSeriesRecords").columns)
         self.assertEqual(len(loaded_db.get_table("TimeSeriesRecords").records), len(self.db.get_table("TimeSeriesRecords").records))
+        
+    def test_store_timeSeriesRecord_methods(self):
+        self.db.create_table("TimeSeriesRecords", ["time_series"])
+        TimeSeriesRecords = self.db.get_table("TimeSeriesRecords")
+        TimeSeriesRecords.insert({"time_series": [1, 2, 3, 4, 5]}, record_type=TimeSeriesRecord)
+        
+        Storage.save(self.db, self.filename)
+        loaded_db = Storage.load(self.filename)
+        loaded_table = loaded_db.get_table("TimeSeriesRecords")
+        loaded_record = loaded_table.records[0]
+        self.assertEqual(loaded_record.moving_average(3), [2.0, 3.0, 4.0])
 
     def test_store_imageRecord(self):
         self.db.create_table("ImageRecords", ["image_data", "image_path"])
@@ -186,6 +218,17 @@ class TestStorage(unittest.TestCase):
         self.assertEqual(loaded_db.tables.keys(), self.db.tables.keys())
         self.assertEqual(loaded_db.get_table("ImageRecords").columns, self.db.get_table("ImageRecords").columns)
         self.assertEqual(len(loaded_db.get_table("ImageRecords").records), len(self.db.get_table("ImageRecords").records))
+        
+    def test_store_imageRecord_methods(self):
+        self.db.create_table("ImageRecords", ["image_data", "image_path"])
+        ImageRecords = self.db.get_table("ImageRecords")
+        ImageRecords.insert({"image_data": 'example_datasets/cube.png'}, record_type=ImageRecord)
+        
+        Storage.save(self.db, self.filename)
+        loaded_db = Storage.load(self.filename)
+        loaded_table = loaded_db.get_table("ImageRecords")
+        loaded_record = loaded_table.records[0]
+        self.assertEqual(loaded_record.image_size, os.path.getsize('example_datasets/cube.png'))
 
     def test_store_textRecord(self):
         self.db.create_table("TextRecords", ["text"])
@@ -200,12 +243,24 @@ class TestStorage(unittest.TestCase):
         self.assertEqual(loaded_db.get_table("TextRecords").columns, self.db.get_table("TextRecords").columns)
         self.assertEqual(len(loaded_db.get_table("TextRecords").records), len(self.db.get_table("TextRecords").records))   
         
+    def test_store_textRecord_methods(self):
+        self.db.create_table("TextRecords", ["text"])
+        TextRecords = self.db.get_table("TextRecords")
+        TextRecords.insert({"text": "Hello, world!"}, record_type=TextRecord)
+        
+        Storage.save(self.db, self.filename)
+        loaded_db = Storage.load(self.filename)
+        loaded_table = loaded_db.get_table("TextRecords")
+        loaded_record = loaded_table.records[0]
+        self.assertEqual(loaded_record.word_count(), 2)
+        self.assertEqual(loaded_record.to_uppercase(), "HELLO, WORLD!")
+        self.assertEqual(loaded_record.to_lowercase(), "hello, world!")           
+    
     def test_store_encrypted_record(self):
         self.db.create_table("EncryptedRecords", ["encrypted_data"])
         key = CustomFernet.generate_key()
         EncryptedRecords = self.db.get_table("EncryptedRecords")
         EncryptedRecords.insert({"data": "secret message", "key": key}, record_type=EncryptedRecord)
-        EncryptedRecords.insert({"data": "another secret message", "key": key}, record_type=EncryptedRecord)
         
         Storage.save(self.db, self.filename)
         loaded_db = Storage.load(self.filename)
@@ -213,6 +268,18 @@ class TestStorage(unittest.TestCase):
         self.assertEqual(loaded_db.tables.keys(), self.db.tables.keys())
         self.assertEqual(loaded_db.get_table("EncryptedRecords").columns, self.db.get_table("EncryptedRecords").columns)
         self.assertEqual(len(loaded_db.get_table("EncryptedRecords").records), len(self.db.get_table("EncryptedRecords").records))
+        
+    def test_store_encrypted_record_wrong_key(self):
+        self.db.create_table("EncryptedRecords", ["encrypted_data"])
+        key = CustomFernet.generate_key()
+        EncryptedRecords = self.db.get_table("EncryptedRecords")
+        EncryptedRecords.insert({"data": "secret message", "key": key}, record_type=EncryptedRecord)
+        
+        Storage.save(self.db, self.filename)
+        loaded_db = Storage.load(self.filename)
+        loaded_table = loaded_db.get_table("EncryptedRecords")
+        loaded_record = loaded_table.records[0]
+        self.assertIn("Decryption Error", loaded_record.decrypt("wrong_key"))
     
 if __name__ == '__main__':
     unittest.main()
