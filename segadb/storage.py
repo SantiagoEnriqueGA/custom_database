@@ -179,6 +179,7 @@ class Storage:
                 "columns": table.columns,
                 "records": [{
                     "id": record.id,
+                    "type": record._type(),
                     "data": record.to_dict() if isinstance(record, ImageRecord) else {k: (v.decode() if isinstance(v, bytes) else v) for k, v in record.data.items()},
                     "index": record.index.to_dict(),
                 } for record in table.records],
@@ -278,7 +279,26 @@ class Storage:
                 table.next_id = table_data["next_id"]
                 for record in table_data["records"]:
                     record_data = {k: (v.encode() if isinstance(v, str) and k == "password_hash" else v) for k, v in record["data"].items()}
-                    table.insert(record_data, record_type=Record, flex_ids = True)
+                    
+                    # For each record type, create the record object and insert it into the table
+                    if record["type"] == "Record":
+                        table.insert(record_data, record_type=Record, flex_ids = True)
+                    elif record["type"] == "VectorRecord":
+                        table.insert(record_data, record_type=VectorRecord, flex_ids = True)
+                    elif record["type"] == "TimeSeriesRecord":
+                        table.insert(record_data, record_type=TimeSeriesRecord, flex_ids = True)
+                    elif record["type"] == "ImageRecord":
+                        table.insert(record_data, record_type=ImageRecord, flex_ids = True)
+                    elif record["type"] == "TextRecord":
+                        table.insert(record_data, record_type=TextRecord, flex_ids = True)
+                    elif record["type"] == "EncryptedRecord":                        
+                        try:
+                            record_data["key"] = None
+                            table.insert(record_data, record_type=EncryptedRecord, flex_ids = True)
+                        except Exception as e:
+                            print(f"Error loading EncryptedRecord: {e}")
+                            table.insert(record_data, record_type=Record, flex_ids = True)
+                    
                     table.records[-1].id = record["id"]
                 for column, constraints in table_data["constraints"].items():
                     for constraint in constraints:

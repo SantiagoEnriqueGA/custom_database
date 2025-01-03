@@ -117,9 +117,27 @@ class ImageRecord(Record):
         """
         image_path = image_path['image_data']
         
-        with open(image_path, "rb") as image_file:
-            image_data = image_file.read()
-        super().__init__(record_id, {"image_data": image_data, "image_path": image_path})
+        # Try to read the image data from the file path
+        try:
+            with open(image_path, "rb") as image_file:
+                image_data = image_file.read()
+            super().__init__(record_id, {"image_data": image_data, "image_path": image_path})
+            
+        # If the file is not found, try to read the image data directly
+        except FileNotFoundError:
+            try:
+                image_data = image_path
+                # Convert the image data from bytes to string
+                if isinstance(image_data, bytes):
+                    image_data = image_data.decode()
+                image_data = base64.b64decode(image_data)
+                
+                
+                super().__init__(record_id, {"image_data": image_data, "image_path": "N/A"})
+            
+            # If the image data is invalid, raise an error
+            except Exception as e:
+                raise ValueError(f"Invalid image path: {e}")
 
     @property
     def image_data(self):
@@ -133,7 +151,6 @@ class ImageRecord(Record):
     def image_size(self):
         """
         Returns the size of the image in bytes.
-
         """
         return len(self.image_data)
 
@@ -230,9 +247,14 @@ class EncryptedRecord(Record):
             record_id (int): The unique identifier for the record.
             data (str): The data associated with the record. Must contain a 'data' and 'key' field.
         """
+        # If key is none, data is already encrypted
+        if data["key"] is None:
+            self._encrypted_data = data["data"]
+            
         # Create a CustomFernet object with the key and encrypt the data
-        fernet = CustomFernet(data["key"])
-        self._encrypted_data = fernet.encrypt(data["data"])
+        else:
+            fernet = CustomFernet(data["key"])
+            self._encrypted_data = fernet.encrypt(data["data"])
         
         super().__init__(record_id, {"data": self._encrypted_data})
 
