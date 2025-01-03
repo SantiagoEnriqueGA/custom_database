@@ -121,9 +121,6 @@ image1.resize(0.5)
 # ----------------------------------------------------------------------------------
 db.create_table("EncryptedRecords", ["encrypted_data"])
 
-# TEMP: Add to init
-from segadb.record import EncryptedRecord
-
 # Insert encrypted records
 key = CustomFernet.generate_key()
 EncryptedRecords = db.get_table("EncryptedRecords")
@@ -139,3 +136,18 @@ encrypted1 = EncryptedRecords.records[0]
 print(f"\nExample usage of EncryptedRecord Methods on record: {encrypted1}:")
 print(f"EncryptedRecord Decrypted (Incorrect Key): {encrypted1.decrypt('incorrect_key')}")
 print(f"EncryptedRecord Decrypted: {encrypted1.decrypt(key)}")
+
+
+# TODO: Ensure that Record extensions are saved and loaded correctly (e.g. VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord, EncryptedRecord)
+# # Save the database
+# Storage.save(db, "example_datasets/example_recordTypes.db")
+
+# # Load the database
+# loaded_db = Storage.load("example_datasets/example_recordTypes.db")
+# loaded_db.print_db()
+
+# EncryptedRecords = loaded_db.get_table("EncryptedRecords")
+# encrypted1 = EncryptedRecords.records[0]
+# print(f"\nExample usage of EncryptedRecord Methods on record: {encrypted1}:")
+# print(f"EncryptedRecord Decrypted (Incorrect Key): {encrypted1.decrypt('incorrect_key')}")
+# print(f"EncryptedRecord Decrypted: {encrypted1.decrypt(key)}")

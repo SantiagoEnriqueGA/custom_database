@@ -11,9 +11,8 @@ from datetime import datetime
 # Imports: Local
 from .crypto import CustomFernet
 from .database import Database
-from .record import Record
+from .record import Record, VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord, EncryptedRecord
 from .index import Index
-from .record import ImageRecord
 from .table import Table
 
 def _process_chunk(records_chunk, table):
@@ -36,6 +35,7 @@ def _process_chunk(records_chunk, table):
         record_objects.append(r)
     return record_objects
 
+# TODO: Ensure that Record extensions are saved and loaded correctly (e.g. VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord, EncryptedRecord)
 class Storage:
     """A utility class for saving, loading, and deleting database files."""
     
