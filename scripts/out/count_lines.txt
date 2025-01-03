@@ -1,7 +1,7 @@
 ﻿Lines per Python file, sorted by descending order:
 ____________________________________________________________________________________________________
 	custom_database\segadb\database.py                                             :  1102
-	custom_database\segadb\storage.py                                              :   695
+	custom_database\segadb\storage.py                                              :   694
 	custom_database\example_datasets\createMeasurements.py                         :   465
 	custom_database\tests\test_database.py                                         :   422
 	custom_database\segadb\table.py                                                :   330
@@ -49,5 +49,5 @@ ________________________________________________________________________________
 	custom_database\examples\example_dataImports.py                                :    13
 	custom_database\tests\run_all_tests.py                                         :    11
 ____________________________________________________________________________________________________
-Total lines                                                                            :  6162
+Total lines                                                                            :  6161
  

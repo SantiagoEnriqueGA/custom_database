@@ -35,8 +35,10 @@ This project is primarily educational. It is designed to help understand the wor
     - `word_count()`: Counts the number of words in the text.
     - `to_uppercase()`: Converts the text to uppercase.
     - `to_lowercase()`: Converts the text to lowercase.
+  - Encrypted records
+    - `decrypt()`: Decrypts the encrypted data using a custom Fernet implementation.
 - **User Management and Authorization**: Manage users, their roles, and permissions. See [`User`, `UserManager`, and `Authorization`](segadb/users.py).
-- **View and Materialized View Management**: Create, retrieve, refresh, and delete views and materialized views. See [`View`](segadb/views.py).
+- **View and Materialized View Management**: Create, retrieve, refresh, and delete views and materialized views. See [`View` and `MaterializedView`](segadb/views.py).
 - **Cryptographic Support**: Encrypt and decrypt data using a custom Fernet implementation. See [`CustomFernet`](segadb/crypto.py).
 
 ## Installation
@@ -118,6 +120,7 @@ The project directory structure is as follows:
   - [comment_density.ps1](scripts/comment_density.ps1): Calculates the comment density in Python files.
   - [documentation_html.ps1](scripts/documentation_html.ps1): Generates HTML documentation.
   - [documentation_md.ps1](scripts/documentation_md.ps1): Generates markdown documentation.
+  - [export_env.ps1](scripts/export_env.ps1): Exports the conda environment to a YAML file.
 
 ## Usage Examples
 
@@ -227,7 +230,7 @@ The following PowerShell scripts are included in the `scripts/` folder to help w
 - **comment_density.ps1**: Calculates the comment density (percentage of lines that are comments) in Python files.
 - **documentation_html.ps1**: Generates HTML documentation for Python files in the `segadb/` folder, and moves the generated HTML files to the `docs/` folder.
 - **documentation_md.ps1**: Generates markdown documentation for Python files in the `segadb/` folder.
-
+- **export_env.ps1**: Exports the conda environment to a YAML file. Remove the prefix from the environment name to make it compatible with other systems.
 
 ## Documentation
 ### HTML Documentation
