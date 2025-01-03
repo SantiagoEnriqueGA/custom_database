@@ -7,7 +7,8 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from segadb.database import Database
 from segadb.storage import Storage
-from segadb.record import Record, VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord
+from segadb.record import Record, VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord, EncryptedRecord
+from segadb.crypto import CustomFernet
 
 class TestStorage(unittest.TestCase):
     """
@@ -31,6 +32,7 @@ class TestStorage(unittest.TestCase):
     - test_store_timeSeriesRecord: Tests storing TimeSeriesRecord objects in the database.
     - test_store_imageRecord: Tests storing ImageRecord objects in the database.
     - test_store_textRecord: Tests storing TextRecord objects in the database.
+    - test_store_encrypted_record: Tests storing EncryptedRecord objects in the database.
     """
     @classmethod
     def setUpClass(cls):
@@ -198,5 +200,19 @@ class TestStorage(unittest.TestCase):
         self.assertEqual(loaded_db.get_table("TextRecords").columns, self.db.get_table("TextRecords").columns)
         self.assertEqual(len(loaded_db.get_table("TextRecords").records), len(self.db.get_table("TextRecords").records))   
         
+    def test_store_encrypted_record(self):
+        self.db.create_table("EncryptedRecords", ["encrypted_data"])
+        key = CustomFernet.generate_key()
+        EncryptedRecords = self.db.get_table("EncryptedRecords")
+        EncryptedRecords.insert({"data": "secret message", "key": key}, record_type=EncryptedRecord)
+        EncryptedRecords.insert({"data": "another secret message", "key": key}, record_type=EncryptedRecord)
+        
+        Storage.save(self.db, self.filename)
+        loaded_db = Storage.load(self.filename)
+        self.assertEqual(loaded_db.name, "TestDB")
+        self.assertEqual(loaded_db.tables.keys(), self.db.tables.keys())
+        self.assertEqual(loaded_db.get_table("EncryptedRecords").columns, self.db.get_table("EncryptedRecords").columns)
+        self.assertEqual(len(loaded_db.get_table("EncryptedRecords").records), len(self.db.get_table("EncryptedRecords").records))
+    
 if __name__ == '__main__':
     unittest.main()
