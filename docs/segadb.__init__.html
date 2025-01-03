@@ -58,7 +58,8 @@ td.singlecolumn { width: 100%; }
 </dt><dt class="heading-text"><a href="segadb.record.html#Record">segadb.record.Record</a>
 </dt><dd>
 <dl>
-<dt class="heading-text"><a href="segadb.record.html#ImageRecord">segadb.record.ImageRecord</a>
+<dt class="heading-text"><a href="segadb.record.html#EncryptedRecord">segadb.record.EncryptedRecord</a>
+</dt><dt class="heading-text"><a href="segadb.record.html#ImageRecord">segadb.record.ImageRecord</a>
 </dt><dt class="heading-text"><a href="segadb.record.html#TextRecord">segadb.record.TextRecord</a>
 </dt><dt class="heading-text"><a href="segadb.record.html#TimeSeriesRecord">segadb.record.TimeSeriesRecord</a>
 </dt><dt class="heading-text"><a href="segadb.record.html#VectorRecord">segadb.record.VectorRecord</a>
@@ -417,7 +418,7 @@ Args:<br>
 
 <hr>
 Static methods defined here:<br>
-<dl><dt><a name="Database-load_sample_database"><strong>load_sample_database</strong></a>(name='SampleDB', num_users=10, num_orders=100)</dt><dd><span class="code">Create&nbsp;a&nbsp;sample&nbsp;database&nbsp;with&nbsp;predefined&nbsp;tables&nbsp;and&nbsp;data&nbsp;for&nbsp;testing&nbsp;and&nbsp;demonstration&nbsp;purposes.<br>
+<dl><dt><a name="Database-load_sample_database"><strong>load_sample_database</strong></a>(name='SampleDB', n_users=10, n_orders=100, n_products=50, n_reviews=200, n_categories=10, n_suppliers=20)</dt><dd><span class="code">Create&nbsp;a&nbsp;sample&nbsp;database&nbsp;with&nbsp;predefined&nbsp;tables&nbsp;and&nbsp;data&nbsp;for&nbsp;testing&nbsp;and&nbsp;demonstration&nbsp;purposes.<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;sample&nbsp;database.<br>
 Returns:<br>
@@ -425,6 +426,54 @@ Returns:<br>
 
 <hr>
 Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table> <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="EncryptedRecord">class <strong>EncryptedRecord</strong></a>(<a href="segadb.record.html#Record">Record</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#EncryptedRecord">EncryptedRecord</a>(record_id,&nbsp;data)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt>Method resolution order:</dt>
+<dd><a href="segadb.record.html#EncryptedRecord">EncryptedRecord</a></dd>
+<dd><a href="segadb.record.html#Record">Record</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="EncryptedRecord-__init__"><strong>__init__</strong></a>(self, record_id, data)</dt><dd><span class="code">Initializes&nbsp;a&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;<a href="#EncryptedRecord">EncryptedRecord</a>&nbsp;class.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;record_id&nbsp;(int):&nbsp;The&nbsp;unique&nbsp;identifier&nbsp;for&nbsp;the&nbsp;record.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;(str):&nbsp;The&nbsp;data&nbsp;associated&nbsp;with&nbsp;the&nbsp;record.&nbsp;Must&nbsp;contain&nbsp;a&nbsp;'data'&nbsp;and&nbsp;'key'&nbsp;field.</span></dd></dl>
+
+<dl><dt><a name="EncryptedRecord-decrypt"><strong>decrypt</strong></a>(self, key)</dt><dd><span class="code">Decrypts&nbsp;the&nbsp;data&nbsp;using&nbsp;the&nbsp;encryption&nbsp;key.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;key&nbsp;(str):&nbsp;The&nbsp;key&nbsp;used&nbsp;for&nbsp;decryption<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;str:&nbsp;The&nbsp;decrypted&nbsp;data.</span></dd></dl>
+
+<hr>
+Methods inherited from <a href="segadb.record.html#Record">Record</a>:<br>
+<dl><dt><a name="EncryptedRecord-add_to_index"><strong>add_to_index</strong></a>(self, key)</dt></dl>
+
+<dl><dt><a name="EncryptedRecord-remove_from_index"><strong>remove_from_index</strong></a>(self, key)</dt></dl>
+
+<hr>
+Readonly properties inherited from <a href="segadb.record.html#Record">Record</a>:<br>
+<dl><dt><strong>index</strong></dt>
+<dd><span class="code">Returns&nbsp;the&nbsp;index&nbsp;of&nbsp;the&nbsp;record.&nbsp;<br>
+@property&nbsp;decorator&nbsp;is&nbsp;used&nbsp;to&nbsp;make&nbsp;the&nbsp;method&nbsp;behave&nbsp;like&nbsp;an&nbsp;attribute.&nbsp;(Read-only)</span></dd>
+</dl>
+<hr>
+Data descriptors inherited from <a href="segadb.record.html#Record">Record</a>:<br>
 <dl><dt><strong>__dict__</strong></dt>
 <dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
 </dl>
@@ -855,7 +904,7 @@ Args:<br>
 
 <hr>
 Static methods inherited from <a href="segadb.database.html#Database">segadb.database.Database</a>:<br>
-<dl><dt><a name="PartialDatabase-load_sample_database"><strong>load_sample_database</strong></a>(name='SampleDB', num_users=10, num_orders=100)</dt><dd><span class="code">Create&nbsp;a&nbsp;sample&nbsp;database&nbsp;with&nbsp;predefined&nbsp;tables&nbsp;and&nbsp;data&nbsp;for&nbsp;testing&nbsp;and&nbsp;demonstration&nbsp;purposes.<br>
+<dl><dt><a name="PartialDatabase-load_sample_database"><strong>load_sample_database</strong></a>(name='SampleDB', n_users=10, n_orders=100, n_products=50, n_reviews=200, n_categories=10, n_suppliers=20)</dt><dd><span class="code">Create&nbsp;a&nbsp;sample&nbsp;database&nbsp;with&nbsp;predefined&nbsp;tables&nbsp;and&nbsp;data&nbsp;for&nbsp;testing&nbsp;and&nbsp;demonstration&nbsp;purposes.<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;sample&nbsp;database.<br>
 Returns:<br>
@@ -877,7 +926,7 @@ Data descriptors inherited from <a href="segadb.database.html#Database">segadb.d
 <tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
 <td class="decor title-decor" colspan=2><span class="code"><a href="#Record">Record</a>(record_id,&nbsp;data)<br>
 &nbsp;<br>
-#&nbsp;TODO:&nbsp;Add&nbsp;support&nbsp;for&nbsp;encrypting&nbsp;data&nbsp;at&nbsp;rest<br>&nbsp;</span></td></tr>
+<br>&nbsp;</span></td></tr>
 <tr><td>&nbsp;</td>
 <td class="singlecolumn">Methods defined here:<br>
 <dl><dt><a name="Record-__init__"><strong>__init__</strong></a>(self, record_id, data)</dt><dd><span class="code">Initializes&nbsp;a&nbsp;new&nbsp;instance&nbsp;of&nbsp;the&nbsp;class.<br>
@@ -1465,5 +1514,5 @@ Data descriptors defined here:<br>
 <td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
     
 <tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
-<td class="singlecolumn"><strong>__all__</strong> = ['Database', 'PartialDatabase', 'Index', 'Record', 'VectorRecord', 'TimeSeriesRecord', 'ImageRecord', 'TextRecord', 'Storage', 'Table', 'Transaction', 'User', 'UserManager', 'Authorization', 'View', 'MaterializedView', 'CustomFernet']</td></tr></table>
+<td class="singlecolumn"><strong>__all__</strong> = ['Database', 'PartialDatabase', 'Index', 'Record', 'VectorRecord', 'TimeSeriesRecord', 'ImageRecord', 'TextRecord', 'EncryptedRecord', 'Storage', 'Table', 'Transaction', 'User', 'UserManager', 'Authorization', 'View', 'MaterializedView', 'CustomFernet']</td></tr></table>
 </body></html>
