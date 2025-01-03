@@ -1142,9 +1142,7 @@ class Database:
                     users_to_drop.add(user.data["user_id"])
             
             print(f"\nDropping users with no orders:")
-            for user_id in users_to_drop:
-                print(f"\tDropping user with ID: {user_id}")
-                users.delete(user_id)
+            print(f"{len(users_to_drop)} users dropped. IDs: {users_to_drop}")
                 
         # Add the stored procedure to the database
         db.add_stored_procedure("drop_users_with_no_orders", drop_users_with_no_orders)
