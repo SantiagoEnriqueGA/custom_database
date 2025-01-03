@@ -15,6 +15,8 @@ class TestIndex(unittest.TestCase):
     - setUp: Initializes a new instance of the Index class before each test method is run.
     - test_add_and_find: Tests that an item can be added to the index and subsequently found.
     - test_remove: Tests that an item can be removed from the index and is no longer found.
+    - test_str: Tests the string representation of the index.
+    - test_to_dict: Tests the dictionary representation of the index.
     """
     @classmethod
     def setUpClass(cls):
@@ -31,6 +33,12 @@ class TestIndex(unittest.TestCase):
         self.index.add("name", 1)
         self.index.remove("name", 1)
         self.assertNotIn(1, self.index.find("name"))
+        
+    def test_str(self):
+        self.assertEqual(str(self.index), "Index Object: {}")
+        
+    def test_to_dict(self):
+        self.assertEqual(self.index.to_dict(), {})
 
 if __name__ == '__main__':
     unittest.main()
