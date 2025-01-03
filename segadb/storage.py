@@ -35,7 +35,6 @@ def _process_chunk(records_chunk, table):
         record_objects.append(r)
     return record_objects
 
-# TODO: Ensure that Record extensions are saved and loaded correctly (e.g. VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord, EncryptedRecord)
 class Storage:
     """A utility class for saving, loading, and deleting database files."""
     
