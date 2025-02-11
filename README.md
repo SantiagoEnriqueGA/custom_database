@@ -3,14 +3,31 @@
 SEGADB is a simple database library for Python.
 This project is primarily educational. It is designed to help understand the workings of a simple database system by building it from scratch. The implementations focus on fundamental concepts first and then on optimizing for speed or robustness, using basic Python data structures and custom transaction handling for specific tasks.
 
+In order to achieve this, the project is divided into several modules that handle different aspects of a database system, such as managing tables, records, transactions, and storage. The library provides a simple interface for creating, updating, and querying data, as well as managing users, views, and constraints.
+
+The project also includes example scripts that demonstrate how to use the library for various tasks, such as creating tables, adding constraints, inserting data, performing queries, and managing views. The examples cover a wide range of functionalities, from basic operations to more advanced features like encryption, indexing, and partial database loading.
+
+The library is designed to be extensible and customizable, allowing users to define their own record types, constraints, and indexing strategies. 
+While the library is not intended to be a full-fledged database management system, it provides a solid foundation for understanding the core concepts of database systems and building more complex systems on top of it. While work has been done to optimize the library for performance, it is still a work in progress and may not be suitable for production use.
+
+Since the project is educational, learning and understanding how databases work, third-party libraries are used sparingly. However, the project does use the following third-party libraries:
+- `bcrypt`: Used for hashing and verifying passwords for user authentication.
+- `cryptography`: Used for encrypting and decrypting data with our custom Fernet implementation.
+- `tabulate`: Used for formatting tables in the console output. (Will be removed in the future)
+- `PIL`: Used for working with images in the ImageRecord class.
+- `tdqm`: Used for progress bars in the large data processing.
+- `faker`: Used for generating fake data for testing purposes.
+
+
+## Table of Contents
 <!-- Add Links to Other Sections Here! -->
 - [Features](#features)
 - [Installation](#installation)
-- [File Structure](#file-structure)
 - [Usage Example](#usage-examples)
 - [Scripts](#scripts)
 - [Documentation](#documentation)
 - [Tests](#tests)
+- [File Structure](#file-structure)
 
 ## Features
 - **Database Management**: Create, drop, copy, restore, and add constraints to database. See [`Database`](segadb/database.py).
@@ -50,77 +67,6 @@ To set up the project environment, you can use the provided `environment.yml` fi
 3. Run the following command to create the conda environment: `conda env create -f environment.yml`  
 4. Activate the newly created environment: `conda activate segadb_env`
 
-## File Structure
-The project directory structure is as follows:
-
-- **setup.py**: Setup script for packaging the segadb library. ~TBD~
-- **segadb/**: Contains the main database library code.
-  - [`__init__.py`](segadb/__init__.py): Initializes the segadb package.
-  - [`database.py`](segadb/database.py): Implements the `Database` class for managing tables.
-  - [`databasePartial.py`](segadb/databasePartial.py): Implements the `DatabasePartial` class for partial database loading.
-  - [`index.py`](segadb/index.py): Implements the `Index` class for indexing records.
-  - [`main.py`](segadb/main.py): Main entry point for the database operations.
-  - [`record.py`](segadb/record.py): Implements the `Record` class for individual records.
-  - [`storage.py`](segadb/storage.py): Implements the `Storage` class for saving and loading the database.
-  - [`table.py`](segadb/table.py): Implements the `Table` class for table operations.
-  - [`transaction.py`](segadb/transaction.py): Implements the `Transaction` class for transaction handling.
-  - [`users.py`](segadb/users.py): Implements the `User`, `UserManager`, and `Authorization` classes for user management and authorization.
-  - [`views.py`](segadb/views.py): Implements the `View` and `MaterializedView` classes for view management.
-  - [`crypto.py`](segadb/crypto.py): Implements the `CustomFernet` class for encryption and decryption.
-- **tests/**: Contains unit and performance tests for the database library.
-  - [`run_all_tests.py`](tests/run_all_tests.py): Runs all available tests.
-  - [`test_utils.py`](tests/test_utils.py): Utility functions for tests.
-  - [`test_database.py`](tests/test_database.py): Unit tests for the `Database` class.
-  - [`test_databasePartial.py`](tests/test_databasePartial.py): Unit tests for the `DatabasePartial` class.
-  - [`test_table.py`](tests/test_table.py): Unit tests for the `Table` class.
-  - [`test_index.py`](tests/test_index.py): Unit tests for the `Index` class.
-  - [`test_record.py`](tests/test_record.py): Unit tests for the `Record` class.
-  - [`test_storage.py`](tests/test_storage.py): Unit tests for the `Storage` class.
-  - [`test_transaction.py`](tests/test_transaction.py): Unit tests for the `Transaction` class.
-  - [`test_users.py`](tests/test_users.py): Unit tests for the `User`, `UserManager`, and `Authorization` classes.
-  - [`test_views.py`](tests/test_views.py): Unit tests for the `View` and `MaterializedView` classes.
-  - [`test_crypto.py`](tests/test_crypto.py): Unit tests for the `CustomFernet` class.
-  - [`test_segadb_performance.py`](tests/test_segadb_performance.py): Performance tests for the segadb package.
-  - [`test_examples.py`](tests/test_examples.py): Contains tests for the example scripts.
-- **examples/**: Example usages of the segadb library.
-  - [example_backupRecovery.py](examples/example_backupRecovery.py): Demonstrates how to create and restore backups.
-  - [example_change_ids.py](examples/example_change_ids.py): Demonstrates how to change record IDs, difference between IDs and Index.
-  - [example_constraints.py](examples/example_constraints.py): Demonstrates how to add and enforce constraints on table columns.
-  - [example_databaseDetails.py](examples/example_databaseDetails.py): Demonstrates how to create tables and manage records.
-  - [example_dataExport.py](examples/example_dataExport.py): Demonstrates how to export data to different formats: CSV, JSON, SQLite.
-  - [example_dataImports.py](examples/example_dataImports.py): Demonstrates how to import data from a CSV file.
-  - [example_foreignKeys.py](examples/example_foreignKeys.py): Demonstrates how to use foreign key constraints.
-  - [example_millionRowLoad.py](examples/example_millionRowLoad.py): Demonstrates how to load a table with a million rows using multiprocessing.
-  - [example_queries.py](examples/example_queries.py): Demonstrates how to create tables, add constraints, insert data, perform joins, aggregations, and filtering operations.
-  - [example_recordTypes.py](examples/example_recordTypes.py): Demonstrates how to use different record types (VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord).
-  - [example_storage.py](examples/example_storage.py): Demonstrates how to save and load the database, and check constraints.
-  - [example_storageCompression.py](examples/example_storageCompression.py): Demonstrates how to save and load the database with compression.
-  - [example_storageCompressionLarge.py](examples/example_storageCompressionLarge.py): Demonstrates how to save and load a large database with compression, using multiprocessing.
-  - [example_transactions.py](examples/example_transactions.py): Demonstrates how to use transactions for commit and rollback operations.
-  - [example_UsersAuth.py](examples/example_UsersAuth.py): Demonstrates user authentication and authorization.
-  - [example_views.py](examples/example_views.py): Demonstrates how to create, retrieve, refresh, and delete views and materialized views.
-  - [example_stored_procs.py'](examples/example_stored_procs.py): Demonstrates how to create and use stored procedures and triggers.
-  - [example_partialDB.py](examples/example_partialDB.py): Demonstrates how to load only the necessary tables from a database file into memory.
-- **docs/**: Contains the generated documentation for the segadb library.
-  - [segadb.database.html](docs/segadb.database.html): Documentation for the `Database` class.
-  - [segadb.databasePartial.html](docs/segadb.databasePartial.html): Documentation for the `DatabasePartial` class.
-  - [segadb.index.html](docs/segadb.index.html): Documentation for the `Index` class.
-  - [segadb.record.html](docs/segadb.record.html): Documentation for the `Record` class.
-  - [segadb.storage.html](docs/segadb.storage.html): Documentation for the `Storage` class.
-  - [segadb.table.html](docs/segadb.table.html): Documentation for the `Table` class.
-  - [segadb.transaction.html](docs/segadb.transaction.html): Documentation for the `Transaction` class.
-  - [segadb.users.html](docs/segadb.users.html): Documentation for the `User`, `UserManager`, and `Authorization` classes.
-  - [segadb.views.html](docs/segadb.views.html): Documentation for the `View` and `MaterializedView` classes.
-  - [segadb.crypto.html](docs/segadb.crypto.html): Documentation for the `CustomFernet` class.
-  - [segadb.__init__.html](docs/segadb.__init__.html): Documentation for the `__init__.py` file.
-- **scripts/**: PowerShell scripts to help with various tasks.
-  - [_run_all_scripts.ps1](scripts/_run_all_scripts.ps1): Runs all PowerShell scripts in the `scripts/` folder sequentially.
-  - [todo_comments.ps1](scripts/todo_comments.ps1): Finds and lists all TODO comments in Python files.
-  - [count_lines.ps1](scripts/count_lines.ps1): Counts the number of lines in each Python file.
-  - [comment_density.ps1](scripts/comment_density.ps1): Calculates the comment density in Python files.
-  - [documentation_html.ps1](scripts/documentation_html.ps1): Generates HTML documentation.
-  - [documentation_md.ps1](scripts/documentation_md.ps1): Generates markdown documentation.
-  - [export_env.ps1](scripts/export_env.ps1): Exports the conda environment to a YAML file.
 
 ## Usage Examples
 
@@ -293,3 +239,76 @@ Ran 150 tests in 60.101s
 
 OK
 ```
+
+
+## File Structure
+The project directory structure is as follows:
+
+- **setup.py**: Setup script for packaging the segadb library. ~TBD~
+- **segadb/**: Contains the main database library code.
+  - [`__init__.py`](segadb/__init__.py): Initializes the segadb package.
+  - [`database.py`](segadb/database.py): Implements the `Database` class for managing tables.
+  - [`databasePartial.py`](segadb/databasePartial.py): Implements the `DatabasePartial` class for partial database loading.
+  - [`index.py`](segadb/index.py): Implements the `Index` class for indexing records.
+  - [`main.py`](segadb/main.py): Main entry point for the database operations.
+  - [`record.py`](segadb/record.py): Implements the `Record` class for individual records.
+  - [`storage.py`](segadb/storage.py): Implements the `Storage` class for saving and loading the database.
+  - [`table.py`](segadb/table.py): Implements the `Table` class for table operations.
+  - [`transaction.py`](segadb/transaction.py): Implements the `Transaction` class for transaction handling.
+  - [`users.py`](segadb/users.py): Implements the `User`, `UserManager`, and `Authorization` classes for user management and authorization.
+  - [`views.py`](segadb/views.py): Implements the `View` and `MaterializedView` classes for view management.
+  - [`crypto.py`](segadb/crypto.py): Implements the `CustomFernet` class for encryption and decryption.
+- **tests/**: Contains unit and performance tests for the database library.
+  - [`run_all_tests.py`](tests/run_all_tests.py): Runs all available tests.
+  - [`test_utils.py`](tests/test_utils.py): Utility functions for tests.
+  - [`test_database.py`](tests/test_database.py): Unit tests for the `Database` class.
+  - [`test_databasePartial.py`](tests/test_databasePartial.py): Unit tests for the `DatabasePartial` class.
+  - [`test_table.py`](tests/test_table.py): Unit tests for the `Table` class.
+  - [`test_index.py`](tests/test_index.py): Unit tests for the `Index` class.
+  - [`test_record.py`](tests/test_record.py): Unit tests for the `Record` class.
+  - [`test_storage.py`](tests/test_storage.py): Unit tests for the `Storage` class.
+  - [`test_transaction.py`](tests/test_transaction.py): Unit tests for the `Transaction` class.
+  - [`test_users.py`](tests/test_users.py): Unit tests for the `User`, `UserManager`, and `Authorization` classes.
+  - [`test_views.py`](tests/test_views.py): Unit tests for the `View` and `MaterializedView` classes.
+  - [`test_crypto.py`](tests/test_crypto.py): Unit tests for the `CustomFernet` class.
+  - [`test_segadb_performance.py`](tests/test_segadb_performance.py): Performance tests for the segadb package.
+  - [`test_examples.py`](tests/test_examples.py): Contains tests for the example scripts.
+- **examples/**: Example usages of the segadb library.
+  - [example_backupRecovery.py](examples/example_backupRecovery.py): Demonstrates how to create and restore backups.
+  - [example_change_ids.py](examples/example_change_ids.py): Demonstrates how to change record IDs, difference between IDs and Index.
+  - [example_constraints.py](examples/example_constraints.py): Demonstrates how to add and enforce constraints on table columns.
+  - [example_databaseDetails.py](examples/example_databaseDetails.py): Demonstrates how to create tables and manage records.
+  - [example_dataExport.py](examples/example_dataExport.py): Demonstrates how to export data to different formats: CSV, JSON, SQLite.
+  - [example_dataImports.py](examples/example_dataImports.py): Demonstrates how to import data from a CSV file.
+  - [example_foreignKeys.py](examples/example_foreignKeys.py): Demonstrates how to use foreign key constraints.
+  - [example_millionRowLoad.py](examples/example_millionRowLoad.py): Demonstrates how to load a table with a million rows using multiprocessing.
+  - [example_queries.py](examples/example_queries.py): Demonstrates how to create tables, add constraints, insert data, perform joins, aggregations, and filtering operations.
+  - [example_recordTypes.py](examples/example_recordTypes.py): Demonstrates how to use different record types (VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord).
+  - [example_storage.py](examples/example_storage.py): Demonstrates how to save and load the database, and check constraints.
+  - [example_storageCompression.py](examples/example_storageCompression.py): Demonstrates how to save and load the database with compression.
+  - [example_storageCompressionLarge.py](examples/example_storageCompressionLarge.py): Demonstrates how to save and load a large database with compression, using multiprocessing.
+  - [example_transactions.py](examples/example_transactions.py): Demonstrates how to use transactions for commit and rollback operations.
+  - [example_UsersAuth.py](examples/example_UsersAuth.py): Demonstrates user authentication and authorization.
+  - [example_views.py](examples/example_views.py): Demonstrates how to create, retrieve, refresh, and delete views and materialized views.
+  - [example_stored_procs.py'](examples/example_stored_procs.py): Demonstrates how to create and use stored procedures and triggers.
+  - [example_partialDB.py](examples/example_partialDB.py): Demonstrates how to load only the necessary tables from a database file into memory.
+- **docs/**: Contains the generated documentation for the segadb library.
+  - [segadb.database.html](docs/segadb.database.html): Documentation for the `Database` class.
+  - [segadb.databasePartial.html](docs/segadb.databasePartial.html): Documentation for the `DatabasePartial` class.
+  - [segadb.index.html](docs/segadb.index.html): Documentation for the `Index` class.
+  - [segadb.record.html](docs/segadb.record.html): Documentation for the `Record` class.
+  - [segadb.storage.html](docs/segadb.storage.html): Documentation for the `Storage` class.
+  - [segadb.table.html](docs/segadb.table.html): Documentation for the `Table` class.
+  - [segadb.transaction.html](docs/segadb.transaction.html): Documentation for the `Transaction` class.
+  - [segadb.users.html](docs/segadb.users.html): Documentation for the `User`, `UserManager`, and `Authorization` classes.
+  - [segadb.views.html](docs/segadb.views.html): Documentation for the `View` and `MaterializedView` classes.
+  - [segadb.crypto.html](docs/segadb.crypto.html): Documentation for the `CustomFernet` class.
+  - [segadb.__init__.html](docs/segadb.__init__.html): Documentation for the `__init__.py` file.
+- **scripts/**: PowerShell scripts to help with various tasks.
+  - [_run_all_scripts.ps1](scripts/_run_all_scripts.ps1): Runs all PowerShell scripts in the `scripts/` folder sequentially.
+  - [todo_comments.ps1](scripts/todo_comments.ps1): Finds and lists all TODO comments in Python files.
+  - [count_lines.ps1](scripts/count_lines.ps1): Counts the number of lines in each Python file.
+  - [comment_density.ps1](scripts/comment_density.ps1): Calculates the comment density in Python files.
+  - [documentation_html.ps1](scripts/documentation_html.ps1): Generates HTML documentation.
+  - [documentation_md.ps1](scripts/documentation_md.ps1): Generates markdown documentation.
+  - [export_env.ps1](scripts/export_env.ps1): Exports the conda environment to a YAML file.
