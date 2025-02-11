@@ -57,6 +57,7 @@ Since the project is educational, learning and understanding how databases work,
 - **User Management and Authorization**: Manage users, their roles, and permissions. See [`User`, `UserManager`, and `Authorization`](segadb/users.py).
 - **View and Materialized View Management**: Create, retrieve, refresh, and delete views and materialized views. See [`View` and `MaterializedView`](segadb/views.py).
 - **Cryptographic Support**: Encrypt and decrypt data using a custom Fernet implementation. See [`CustomFernet`](segadb/crypto.py).
+- **Database Navigator**: View the contents of the database in the console with curses. See [`DB Navigator`](segadb/db_navigator.py).
 
 ## Installation
 
@@ -69,6 +70,10 @@ To set up the project environment, you can use the provided `environment.yml` fi
 
 
 ## Usage Examples
+
+### Sample Database and Navigation
+- [example_sampleDB.py](examples/example_sampleDB.py): Demonstrates how to create a sample database and navigate through it using the DB Navigator.
+- [example_dbNavigator.py](examples/example_dbNavigator.py): Demonstrates how to navigate through a database using the DB Navigator.
 
 ### Backup and Recovery
 - [example_backupRecovery.py](examples/example_backupRecovery.py): Demonstrates how to create and restore backups.
@@ -208,6 +213,7 @@ Testing CustomFernet Class
 .Testing file: example_dataExport.py
 .Testing file: example_dataImports.py
 .Testing file: example_databaseDetails.py
+.Testing file: example_dbNavigator.py
 .Testing file: example_foreignKeys.py
 .Testing file: example_millionRowLoad.py
 .Testing file: example_partialDB.py
@@ -223,19 +229,19 @@ Testing CustomFernet Class
 .Testing Imports
 ..Testing Index Class
 ....Testing Record Class
-.............Delete performance on 5000 [id, name, email] records: 0.015 seconds.
-.Insert performance for 5000 [id, name, email] records: 0.95 seconds.
-.Load performance for 5000 records: 0.92 seconds.
+.............Delete performance on 5000 [id, name, email] records: 0.008 seconds.
+.Insert performance for 5000 [id, name, email] records: 0.87 seconds.
+.Load performance for 5000 records: 0.91 seconds.
 .Restore performance for 5000 records: 0.0 seconds.
-.Save performance for 5000 records: 0.1 seconds.
-.Select performance of 1 out of 5000 [id, name, email] records: 0.0005 seconds.
-.Update performance on 5000 [id, name, email] records: 0.46 seconds.
+.Save performance for 5000 records: 0.11 seconds.
+.Select performance of 1 out of 5000 [id, name, email] records: 0.003 seconds.
+.Update performance on 5000 [id, name, email] records: 0.51 seconds.
 .Testing Storage Class
 ......................Testing Table Class
 ........Testing Transaction Class
 .......................
 ----------------------------------------------------------------------
-Ran 150 tests in 60.101s
+Ran 151 tests in 58.788s
 
 OK
 ```
@@ -258,6 +264,7 @@ The project directory structure is as follows:
   - [`users.py`](segadb/users.py): Implements the `User`, `UserManager`, and `Authorization` classes for user management and authorization.
   - [`views.py`](segadb/views.py): Implements the `View` and `MaterializedView` classes for view management.
   - [`crypto.py`](segadb/crypto.py): Implements the `CustomFernet` class for encryption and decryption.
+  - [`db_navigator.py`](segadb/db_navigator.py): Implements the `DBNavigator` class for navigating the database in the console.
 - **tests/**: Contains unit and performance tests for the database library.
   - [`run_all_tests.py`](tests/run_all_tests.py): Runs all available tests.
   - [`test_utils.py`](tests/test_utils.py): Utility functions for tests.
@@ -280,6 +287,7 @@ The project directory structure is as follows:
   - [example_databaseDetails.py](examples/example_databaseDetails.py): Demonstrates how to create tables and manage records.
   - [example_dataExport.py](examples/example_dataExport.py): Demonstrates how to export data to different formats: CSV, JSON, SQLite.
   - [example_dataImports.py](examples/example_dataImports.py): Demonstrates how to import data from a CSV file.
+  - [example_dbNavigator.py](examples/example_dbNavigator.py): Demonstrates how to navigate through a database using the DB Navigator.
   - [example_foreignKeys.py](examples/example_foreignKeys.py): Demonstrates how to use foreign key constraints.
   - [example_millionRowLoad.py](examples/example_millionRowLoad.py): Demonstrates how to load a table with a million rows using multiprocessing.
   - [example_queries.py](examples/example_queries.py): Demonstrates how to create tables, add constraints, insert data, perform joins, aggregations, and filtering operations.
