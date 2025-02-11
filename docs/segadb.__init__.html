@@ -1510,9 +1510,37 @@ Data descriptors defined here:<br>
 </dl>
 </td></tr></table></td></tr></table><p>
 <table class="section">
+<tr class="decor functions-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
+    
+<tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt><a name="-db_navigator"><strong>db_navigator</strong></a>(stdscr, db)</dt><dd><span class="code">Navigates&nbsp;through&nbsp;the&nbsp;database&nbsp;options&nbsp;using&nbsp;a&nbsp;curses-based&nbsp;interface.<br>
+The&nbsp;function&nbsp;initializes&nbsp;the&nbsp;curses&nbsp;environment,&nbsp;sets&nbsp;up&nbsp;color&nbsp;pairs,&nbsp;and&nbsp;defines&nbsp;a&nbsp;menu&nbsp;with&nbsp;various&nbsp;database&nbsp;options.<br>
+It&nbsp;then&nbsp;enters&nbsp;a&nbsp;main&nbsp;loop&nbsp;where&nbsp;it&nbsp;displays&nbsp;the&nbsp;main&nbsp;screen&nbsp;layout,&nbsp;handles&nbsp;user&nbsp;input&nbsp;to&nbsp;navigate&nbsp;through&nbsp;the&nbsp;menu,<br>
+and&nbsp;calls&nbsp;the&nbsp;corresponding&nbsp;display&nbsp;functions&nbsp;based&nbsp;on&nbsp;the&nbsp;selected&nbsp;menu&nbsp;option.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stdscr:&nbsp;The&nbsp;curses&nbsp;window&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db:&nbsp;The&nbsp;database&nbsp;connection&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+Menu&nbsp;Options:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"DB&nbsp;Info":&nbsp;Displays&nbsp;database&nbsp;information.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"<a href="#View">View</a>&nbsp;Tables":&nbsp;Displays&nbsp;the&nbsp;list&nbsp;of&nbsp;tables.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"<a href="#View">View</a>&nbsp;Views":&nbsp;Displays&nbsp;the&nbsp;list&nbsp;of&nbsp;views.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"<a href="#View">View</a>&nbsp;Materialized&nbsp;Views":&nbsp;Displays&nbsp;the&nbsp;list&nbsp;of&nbsp;materialized&nbsp;views.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"<a href="#View">View</a>&nbsp;Stored&nbsp;Procedures":&nbsp;Displays&nbsp;the&nbsp;list&nbsp;of&nbsp;stored&nbsp;procedures.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"<a href="#View">View</a>&nbsp;Trigger&nbsp;Functions":&nbsp;Displays&nbsp;the&nbsp;list&nbsp;of&nbsp;trigger&nbsp;functions.<br>
+&nbsp;<br>
+<a href="#User">User</a>&nbsp;Input:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'q':&nbsp;Quit&nbsp;the&nbsp;navigator.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;KEY_UP:&nbsp;Move&nbsp;the&nbsp;selection&nbsp;up.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;KEY_DOWN:&nbsp;Move&nbsp;the&nbsp;selection&nbsp;down.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;KEY_ENTER,&nbsp;10,&nbsp;13,&nbsp;KEY_RIGHT:&nbsp;Select&nbsp;the&nbsp;current&nbsp;menu&nbsp;option&nbsp;and&nbsp;display&nbsp;the&nbsp;corresponding&nbsp;information.</span></dd></dl>
+</td></tr></table><p>
+<table class="section">
 <tr class="decor data-decor heading-text">
 <td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
     
 <tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
-<td class="singlecolumn"><strong>__all__</strong> = ['Database', 'PartialDatabase', 'Index', 'Record', 'VectorRecord', 'TimeSeriesRecord', 'ImageRecord', 'TextRecord', 'EncryptedRecord', 'Storage', 'Table', 'Transaction', 'User', 'UserManager', 'Authorization', 'View', 'MaterializedView', 'CustomFernet']</td></tr></table>
+<td class="singlecolumn"><strong>__all__</strong> = ['Database', 'PartialDatabase', 'Index', 'Record', 'VectorRecord', 'TimeSeriesRecord', 'ImageRecord', 'TextRecord', 'EncryptedRecord', 'Storage', 'Table', 'Transaction', 'User', 'UserManager', 'Authorization', 'View', 'MaterializedView', 'CustomFernet', 'db_navigator']</td></tr></table>
 </body></html>

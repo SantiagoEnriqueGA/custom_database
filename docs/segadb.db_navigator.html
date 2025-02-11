@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+body { background-color: #f0f0f8; }
+table.heading tr { background-color: #7799ee; }
+.decor { color: #ffffff; }
+.title-decor { background-color: #ffc8d8; color: #000000; }
+.pkg-content-decor { background-color: #aa55cc; }
+.index-decor { background-color: #ee77aa; }
+.functions-decor { background-color: #eeaa77; }
+.data-decor { background-color: #55aa55; }
+.author-decor { background-color: #7799ee; }
+.credits-decor { background-color: #7799ee; }
+.error-decor { background-color: #bb0000; }
+.grey { color: #909090; }
+.white { color: #ffffff; }
+.repr { color: #c040c0; }
+table.heading tr td.title, table.heading tr td.extra { vertical-align: bottom; }
+table.heading tr td.extra { text-align: right; }
+.heading-text { font-family: helvetica, arial; }
+.bigsection { font-size: larger; }
+.title { font-size: x-large; }
+.code { font-family: monospace; }
+table { width: 100%; border-spacing: 0; border-collapse: collapse; border: 0; }
+td { padding: 2; }
+td.section-title, td.multicolumn { vertical-align: bottom; }
+td.multicolumn { width: 25%; }
+td.singlecolumn { width: 100%; }
+</style>
+<meta charset="utf-8">
+<title>Python: module segadb.db_navigator</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title"><a href="segadb.html" class="white">segadb</a>.db_navigator</strong></td>
+</tr></table>
+    <p></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="curses.html">curses</a><br>
+</td><td class="multicolumn"></td><td class="multicolumn"></td><td class="multicolumn"></td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor functions-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
+    
+<tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt><a name="-db_navigator"><strong>db_navigator</strong></a>(stdscr, db)</dt><dd><span class="code">Navigates&nbsp;through&nbsp;the&nbsp;database&nbsp;options&nbsp;using&nbsp;a&nbsp;curses-based&nbsp;interface.<br>
+The&nbsp;function&nbsp;initializes&nbsp;the&nbsp;curses&nbsp;environment,&nbsp;sets&nbsp;up&nbsp;color&nbsp;pairs,&nbsp;and&nbsp;defines&nbsp;a&nbsp;menu&nbsp;with&nbsp;various&nbsp;database&nbsp;options.<br>
+It&nbsp;then&nbsp;enters&nbsp;a&nbsp;main&nbsp;loop&nbsp;where&nbsp;it&nbsp;displays&nbsp;the&nbsp;main&nbsp;screen&nbsp;layout,&nbsp;handles&nbsp;user&nbsp;input&nbsp;to&nbsp;navigate&nbsp;through&nbsp;the&nbsp;menu,<br>
+and&nbsp;calls&nbsp;the&nbsp;corresponding&nbsp;display&nbsp;functions&nbsp;based&nbsp;on&nbsp;the&nbsp;selected&nbsp;menu&nbsp;option.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stdscr:&nbsp;The&nbsp;curses&nbsp;window&nbsp;object.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db:&nbsp;The&nbsp;database&nbsp;connection&nbsp;object.<br>
+&nbsp;<br>
+Menu&nbsp;Options:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"DB&nbsp;Info":&nbsp;Displays&nbsp;database&nbsp;information.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"View&nbsp;Tables":&nbsp;Displays&nbsp;the&nbsp;list&nbsp;of&nbsp;tables.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"View&nbsp;Views":&nbsp;Displays&nbsp;the&nbsp;list&nbsp;of&nbsp;views.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"View&nbsp;Materialized&nbsp;Views":&nbsp;Displays&nbsp;the&nbsp;list&nbsp;of&nbsp;materialized&nbsp;views.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"View&nbsp;Stored&nbsp;Procedures":&nbsp;Displays&nbsp;the&nbsp;list&nbsp;of&nbsp;stored&nbsp;procedures.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"View&nbsp;Trigger&nbsp;Functions":&nbsp;Displays&nbsp;the&nbsp;list&nbsp;of&nbsp;trigger&nbsp;functions.<br>
+&nbsp;<br>
+User&nbsp;Input:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;'q':&nbsp;Quit&nbsp;the&nbsp;navigator.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;KEY_UP:&nbsp;Move&nbsp;the&nbsp;selection&nbsp;up.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;KEY_DOWN:&nbsp;Move&nbsp;the&nbsp;selection&nbsp;down.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;KEY_ENTER,&nbsp;10,&nbsp;13,&nbsp;KEY_RIGHT:&nbsp;Select&nbsp;the&nbsp;current&nbsp;menu&nbsp;option&nbsp;and&nbsp;display&nbsp;the&nbsp;corresponding&nbsp;information.</span></dd></dl>
+ <dl><dt><a name="-display_db_info"><strong>display_db_info</strong></a>(stdscr, db, info_offset)</dt><dd><span class="code">Displays&nbsp;the&nbsp;database&nbsp;information&nbsp;on&nbsp;the&nbsp;provided&nbsp;screen.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stdscr:&nbsp;The&nbsp;curses&nbsp;window&nbsp;object&nbsp;where&nbsp;the&nbsp;information&nbsp;will&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db:&nbsp;The&nbsp;database&nbsp;object&nbsp;containing&nbsp;the&nbsp;information&nbsp;to&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;info_offset:&nbsp;The&nbsp;vertical&nbsp;offset&nbsp;to&nbsp;display&nbsp;the&nbsp;database&nbsp;information.</span></dd></dl>
+ <dl><dt><a name="-display_function"><strong>display_function</strong></a>(stdscr, function, function_name, func_offset)</dt><dd><span class="code">Displays&nbsp;the&nbsp;trigger&nbsp;function&nbsp;information&nbsp;on&nbsp;the&nbsp;provided&nbsp;screen.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stdscr:&nbsp;The&nbsp;curses&nbsp;window&nbsp;object&nbsp;where&nbsp;the&nbsp;information&nbsp;will&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;function:&nbsp;The&nbsp;trigger&nbsp;function&nbsp;code&nbsp;to&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;function_name:&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;trigger&nbsp;function.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;func_offset:&nbsp;The&nbsp;vertical&nbsp;offset&nbsp;to&nbsp;display&nbsp;the&nbsp;trigger&nbsp;function&nbsp;information.</span></dd></dl>
+ <dl><dt><a name="-display_info"><strong>display_info</strong></a>(stdscr, db)</dt><dd><span class="code">Displays&nbsp;the&nbsp;database&nbsp;navigator&nbsp;information&nbsp;on&nbsp;the&nbsp;provided&nbsp;screen.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stdscr:&nbsp;The&nbsp;curses&nbsp;window&nbsp;object&nbsp;where&nbsp;the&nbsp;information&nbsp;will&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db:&nbsp;The&nbsp;database&nbsp;object&nbsp;containing&nbsp;the&nbsp;name&nbsp;attribute&nbsp;to&nbsp;be&nbsp;displayed.</span></dd></dl>
+ <dl><dt><a name="-display_main_screen"><strong>display_main_screen</strong></a>(stdscr, menu_list, selected_row_idx, info_offset)</dt><dd><span class="code">Displays&nbsp;the&nbsp;main&nbsp;screen&nbsp;layout&nbsp;with&nbsp;the&nbsp;menu&nbsp;options&nbsp;and&nbsp;highlights&nbsp;the&nbsp;selected&nbsp;row.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stdscr:&nbsp;The&nbsp;curses&nbsp;window&nbsp;object&nbsp;where&nbsp;the&nbsp;main&nbsp;screen&nbsp;layout&nbsp;will&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;menu_list:&nbsp;A&nbsp;list&nbsp;of&nbsp;menu&nbsp;options&nbsp;to&nbsp;display.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;selected_row_idx:&nbsp;The&nbsp;index&nbsp;of&nbsp;the&nbsp;selected&nbsp;row&nbsp;in&nbsp;the&nbsp;menu&nbsp;list.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;info_offset:&nbsp;The&nbsp;vertical&nbsp;offset&nbsp;to&nbsp;display&nbsp;the&nbsp;menu&nbsp;options.</span></dd></dl>
+ <dl><dt><a name="-display_mv_view"><strong>display_mv_view</strong></a>(stdscr, table, view_name, query, view_offset)</dt><dd><span class="code">Displays&nbsp;the&nbsp;materialized&nbsp;view&nbsp;information&nbsp;and&nbsp;records&nbsp;on&nbsp;the&nbsp;provided&nbsp;screen.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stdscr:&nbsp;The&nbsp;curses&nbsp;window&nbsp;object&nbsp;where&nbsp;the&nbsp;information&nbsp;will&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;table:&nbsp;The&nbsp;table&nbsp;object&nbsp;containing&nbsp;the&nbsp;records&nbsp;to&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;view_name:&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;materialized&nbsp;view.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;query:&nbsp;The&nbsp;query&nbsp;used&nbsp;to&nbsp;create&nbsp;the&nbsp;materialized&nbsp;view.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;view_offset:&nbsp;The&nbsp;vertical&nbsp;offset&nbsp;to&nbsp;display&nbsp;the&nbsp;materialized&nbsp;view&nbsp;information.</span></dd></dl>
+ <dl><dt><a name="-display_mv_views"><strong>display_mv_views</strong></a>(stdscr, db, info_offset)</dt><dd><span class="code">Displays&nbsp;the&nbsp;list&nbsp;of&nbsp;materialized&nbsp;views&nbsp;in&nbsp;the&nbsp;database&nbsp;on&nbsp;the&nbsp;provided&nbsp;screen.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stdscr:&nbsp;The&nbsp;curses&nbsp;window&nbsp;object&nbsp;where&nbsp;the&nbsp;information&nbsp;will&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db:&nbsp;The&nbsp;database&nbsp;object&nbsp;containing&nbsp;the&nbsp;information&nbsp;to&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;info_offset:&nbsp;The&nbsp;vertical&nbsp;offset&nbsp;to&nbsp;display&nbsp;the&nbsp;database&nbsp;information</span></dd></dl>
+ <dl><dt><a name="-display_procedure"><strong>display_procedure</strong></a>(stdscr, procedure, procedure_name, proc_offset)</dt><dd><span class="code">Displays&nbsp;the&nbsp;stored&nbsp;procedure&nbsp;information&nbsp;on&nbsp;the&nbsp;provided&nbsp;screen.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stdscr:&nbsp;The&nbsp;curses&nbsp;window&nbsp;object&nbsp;where&nbsp;the&nbsp;information&nbsp;will&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;procedure:&nbsp;The&nbsp;stored&nbsp;procedure&nbsp;code&nbsp;to&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;procedure_name:&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;stored&nbsp;procedure.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;proc_offset:&nbsp;The&nbsp;vertical&nbsp;offset&nbsp;to&nbsp;display&nbsp;the&nbsp;stored&nbsp;procedure&nbsp;information</span></dd></dl>
+ <dl><dt><a name="-display_stored_procedures"><strong>display_stored_procedures</strong></a>(stdscr, db, info_offset)</dt><dd><span class="code">Displays&nbsp;the&nbsp;list&nbsp;of&nbsp;stored&nbsp;procedures&nbsp;in&nbsp;the&nbsp;database&nbsp;on&nbsp;the&nbsp;provided&nbsp;screen.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stdscr:&nbsp;The&nbsp;curses&nbsp;window&nbsp;object&nbsp;where&nbsp;the&nbsp;information&nbsp;will&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db:&nbsp;The&nbsp;database&nbsp;object&nbsp;containing&nbsp;the&nbsp;information&nbsp;to&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;info_offset:&nbsp;The&nbsp;vertical&nbsp;offset&nbsp;to&nbsp;display&nbsp;the&nbsp;database&nbsp;information.</span></dd></dl>
+ <dl><dt><a name="-display_table"><strong>display_table</strong></a>(stdscr, table, table_name, tables_offset)</dt><dd><span class="code">Displays&nbsp;the&nbsp;table&nbsp;information&nbsp;and&nbsp;records&nbsp;on&nbsp;the&nbsp;provided&nbsp;screen.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stdscr:&nbsp;The&nbsp;curses&nbsp;window&nbsp;object&nbsp;where&nbsp;the&nbsp;information&nbsp;will&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;table:&nbsp;The&nbsp;table&nbsp;object&nbsp;containing&nbsp;the&nbsp;records&nbsp;to&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;table_name:&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;table.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tables_offset:&nbsp;The&nbsp;vertical&nbsp;offset&nbsp;to&nbsp;display&nbsp;the&nbsp;table&nbsp;information.</span></dd></dl>
+ <dl><dt><a name="-display_tables"><strong>display_tables</strong></a>(stdscr, db, info_offset)</dt><dd><span class="code">Displays&nbsp;the&nbsp;list&nbsp;of&nbsp;tables&nbsp;in&nbsp;the&nbsp;database&nbsp;on&nbsp;the&nbsp;provided&nbsp;screen.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stdscr:&nbsp;The&nbsp;curses&nbsp;window&nbsp;object&nbsp;where&nbsp;the&nbsp;information&nbsp;will&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db:&nbsp;The&nbsp;database&nbsp;object&nbsp;containing&nbsp;the&nbsp;information&nbsp;to&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;info_offset:&nbsp;The&nbsp;vertical&nbsp;offset&nbsp;to&nbsp;display&nbsp;the&nbsp;database&nbsp;information.</span></dd></dl>
+ <dl><dt><a name="-display_trigger_functions"><strong>display_trigger_functions</strong></a>(stdscr, db, info_offset)</dt><dd><span class="code">Displays&nbsp;the&nbsp;list&nbsp;of&nbsp;trigger&nbsp;functions&nbsp;in&nbsp;the&nbsp;database&nbsp;on&nbsp;the&nbsp;provided&nbsp;screen.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stdscr:&nbsp;The&nbsp;curses&nbsp;window&nbsp;object&nbsp;where&nbsp;the&nbsp;information&nbsp;will&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db:&nbsp;The&nbsp;database&nbsp;object&nbsp;containing&nbsp;the&nbsp;information&nbsp;to&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;info_offset:&nbsp;The&nbsp;vertical&nbsp;offset&nbsp;to&nbsp;display&nbsp;the&nbsp;database&nbsp;information.</span></dd></dl>
+ <dl><dt><a name="-display_view"><strong>display_view</strong></a>(stdscr, table, view_name, query, view_offset)</dt><dd><span class="code">Displays&nbsp;the&nbsp;view&nbsp;information&nbsp;and&nbsp;records&nbsp;on&nbsp;the&nbsp;provided&nbsp;screen.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stdscr:&nbsp;The&nbsp;curses&nbsp;window&nbsp;object&nbsp;where&nbsp;the&nbsp;information&nbsp;will&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;table:&nbsp;The&nbsp;table&nbsp;object&nbsp;containing&nbsp;the&nbsp;records&nbsp;to&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;view_name:&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;view.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;query:&nbsp;The&nbsp;query&nbsp;used&nbsp;to&nbsp;create&nbsp;the&nbsp;view.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;view_offset:&nbsp;The&nbsp;vertical&nbsp;offset&nbsp;to&nbsp;display&nbsp;the&nbsp;view&nbsp;information.</span></dd></dl>
+ <dl><dt><a name="-display_views"><strong>display_views</strong></a>(stdscr, db, info_offset)</dt><dd><span class="code">Displays&nbsp;the&nbsp;list&nbsp;of&nbsp;views&nbsp;in&nbsp;the&nbsp;database&nbsp;on&nbsp;the&nbsp;provided&nbsp;screen.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stdscr:&nbsp;The&nbsp;curses&nbsp;window&nbsp;object&nbsp;where&nbsp;the&nbsp;information&nbsp;will&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db:&nbsp;The&nbsp;database&nbsp;object&nbsp;containing&nbsp;the&nbsp;information&nbsp;to&nbsp;be&nbsp;displayed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;info_offset:&nbsp;The&nbsp;vertical&nbsp;offset&nbsp;to&nbsp;display&nbsp;the&nbsp;database&nbsp;information.</span></dd></dl>
+</td></tr></table>
+</body></html>
