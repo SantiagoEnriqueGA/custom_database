@@ -17,7 +17,7 @@ from .users import User, UserManager, Authorization, PRESET_ROLES
 from .table import Table
 from .record import Record
 from .views import View, MaterializedView
-
+from .db_navigator import db_navigator
 
 # Helper function for processing file chunks in parallel (cannot be defined within the Database class)
 def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_names=None, col_types=None, progress=False, headers=False):
@@ -769,6 +769,10 @@ class Database:
         
     # Utility Methods
     # ---------------------------------------------------------------------------------------------
+    def show_db_with_curses(self):
+        import curses
+        curses.wrapper(db_navigator, self)
+    
     def print_db(self, index=False, 
                  limit=None, tables=True, 
                  views=False, materialized_views=False,

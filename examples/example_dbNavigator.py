@@ -9,9 +9,13 @@ import curses
 
 # Load navigator
 if __name__ == "__main__":
-    db = Database.load_sample_database()    # Load the database here
-    # db = Database.load_sample_database(n_users=1000, n_orders=10_000, n_products=50, n_reviews=200, n_categories=10, n_suppliers=20)
-    curses.wrapper(db_navigator, db)        # Pass the database to the navigator
+    # Load the database
+    # db = Database.load_sample_database()
+    db = Database.load_sample_database(n_users=1000, n_orders=10_000, n_products=50, n_reviews=200, n_categories=10, n_suppliers=20)
+    
+    # Two ways to run the navigator
+    # curses.wrapper(db_navigator, db)        # Pass the database to the navigator
+    db.show_db_with_curses()                # Call the method from the database object
 
 
 
