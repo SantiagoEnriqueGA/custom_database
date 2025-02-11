@@ -10,6 +10,7 @@ from .transaction import Transaction
 from .users import User, UserManager, Authorization
 from .views import View, MaterializedView
 from .crypto import CustomFernet
+from .db_navigator import db_navigator
 
 __all__ = [
     "Database",
@@ -30,4 +31,5 @@ __all__ = [
     "View",
     "MaterializedView",
     "CustomFernet",
+    "db_navigator"
 ]
