@@ -129,16 +129,35 @@ class Table:
         except ValueError as e:
             print(f"Error on insert: {e}")
             
-    def bulk_insert(self, data_list, record_type=Record, transaction=None):
+    def bulk_insert(self, record_list, transaction=None):
         """
         Inserts a list of records into the table.
         Args:
-            data_list (list): A list of dictionaries, where each dictionary represents a record to be inserted.
-            transaction (Transaction, optional): An optional transaction object. If provided, the insert operations are added to the transaction.
+            record_list (list): A list of dictionaries where each dictionary represents a record to be inserted.
+            transaction (Transaction, optional): An optional transaction object. 
+                If provided, the bulk insert operation will be added to the transaction. Defaults to None.
         """
-        # TODO: bulk inserts
-        pass
-
+        # Check constraints for first record to ensure consistency
+        if record_list:
+            self._check_constraints(record_list[0])
+        if transaction:
+            transaction.add_operation(lambda: self._bulk_insert(record_list))
+        else:
+            self._bulk_insert(record_list)
+        
+    def _bulk_insert(self, record_list):
+        new_records = []
+        for record in record_list:
+            if "id" in record:
+                del record["id"]
+            record_id = self.next_id
+            new_record = Record(record_id, record)
+            new_record.add_to_index(self.index_cnt)
+            self.index_cnt += 1
+            new_records.append(new_record)
+            self.next_id += 1
+        self.records.extend(new_records)  
+    
     def delete(self, record_id, transaction=None):
         """
         Deletes a record from the database.
@@ -229,9 +248,8 @@ class Table:
         
         joined_columns = list(set(self.columns + other_table.columns))
         joined_table = Table(f"{self.name}_join_{other_table.name}", joined_columns)
-        for record in joined_records:
-            # TODO: This could be bulk inserted for performance
-            joined_table.insert(record)
+        joined_table.bulk_insert(joined_records)
+        
         return joined_table
 
     def aggregate(self, group_column, agg_column, agg_func):
@@ -272,9 +290,8 @@ class Table:
             result_data.append({group_column: group_value, agg_column: result})
 
         agg_table = Table(f"{self.name}_agg_{group_column}_{agg_column}_{agg_func}", [group_column, agg_column])
-        for record in result_data:
-            # TODO: This could be bulk inserted for performance
-            agg_table.insert(record)
+        agg_table.bulk_insert(result_data)
+
         return agg_table
 
     def filter(self, condition):
@@ -288,7 +305,6 @@ class Table:
         filtered_records = [record for record in self.records if condition(record)]
         filtered_table = Table(f"{self.name}_filtered", self.columns)
         for record in filtered_records:
-            # TODO: This could be bulk inserted for performance
             filtered_table.insert(record.data)
         return filtered_table
     
@@ -304,7 +320,6 @@ class Table:
         sorted_records = sorted(self.records, key=lambda record: record.data.get(column), reverse=not ascending)
         new_table = Table(f"{self.name}_sorted", self.columns)
         for record in sorted_records:
-            # TODO: This could be bulk inserted for performance
             new_table.insert(record.data)
         return new_table
     
