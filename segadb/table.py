@@ -35,13 +35,16 @@ class Table:
         Raises:
             ValueError: If the specified column does not exist in the table.
         """
+        # If the column exists in the table, add the constraint to the column's list of constraints
         if column in self.constraints:
+            # For UNIQUE constraints, add a lambda function to check if the value is unique
             if constraint == 'UNIQUE':
                 def unique_constraint(value):
                     return all(record.data.get(column) != value for record in self.records)
                 unique_constraint.__name__ = "unique_constraint"
                 self.constraints[column].append(unique_constraint)
             
+            # For FOREIGN_KEY constraints, add a lambda function to check if the value exists in the reference table
             elif constraint == 'FOREIGN_KEY':
                 if not reference_table or not reference_column:
                     raise ValueError("Foreign key constraints require a reference table and column.")
@@ -53,6 +56,9 @@ class Table:
                 foreign_key_constraint.reference_column = reference_column
                 self.constraints[column].append(foreign_key_constraint)
             
+            # For OTHER constraints, add the provided constraint function
+            # TODO: Add support for other constraint types
+            # TODO: Check if the constraint is a valid function
             else:
                 self.constraints[column].append(constraint)
         else:
@@ -122,6 +128,16 @@ class Table:
             self.insert(data, record_type, transaction)
         except ValueError as e:
             print(f"Error on insert: {e}")
+            
+    def bulk_insert(self, data_list, record_type=Record, transaction=None):
+        """
+        Inserts a list of records into the table.
+        Args:
+            data_list (list): A list of dictionaries, where each dictionary represents a record to be inserted.
+            transaction (Transaction, optional): An optional transaction object. If provided, the insert operations are added to the transaction.
+        """
+        # TODO: bulk inserts
+        pass
 
     def delete(self, record_id, transaction=None):
         """
@@ -214,6 +230,7 @@ class Table:
         joined_columns = list(set(self.columns + other_table.columns))
         joined_table = Table(f"{self.name}_join_{other_table.name}", joined_columns)
         for record in joined_records:
+            # TODO: This could be bulk inserted for performance
             joined_table.insert(record)
         return joined_table
 
@@ -256,6 +273,7 @@ class Table:
 
         agg_table = Table(f"{self.name}_agg_{group_column}_{agg_column}_{agg_func}", [group_column, agg_column])
         for record in result_data:
+            # TODO: This could be bulk inserted for performance
             agg_table.insert(record)
         return agg_table
 
@@ -270,6 +288,7 @@ class Table:
         filtered_records = [record for record in self.records if condition(record)]
         filtered_table = Table(f"{self.name}_filtered", self.columns)
         for record in filtered_records:
+            # TODO: This could be bulk inserted for performance
             filtered_table.insert(record.data)
         return filtered_table
     
@@ -285,6 +304,7 @@ class Table:
         sorted_records = sorted(self.records, key=lambda record: record.data.get(column), reverse=not ascending)
         new_table = Table(f"{self.name}_sorted", self.columns)
         for record in sorted_records:
+            # TODO: This could be bulk inserted for performance
             new_table.insert(record.data)
         return new_table
     
