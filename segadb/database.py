@@ -38,24 +38,32 @@ def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_nam
     """
     rows = []
     with open(file_name, 'r', encoding='utf-8') as file:
+        # Find the start of the first line in the chunk
         file.seek(chunk_start)
+        
+        # Skip the header row if it exists
         if headers and file.tell() == 0:
-            file.readline()  # Skip the header row
+            file.readline()
+            
+        # Progress bar for processing the chunk
         if progress:
             total_lines = chunk_end - chunk_start
             pbar = tqdm(total=total_lines, desc="Processing chunks", unit="line")
         
+        # Iterate over the lines in the chunk
         while file.tell() < chunk_end:
+            # Store the current position in the file
             line = file.readline().strip()
             if line:
+                # If the line is not empty, process the line
                 row_data = line.split(delim)
                 if col_types:
                     row_data = [col_type(value) for col_type, value in zip(col_types, row_data)]
                 record = Record(file.tell(), dict(zip(column_names, row_data)))
                 rows.append(record)
+            # Update progress bar with the length of the line plus newline character
             if progress:
-                pbar.update(len(line) + 1)  # Update progress bar with the length of the line plus newline character
-        
+                pbar.update(len(line) + 1)
         if progress:
             pbar.close()
     return rows
@@ -78,6 +86,7 @@ class Database:
         self.stored_procedures = {}
         self.triggers = {"before": {}, "after": {}}
 
+        # Create the _users table for user management
         self.create_table("_users" , ["username", "password_hash", "roles"])        
         
     def create_user_manager(self):
