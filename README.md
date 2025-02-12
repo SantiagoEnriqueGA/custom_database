@@ -27,6 +27,7 @@ Since the project is educational, learning and understanding how databases work,
 - [Scripts](#scripts)
 - [Documentation](#documentation)
 - [Tests](#tests)
+- [Performance Comparisons](#performance-comparisons)
 - [File Structure](#file-structure)
 
 ## Features
@@ -229,23 +230,40 @@ Testing CustomFernet Class
 .Testing Imports
 ..Testing Index Class
 ....Testing Record Class
-.............Delete performance on 5000 [id, name, email] records: 0.008 seconds.
+.............Delete performance on 5000 [id, name, email] records: 0.0086 seconds.
 .Insert performance for 5000 [id, name, email] records: 0.87 seconds.
-.Load performance for 5000 records: 0.91 seconds.
+.Join performance for 5000 records: 2.7 seconds.
+.Load performance for 5000 records: 0.93 seconds.
 .Restore performance for 5000 records: 0.0 seconds.
-.Save performance for 5000 records: 0.11 seconds.
-.Select performance of 1 out of 5000 [id, name, email] records: 0.003 seconds.
-.Update performance on 5000 [id, name, email] records: 0.51 seconds.
+.Save performance for 5000 records: 0.1 seconds.
+.Select performance of 1 out of 5000 [id, name, email] records: 0.002 seconds.
+.Update performance on 5000 [id, name, email] records: 0.46 seconds.
 .Testing Storage Class
 ......................Testing Table Class
 ........Testing Transaction Class
 .......................
 ----------------------------------------------------------------------
-Ran 151 tests in 58.788s
+Ran 152 tests in 61.289s
 
 OK
 ```
 
+## Performance Comparisons
+
+The `performance_comparisons/performance_comparison.py` script is used to compare the performance of the SEGADB library with SQLite. The script measures the time taken for various database operations such as insert, select, update, aggregate, filter, sort, and delete.
+
+### Results
+
+The script generates performance comparison plots for each operation and saves them in the `performance_comparisons/` folder. The plots show the time taken for each operation with varying numbers of records.
+
+### Example Plots
+
+To see all the plots, navigate to the `performance_comparisons/` folder.  
+Here is the performance comparison plots for the insert, select, and delete operations:
+
+![Insert Performance Comparison](performance_comparisons/perf_comp_insert.png)
+![Select Performance Comparison](performance_comparisons/perf_comp_select.png)
+![Delete Performance Comparison](performance_comparisons/perf_comp_delete.png)
 
 ## File Structure
 The project directory structure is as follows:

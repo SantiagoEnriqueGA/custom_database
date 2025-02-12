@@ -3,6 +3,7 @@ ________________________________________________________________________________
 	custom_database\segadb\database.py                                             :  1107
 	custom_database\segadb\storage.py                                              :   694
 	custom_database\segadb\db_navigator.py                                         :   692
+	custom_database\performance_comparisons\performance_comparison.py              :   507
 	custom_database\example_datasets\createMeasurements.py                         :   465
 	custom_database\tests\test_database.py                                         :   422
 	custom_database\segadb\table.py                                                :   330
@@ -12,11 +13,11 @@ ________________________________________________________________________________
 	custom_database\segadb\users.py                                                :   154
 	custom_database\examples\example_stored_procs.py                               :   116
 	custom_database\tests\test_record.py                                           :   107
+	custom_database\tests\test_segadb_performance.py                               :   107
 	custom_database\examples\example_recordTypes.py                                :   101
 	custom_database\examples\example_storage.py                                    :    97
-	custom_database\tests\test_segadb_performance.py                               :    95
-	custom_database\tests\test_users.py                                            :    89
 	custom_database\tests\test_examples.py                                         :    89
+	custom_database\tests\test_users.py                                            :    89
 	custom_database\examples\example_databaseDetails.py                            :    85
 	custom_database\examples\example_queries.py                                    :    78
 	custom_database\tests\test_table.py                                            :    78
@@ -51,5 +52,5 @@ ________________________________________________________________________________
 	custom_database\examples\example_dataImports.py                                :    13
 	custom_database\tests\run_all_tests.py                                         :    11
 ____________________________________________________________________________________________________
-Total lines                                                                            :  6875
+Total lines                                                                            :  7394
  
