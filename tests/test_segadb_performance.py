@@ -89,16 +89,28 @@ class TestDatabasePerformance(unittest.TestCase):
         end_time = time.time()
         print(f"Restore performance for {NUM_RECORDS} records: {(end_time - start_time):.2} seconds.")
               
-    def tes_loadCSV_MP_performance(self):
-        # Measure loadCSV performance
+    def test_join_performance(self):
+        # Create a new table
+        self.db.create_table("Orders", ["id", "user_id", "product_id", "quantity"])
+        orders_table = self.db.get_table("Orders")
+        for i in range(NUM_RECORDS):
+            orders_table.insert({"id": i, "user_id": i, "product_id": i, "quantity": i})
+        
         start_time = time.time()
-        self.db.create_table_from_csv("example_datasets/measurements_s.txt", "MillionRowTable_MP", 
-                                      headers=False, delim=';', 
-                                      column_names=['station', 'measure'],  col_types=[str, float],
-                                      progress=False, parrallel=True, max_chunk_size=5_000
-                                      )
+        results = self.users_table.join(orders_table, "id", "user_id")
         end_time = time.time()
-        print(f"LoadCSV performance (multi-threaded) for 1 million records: {(end_time - start_time):.2} seconds.")
+        print(f"Join performance for {NUM_RECORDS} records: {(end_time - start_time):.2} seconds.")
+    
+    # def test_loadCSV_MP_performance(self):
+    #     # Measure loadCSV performance
+    #     start_time = time.time()
+    #     self.db.create_table_from_csv("example_datasets/measurements_s.txt", "MillionRowTable_MP", 
+    #                                   headers=False, delim=';', 
+    #                                   column_names=['station', 'measure'],  col_types=[str, float],
+    #                                   progress=False, parrallel=True, max_chunk_size=5_000
+    #                                   )
+    #     end_time = time.time()
+    #     print(f"LoadCSV performance (multi-threaded) for 1 million records: {(end_time - start_time):.2} seconds.")
 
 if __name__ == '__main__':
     unittest.main()
