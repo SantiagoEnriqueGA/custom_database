@@ -24,3 +24,6 @@ example_storage/
 
 # Ignore test backup folders
 tests_backups*/
+
+# Ignore log files
+*.log
