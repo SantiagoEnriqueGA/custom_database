@@ -1,5 +1,28 @@
 import curses
 
+# Define key constants for cross-platform compatibility
+KEY_MAPPING = {
+    'UP': [curses.KEY_UP, ord('w'), ord('W')],
+    'DOWN': [curses.KEY_DOWN, ord('s'), ord('S')],
+    'LEFT': [curses.KEY_LEFT, ord('a'), ord('A')],
+    'RIGHT': [curses.KEY_RIGHT, ord('d'), ord('D')],
+    'ENTER': [curses.KEY_ENTER, 10, 13],
+    'QUIT': [ord('q'), ord('Q')]
+}
+
+def is_key(key, key_type):
+    """
+    Check if the input key matches any of the mapped keys for the given key type.
+    
+    Args:
+        key: The input key code
+        key_type: The type of key to check ('UP', 'DOWN', 'LEFT', 'RIGHT', 'ENTER', 'QUIT')
+    
+        bool: True if the key matches any of the mapped keys, False otherwise
+    Returns:
+    """
+    return key in KEY_MAPPING[key_type]
+
 def db_navigator(stdscr, db):
     """
     Navigates through the database options using a curses-based interface.
@@ -57,14 +80,14 @@ def db_navigator(stdscr, db):
         # Get user input
         key = stdscr.getch()
         
-        # Handle user input
-        if key == ord('q'):
+        # Handle user input using the key mapping
+        if is_key(key, 'QUIT'):
             break
-        elif key == curses.KEY_UP and current_row > 0:
+        elif is_key(key, 'UP') and current_row > 0:
             current_row -= 1
-        elif key == curses.KEY_DOWN and current_row < len(menu_list) - 1:
+        elif is_key(key, 'DOWN') and current_row < len(menu_list) - 1:
             current_row += 1
-        elif key == curses.KEY_ENTER or key in [10, 13, curses.KEY_RIGHT]:
+        elif is_key(key, 'ENTER') or is_key(key, 'RIGHT'):
             menu_options[menu_list[current_row]](stdscr, db, info_offset)
 
 def display_info(stdscr, db):
@@ -138,7 +161,7 @@ def display_db_info(stdscr, db, info_offset):
         
         # Get user input, if 'q' is pressed, break
         key = stdscr.getch()        
-        if key == curses.KEY_LEFT or key == ord('q'):
+        if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
             break
     
 def display_tables(stdscr, db, info_offset):
@@ -174,14 +197,14 @@ def display_tables(stdscr, db, info_offset):
         
         # Get user input, if 'q' is pressed, break
         key = stdscr.getch()
-        if key == curses.KEY_LEFT or key == ord('q'):
+        if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
             break
-        elif key == curses.KEY_UP and current_row > 0:
+        elif is_key(key, 'UP') and current_row > 0:
             current_row -= 1
-        elif key == curses.KEY_DOWN and current_row < len(db.tables) - 1:
+        elif is_key(key, 'DOWN') and current_row < len(db.tables) - 1:
             current_row += 1
         # If the user presses Enter or Right arrow key, display the table information
-        elif key == curses.KEY_ENTER or key in [10, 13, curses.KEY_RIGHT]:
+        elif is_key(key, 'ENTER') or is_key(key, 'RIGHT'):
             table_name = list(db.tables.keys())[current_row]
             offset = info_offset + len(db.tables) + 6
             table = db.get_table(table_name)
@@ -268,13 +291,13 @@ def display_table(stdscr, table, table_name, tables_offset):
 
             # Get user input, if 'q' is pressed, break
             key = stdscr.getch()
-            if key == curses.KEY_LEFT or key == ord('q'):
+            if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
                 break
             # If the user presses Up arrow key, move to the previous page
-            elif key == curses.KEY_UP and current_page > 0:
+            elif is_key(key, 'UP') and current_page > 0:
                 current_page -= 1
             # If the user presses Down arrow key, move to the next page
-            elif key == curses.KEY_DOWN and current_page < (record_count + record_limit - 1) // record_limit - 1:
+            elif is_key(key, 'DOWN') and current_page < (record_count + record_limit - 1) // record_limit - 1:
                 current_page += 1
         
 def _get_record_page(table, page_num, page_size):
@@ -327,14 +350,15 @@ def display_views(stdscr, db, info_offset):
         
         # Get user input, if 'q' is pressed, break
         key = stdscr.getch()
-        if key == curses.KEY_LEFT or key == ord('q'):
+        if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
             break
-        elif key == curses.KEY_UP and current_row > 0:
+        elif is_key(key, 'UP') and current_row > 0:
             current_row -= 1
-        elif key == curses.KEY_DOWN and current_row < len(db.views) - 1:
+        elif is_key(key, 'DOWN') and current_row < len(db.views) - 1:
             current_row += 1
         # If the user presses Enter or Right arrow key, display the view information
-        elif key == curses.KEY_ENTER or key in [10, 13, curses.KEY_RIGHT]:
+        elif key == is_key(key, 'ENTER') or is_key(key, 'RIGHT'):
+            # TODO: Add loading indicator (visually indicate that the view is being loaded)
             view_name = list(db.views.keys())[current_row]
             offset = info_offset + len(db.views) + 6
             table = db.get_view(view_name).get_data()
@@ -421,13 +445,13 @@ def display_view(stdscr, table, view_name, query, view_offset):
             
             # Get user input, if 'q' is pressed, break
             key = stdscr.getch()
-            if key == curses.KEY_LEFT or key == ord('q'):
+            if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
                 break
             # If the user presses Up arrow key, move to the previous page
-            elif key == curses.KEY_UP and current_page > 0:
+            elif is_key(key, 'UP') and current_page > 0:
                 current_page -= 1
             # If the user presses Down arrow key, move to the next page
-            elif key == curses.KEY_DOWN and current_page < (record_count + record_limit - 1) // record_limit - 1:
+            elif is_key(key, 'DOWN') and current_page < (record_count + record_limit - 1) // record_limit - 1:
                 current_page += 1
             
             # Clear only the table display area before refreshing
@@ -463,13 +487,13 @@ def display_mv_views(stdscr, db, info_offset):
         
         key = stdscr.getch()
         
-        if key == curses.KEY_LEFT or key == ord('q'):
+        if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
             break
-        elif key == curses.KEY_UP and current_row > 0:
+        elif is_key(key, 'UP') and current_row > 0:
             current_row -= 1
-        elif key == curses.KEY_DOWN and current_row < len(db.materialized_views) - 1:
+        elif is_key(key, 'DOWN') and current_row < len(db.materialized_views) - 1:
             current_row += 1
-        elif key == curses.KEY_ENTER or key in [10, 13, curses.KEY_RIGHT]:
+        elif is_key(key, 'ENTER') or is_key(key, 'RIGHT'):
             view_name = list(db.materialized_views.keys())[current_row]
             offset = info_offset + len(db.materialized_views) + 6
             db.refresh_materialized_view(view_name)
@@ -550,11 +574,11 @@ def display_mv_view(stdscr, table, view_name, query, view_offset):
             stdscr.refresh()
             key = stdscr.getch()
             
-            if key == curses.KEY_LEFT or key == ord('q'):
+            if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
                 break
-            elif key == curses.KEY_UP and current_page > 0:
+            elif is_key(key, 'UP') and current_page > 0:
                 current_page -= 1
-            elif key == curses.KEY_DOWN and current_page < (record_count + record_limit - 1) // record_limit - 1:
+            elif is_key(key, 'DOWN') and current_page < (record_count + record_limit - 1) // record_limit - 1:
                 current_page += 1
             
             # Clear only the table display area before refreshing
@@ -590,13 +614,13 @@ def display_stored_procedures(stdscr, db, info_offset):
         
         key = stdscr.getch()
         
-        if key == curses.KEY_LEFT or key == ord('q'):
+        if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
             break
-        elif key == curses.KEY_UP and current_row > 0:
+        elif is_key(key, 'UP') and current_row > 0:
             current_row -= 1
-        elif key == curses.KEY_DOWN and current_row < len(db.stored_procedures) - 1:
+        elif is_key(key, 'DOWN') and current_row < len(db.stored_procedures) - 1:
             current_row += 1
-        elif key == curses.KEY_ENTER or key in [10, 13, curses.KEY_RIGHT]:
+        elif is_key(key, 'ENTER') or is_key(key, 'RIGHT'):
             procedure_name = list(db.stored_procedures.keys())[current_row]
             offset = info_offset + len(db.stored_procedures) + 6
             procedure = db._stored_procedure_to_string(db.get_stored_procedure(procedure_name))
@@ -625,7 +649,7 @@ def display_procedure(stdscr, procedure, procedure_name, proc_offset):
     
     key = stdscr.getch()
     
-    if key == curses.KEY_LEFT or key == ord('q'):
+    if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
         return
     
 def display_trigger_functions(stdscr, db, info_offset):
@@ -664,13 +688,13 @@ def display_trigger_functions(stdscr, db, info_offset):
         
         key = stdscr.getch()
         
-        if key == curses.KEY_LEFT or key == ord('q'):
+        if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
             break
-        elif key == curses.KEY_UP and current_row > 0:
+        elif is_key(key, 'UP') and current_row > 0:
             current_row -= 1
-        elif key == curses.KEY_DOWN and current_row < len(trigger_list) - 1:
+        elif is_key(key, 'DOWN') and current_row < len(trigger_list) - 1:
             current_row += 1
-        elif key == curses.KEY_ENTER or key in [10, 13, curses.KEY_RIGHT]:
+        elif is_key(key, 'ENTER') or is_key(key, 'RIGHT'):
             trigger_type, function_name = trigger_list[current_row]
             offset = info_offset + len(trigger_list) + 6
             trigger = db.triggers[trigger_type][function_name][0]
@@ -700,5 +724,5 @@ def display_function(stdscr, function, function_name, func_offset):
     
     key = stdscr.getch()
     
-    if key == curses.KEY_LEFT or key == ord('q'):
+    if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
         return
