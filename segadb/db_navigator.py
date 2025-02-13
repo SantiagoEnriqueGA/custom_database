@@ -4,6 +4,8 @@ import logging
 from typing import Dict, List, Any, Optional
 from contextlib import contextmanager
 
+# TODO: Color displayed code for views, mvs, stored procedures, and trigger functions
+
 # Set up logging
 logging.basicConfig(
     filename='segadb_error.log',
@@ -61,6 +63,14 @@ def safe_addstr(stdscr, y: int, x: int, text: str, attr=None):
                 stdscr.addstr(y, x, text[:width-x])
         except curses.error:
             pass
+        
+def remove_leading_spaces(code: str) -> str:
+    """Remove leading spaces from each line of the given code."""
+    lines = code.split("\n")
+    if lines:
+        leading_spaces = len(lines[0]) - len(lines[0].lstrip())
+        lines = [line[leading_spaces:] for line in lines]
+    return "\n".join(lines)
 
 @safe_execution
 def display_popup(stdscr, message: str, timeout: int = 0):
@@ -249,7 +259,7 @@ def display_info(stdscr, db):
     """
     safe_addstr(stdscr, 0, 0, "Database Navigator: " + db.name)
     safe_addstr(stdscr, 1, 0, "-" * 60)
-    safe_addstr(stdscr, 2, 0, "Navigation: Arrow keys or H/J/K/L keys")
+    safe_addstr(stdscr, 2, 0, "Navigation: Arrow keys or W/A/S/D keys")
     safe_addstr(stdscr, 3, 0, "Select: Enter or L key | Back/Quit: Q key or H key")
     safe_addstr(stdscr, 4, 0, "Help: ? | Search: / | Refresh: R")
     safe_addstr(stdscr, 5, 0, "-" * 60)
@@ -508,12 +518,19 @@ def display_views(stdscr, db, info_offset):
         elif is_key(key, 'DOWN') and current_row < len(db.views) - 1:
             current_row += 1
         # If the user presses Enter or Right arrow key, display the view information
-        elif key == is_key(key, 'ENTER') or is_key(key, 'RIGHT'):
-            # TODO: Add loading indicator (visually indicate that the view is being loaded)
+        elif is_key(key, 'ENTER') or is_key(key, 'RIGHT'):
+            # Add loading indicator
+            safe_addstr(stdscr, info_offset + len(db.views) + 5, 0, "Loading view, please wait...")
+            stdscr.refresh()
+            
             view_name = list(db.views.keys())[current_row]
             offset = info_offset + len(db.views) + 6
             table = db.get_view(view_name).get_data()
             query = db.get_view(view_name)._query_to_string()
+            
+            # Remove loading indicator
+            safe_addstr(stdscr, info_offset + len(db.views) + 5, 0, " " * 40)
+            
             display_view(stdscr, table, view_name, query, offset)
 
 @safe_execution
@@ -536,7 +553,7 @@ def display_view(stdscr, table, view_name, query, view_offset):
     else: safe_addstr(stdscr, view_offset + 3, 0, "Record Types: None")
     safe_addstr(stdscr, view_offset + 4, 0, "-" * 40)
     safe_addstr(stdscr, view_offset + 5, 0, "Query:")
-    safe_addstr(stdscr, view_offset + 6, 0, query)
+    safe_addstr(stdscr, view_offset + 6, 0, remove_leading_spaces(query))
     
     # Display the query and increment the view offset
     query_lines = query.split("\n")
@@ -649,7 +666,6 @@ def display_mv_views(stdscr, db, info_offset):
         elif is_key(key, 'ENTER') or is_key(key, 'RIGHT'):
             view_name = list(db.materialized_views.keys())[current_row]
             offset = info_offset + len(db.materialized_views) + 6
-            db.refresh_materialized_view(view_name)
             table = db.get_materialized_view(view_name).get_data()
             query = db.get_materialized_view(view_name)._query_to_string()
             display_mv_view(stdscr, table, view_name, query, offset)
@@ -673,7 +689,7 @@ def display_mv_view(stdscr, table, view_name, query, view_offset):
     else: safe_addstr(stdscr, view_offset + 3, 0, "Record Types: None")
     safe_addstr(stdscr, view_offset + 4, 0, "-" * 40)
     safe_addstr(stdscr, view_offset + 5, 0, "Query:")
-    safe_addstr(stdscr, view_offset + 6, 0, query)
+    safe_addstr(stdscr, view_offset + 6, 0, remove_leading_spaces(query))
     
     query_lines = query.split("\n")
     view_offset += len(query_lines)
@@ -781,6 +797,7 @@ def display_stored_procedures(stdscr, db, info_offset):
             procedure = db._stored_procedure_to_string(db.get_stored_procedure(procedure_name))
             display_procedure(stdscr, procedure, procedure_name, offset)
             
+
 @safe_execution
 def display_procedure(stdscr, procedure, procedure_name, proc_offset):
     """
@@ -795,8 +812,8 @@ def display_procedure(stdscr, procedure, procedure_name, proc_offset):
     safe_addstr(stdscr, proc_offset, 0, "Procedure: " + procedure_name)
     safe_addstr(stdscr, proc_offset + 1, 0, "Code:")
 
-    # TODO: Only works "unsafely"
-    # TODO: Remove leading spaces
+    # Remove leading spaces
+    procedure = remove_leading_spaces(procedure)
     stdscr.addstr(proc_offset + 2, 0, procedure)
     
     code_lines = procedure.split("\n")
@@ -810,7 +827,7 @@ def display_procedure(stdscr, procedure, procedure_name, proc_offset):
     
     if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
         return
-    
+
 @safe_execution
 def display_trigger_functions(stdscr, db, info_offset):
     """
@@ -875,8 +892,8 @@ def display_function(stdscr, function, function_name, func_offset):
     safe_addstr(stdscr, func_offset, 0, "Function: " + function_name)
     safe_addstr(stdscr, func_offset + 1, 0, "Code:")
     
-    # TODO: Only works "unsafely"
-    # TODO: Remove leading spaces
+    # Remove leading spaces
+    function = remove_leading_spaces(function)
     stdscr.addstr(func_offset + 2, 0, function)
     
     code_lines = function.split("\n")

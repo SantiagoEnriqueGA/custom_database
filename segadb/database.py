@@ -19,7 +19,7 @@ from .record import Record
 from .views import View, MaterializedView
 from .db_navigator import db_navigator
 
-# TODO: Ensure MaterializedView is loaded when the database is loaded
+# TODO: Add support for logging all database operations to file
 
 # Helper function for processing file chunks in parallel (cannot be defined within the Database class)
 def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_names=None, col_types=None, progress=False, headers=False):
