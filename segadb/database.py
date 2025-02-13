@@ -19,6 +19,8 @@ from .record import Record
 from .views import View, MaterializedView
 from .db_navigator import db_navigator
 
+# TODO: Ensure MaterializedView is loaded when the database is loaded
+
 # Helper function for processing file chunks in parallel (cannot be defined within the Database class)
 def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_names=None, col_types=None, progress=False, headers=False):
     """
@@ -1122,6 +1124,20 @@ class Database:
             return db.filter_table("orders", lambda record: record.data["user_id"] == 2)
 
         db.create_materialized_view("mv_ordersUser2", mv_ordersUser2)
+
+        # Example usage, create a materialized view of Orders by even User IDs
+        # ----------------------------------------------------------------------------------
+        def mv_ordersUserEven():
+            return db.filter_table("orders", lambda record: record.data["user_id"] % 2 == 0)
+
+        db.create_materialized_view("mv_ordersUserEven", mv_ordersUserEven)
+
+        # Example usage, create a materialized view of Orders by odd User IDs
+        # ----------------------------------------------------------------------------------
+        def mv_ordersUserOdd():
+            return db.filter_table("orders", lambda record: record.data["user_id"] % 2 == 1)
+
+        db.create_materialized_view("mv_ordersUserOdd", mv_ordersUserOdd)
         
         # Define a stored procedure to get orders by user
         # ----------------------------------------------------------------------------------
