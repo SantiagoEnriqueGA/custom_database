@@ -230,20 +230,21 @@ Testing CustomFernet Class
 .Testing Imports
 ..Testing Index Class
 ....Testing Record Class
-.............Delete performance on 5000 [id, name, email] records: 0.0086 seconds.
-.Insert performance for 5000 [id, name, email] records: 0.87 seconds.
-.Join performance for 5000 records: 2.7 seconds.
-.Load performance for 5000 records: 0.93 seconds.
+.............Testing safe_execution decorator
+.....Delete performance on 5000 [id, name, email] records: 0.008 seconds.
+.Insert performance for 5000 [id, name, email] records: 1.0 seconds.
+.Join performance for 5000 records: 3.0 seconds.
+.Load performance for 5000 records: 1.0 seconds.
 .Restore performance for 5000 records: 0.0 seconds.
-.Save performance for 5000 records: 0.1 seconds.
-.Select performance of 1 out of 5000 [id, name, email] records: 0.002 seconds.
-.Update performance on 5000 [id, name, email] records: 0.46 seconds.
+.Save performance for 5000 records: 0.11 seconds.
+.Select performance of 1 out of 5000 [id, name, email] records: 0.0 seconds.
+.Update performance on 5000 [id, name, email] records: 0.5 seconds.
 .Testing Storage Class
 ......................Testing Table Class
 ........Testing Transaction Class
 .......................
 ----------------------------------------------------------------------
-Ran 152 tests in 61.289s
+Ran 157 tests in 62.958s
 
 OK
 ```
