@@ -1102,6 +1102,12 @@ Args:<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Table">Table</a>:&nbsp;A&nbsp;new&nbsp;table&nbsp;containing&nbsp;the&nbsp;result&nbsp;of&nbsp;the&nbsp;aggregation.</span></dd></dl>
 
+<dl><dt><a name="Table-bulk_insert"><strong>bulk_insert</strong></a>(self, record_list, transaction=None)</dt><dd><span class="code">Inserts&nbsp;a&nbsp;list&nbsp;of&nbsp;records&nbsp;into&nbsp;the&nbsp;table.<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;record_list&nbsp;(list):&nbsp;A&nbsp;list&nbsp;of&nbsp;dictionaries&nbsp;where&nbsp;each&nbsp;dictionary&nbsp;represents&nbsp;a&nbsp;record&nbsp;to&nbsp;be&nbsp;inserted.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;transaction&nbsp;(<a href="#Transaction">Transaction</a>,&nbsp;optional):&nbsp;An&nbsp;optional&nbsp;transaction&nbsp;<a href="builtins.html#object">object</a>.&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;provided,&nbsp;the&nbsp;bulk&nbsp;insert&nbsp;operation&nbsp;will&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;transaction.&nbsp;Defaults&nbsp;to&nbsp;None.</span></dd></dl>
+
 <dl><dt><a name="Table-delete"><strong>delete</strong></a>(self, record_id, transaction=None)</dt><dd><span class="code">Deletes&nbsp;a&nbsp;record&nbsp;from&nbsp;the&nbsp;database.<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;record_id&nbsp;(int):&nbsp;The&nbsp;ID&nbsp;of&nbsp;the&nbsp;record&nbsp;to&nbsp;delete.<br>

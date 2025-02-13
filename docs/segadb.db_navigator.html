@@ -44,7 +44,9 @@ td.singlecolumn { width: 100%; }
     
 <tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
 <td class="singlecolumn"><table><tr><td class="multicolumn"><a href="curses.html">curses</a><br>
-</td><td class="multicolumn"></td><td class="multicolumn"></td><td class="multicolumn"></td></tr></table></td></tr></table><p>
+</td><td class="multicolumn"><a href="functools.html">functools</a><br>
+</td><td class="multicolumn"><a href="logging.html">logging</a><br>
+</td><td class="multicolumn"></td></tr></table></td></tr></table><p>
 <table class="section">
 <tr class="decor functions-decor heading-text">
 <td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
@@ -85,6 +87,7 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;function:&nbsp;The&nbsp;trigger&nbsp;function&nbsp;code&nbsp;to&nbsp;be&nbsp;displayed.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;function_name:&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;trigger&nbsp;function.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;func_offset:&nbsp;The&nbsp;vertical&nbsp;offset&nbsp;to&nbsp;display&nbsp;the&nbsp;trigger&nbsp;function&nbsp;information.</span></dd></dl>
+ <dl><dt><a name="-display_help"><strong>display_help</strong></a>(stdscr)</dt><dd><span class="code">Display&nbsp;help&nbsp;information.</span></dd></dl>
  <dl><dt><a name="-display_info"><strong>display_info</strong></a>(stdscr, db)</dt><dd><span class="code">Displays&nbsp;the&nbsp;database&nbsp;navigator&nbsp;information&nbsp;on&nbsp;the&nbsp;provided&nbsp;screen.<br>
 &nbsp;<br>
 Args:<br>
@@ -111,6 +114,7 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;stdscr:&nbsp;The&nbsp;curses&nbsp;window&nbsp;object&nbsp;where&nbsp;the&nbsp;information&nbsp;will&nbsp;be&nbsp;displayed.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;db:&nbsp;The&nbsp;database&nbsp;object&nbsp;containing&nbsp;the&nbsp;information&nbsp;to&nbsp;be&nbsp;displayed.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;info_offset:&nbsp;The&nbsp;vertical&nbsp;offset&nbsp;to&nbsp;display&nbsp;the&nbsp;database&nbsp;information</span></dd></dl>
+ <dl><dt><a name="-display_popup"><strong>display_popup</strong></a>(stdscr, message: str, timeout: int = 0)</dt><dd><span class="code">Display&nbsp;a&nbsp;centered&nbsp;popup&nbsp;message.</span></dd></dl>
  <dl><dt><a name="-display_procedure"><strong>display_procedure</strong></a>(stdscr, procedure, procedure_name, proc_offset)</dt><dd><span class="code">Displays&nbsp;the&nbsp;stored&nbsp;procedure&nbsp;information&nbsp;on&nbsp;the&nbsp;provided&nbsp;screen.<br>
 &nbsp;<br>
 Args:<br>
@@ -157,5 +161,25 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;stdscr:&nbsp;The&nbsp;curses&nbsp;window&nbsp;object&nbsp;where&nbsp;the&nbsp;information&nbsp;will&nbsp;be&nbsp;displayed.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;db:&nbsp;The&nbsp;database&nbsp;object&nbsp;containing&nbsp;the&nbsp;information&nbsp;to&nbsp;be&nbsp;displayed.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;info_offset:&nbsp;The&nbsp;vertical&nbsp;offset&nbsp;to&nbsp;display&nbsp;the&nbsp;database&nbsp;information.</span></dd></dl>
-</td></tr></table>
+ <dl><dt><a name="-is_key"><strong>is_key</strong></a>(key, key_type)</dt><dd><span class="code">Check&nbsp;if&nbsp;the&nbsp;input&nbsp;key&nbsp;matches&nbsp;any&nbsp;of&nbsp;the&nbsp;mapped&nbsp;keys&nbsp;for&nbsp;the&nbsp;given&nbsp;key&nbsp;type.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;key:&nbsp;The&nbsp;input&nbsp;key&nbsp;code<br>
+&nbsp;&nbsp;&nbsp;&nbsp;key_type:&nbsp;The&nbsp;type&nbsp;of&nbsp;key&nbsp;to&nbsp;check&nbsp;('UP',&nbsp;'DOWN',&nbsp;'LEFT',&nbsp;'RIGHT',&nbsp;'ENTER',&nbsp;'QUIT')<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bool:&nbsp;True&nbsp;if&nbsp;the&nbsp;key&nbsp;matches&nbsp;any&nbsp;of&nbsp;the&nbsp;mapped&nbsp;keys,&nbsp;False&nbsp;otherwise<br>
+Returns:</span></dd></dl>
+ <dl><dt><a name="-safe_addstr"><strong>safe_addstr</strong></a>(stdscr, y: int, x: int, text: str, attr=None)</dt><dd><span class="code">Safely&nbsp;add&nbsp;a&nbsp;string&nbsp;to&nbsp;the&nbsp;screen,&nbsp;handling&nbsp;boundary&nbsp;errors.</span></dd></dl>
+ <dl><dt><a name="-safe_execution"><strong>safe_execution</strong></a>(func)</dt><dd><span class="code">Decorator&nbsp;to&nbsp;handle&nbsp;exceptions&nbsp;and&nbsp;log&nbsp;errors&nbsp;for&nbsp;functions.</span></dd></dl>
+ <dl><dt><a name="-search_prompt"><strong>search_prompt</strong></a>(stdscr, items: List[str]) -&gt; Optional[int]</dt><dd><span class="code">Display&nbsp;search&nbsp;prompt&nbsp;and&nbsp;return&nbsp;index&nbsp;of&nbsp;matched&nbsp;item.</span></dd></dl>
+</td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+    
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>Dict</strong> = typing.Dict<br>
+<strong>KEY_MAPPING</strong> = {'DOWN': [258, 115, 83], 'ENTER': [343, 10, 13], 'HELP': [63], 'LEFT': [260, 97, 65], 'QUIT': [113, 81], 'REFRESH': [114, 82], 'RIGHT': [261, 100, 68], 'SEARCH': [47], 'UP': [259, 119, 87]}<br>
+<strong>List</strong> = typing.List<br>
+<strong>Optional</strong> = typing.Optional</td></tr></table>
 </body></html>
