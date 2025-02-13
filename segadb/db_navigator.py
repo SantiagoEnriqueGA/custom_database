@@ -110,7 +110,6 @@ def display_help(stdscr):
 @safe_execution
 def search_prompt(stdscr, items: List[str]) -> Optional[int]:
     """Display search prompt and return index of matched item."""
-    # TODO: Fix search prompt functionality
     screen_height, screen_width = stdscr.getmaxyx()
     search_win = curses.newwin(3, 40, screen_height//2 - 1, screen_width//2 - 20)
     search_win.box()
@@ -119,34 +118,37 @@ def search_prompt(stdscr, items: List[str]) -> Optional[int]:
     
     curses.echo()
     curses.curs_set(1)
-    
+
     search_str = ""
     while True:
         ch = search_win.getch()
+        
+        # If the user presses Enter, perform the search and return result
         if ch in [ord('\n'), curses.KEY_ENTER]:
             break
+        # If the user presses ESC, exit the search
         elif ch == 27:  # ESC
             return None
-        elif ch == curses.KEY_BACKSPACE or ch == 127:
+        # Handle backspace
+        elif ch in [curses.KEY_BACKSPACE, 127]:
             search_str = search_str[:-1]
-            search_win.clear()
-            search_win.box()
-            safe_addstr(search_win, 1, 2, f"Search: {search_str}")
-            search_win.refresh()
-            continue
-            
-        search_str += chr(ch)
+        # Append character to search string
+        else:
+            search_str += chr(ch)
+
+        # Update the UI
         search_win.clear()
         search_win.box()
         safe_addstr(search_win, 1, 2, f"Search: {search_str}")
         search_win.refresh()
-        
-        # Search for matching item
-        for i, item in enumerate(items):
-            if search_str.lower() in item.lower():
-                return i
-    
-    return None
+
+    # Perform search **only after Enter is pressed**
+    for i, item in enumerate(items):
+        if search_str.lower() in item.lower():
+            return i
+
+    return None  # Return None if no match is found
+
 
 @safe_execution
 def db_navigator(stdscr, db):
@@ -208,7 +210,10 @@ def db_navigator(stdscr, db):
             if is_key(key, 'HELP'):
                 display_help(stdscr)
             elif is_key(key, 'SEARCH'):
-                result = search_prompt(stdscr, menu_list)
+                # Remove "View " from the beginning of the menu list, except for the first item
+                menu_list_noView = [item[5:] for item in menu_list]
+                menu_list_noView[0] = menu_list[0]
+                result = search_prompt(stdscr, menu_list_noView)
                 if result is not None:
                     current_row = result
             elif is_key(key, 'REFRESH'):
