@@ -4,8 +4,6 @@ import logging
 from typing import Dict, List, Any, Optional
 from contextlib import contextmanager
 
-# TODO: Color displayed code for views, mvs, stored procedures, and trigger functions
-
 # Set up logging
 logging.basicConfig(
     filename='segadb_error.log',
@@ -116,8 +114,8 @@ def display_help(stdscr):
     /: Search
     
     In Tables/Views/MVs:
-    Page Up: Go to first page
-    Page Down: Go to last page
+    Page Up:   first page
+    Page Down: last page
     
     Press any key to close help
     """
