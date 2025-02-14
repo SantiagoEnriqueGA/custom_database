@@ -14,8 +14,8 @@ from test_utils import suppress_print
 class TestDatabase(unittest.TestCase):
     """
     Unit tests for the Database class.
-    Methods:
-    # Initialization and Configuration
+        Methods:
+        # Initialization and Configuration
         - test_database: Tests the initialization of a database object.
         - test_create_table: Tests the creation of a table in the database.
         - test_drop_table: Tests the deletion of a table from the database.

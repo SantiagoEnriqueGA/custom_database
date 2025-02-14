@@ -5,8 +5,6 @@ import inspect
 # Imports: Local
 from .record import Record
 
-# TODO: Add table level logging
-
 def log_method_call(func):
     """
     Decorator to log method calls in the Table class.
