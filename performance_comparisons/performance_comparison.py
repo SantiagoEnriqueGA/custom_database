@@ -10,8 +10,6 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from segadb.database import Database
 
-# TODO: Add performance tests for Join
-
 class TestDatabasePerformance:
     """Performance tests for the Database class."""
     def __init__(self, num_records=1000, repeats=1, verbose=False):
@@ -42,7 +40,7 @@ class TestDatabasePerformance:
         Returns:
             dict: A dictionary containing the average time for each operation.
         """
-        results = {"insert": 0, "select": 0, "update": 0, "aggregate": 0, "filter": 0, "sort": 0, "delete": 0}
+        results = {"insert": 0, "select": 0, "update": 0, "aggregate": 0, "filter": 0, "sort": 0, "join": 0, "delete": 0}
         for _ in range(self.repeats):
             results["insert"] += self.test_insert_performance()
             results["select"] += self.test_select_performance()
@@ -50,6 +48,7 @@ class TestDatabasePerformance:
             results["aggregate"] += self.test_aggregate_performance()
             results["filter"] += self.test_filter_performance()
             results["sort"] += self.test_sort_performance()
+            results["join"] += self.test_join_performance()
             results["delete"] += self.test_delete_performance()
         
         for key in results:
@@ -75,7 +74,7 @@ class TestDatabasePerformance:
                   of results from each test run.
         """
         # Returns ALL results for each operation and repeats
-        results = {"insert": [], "select": [], "update": [], "aggregate": [], "filter": [], "sort": [], "delete": []}
+        results = {"insert": [], "select": [], "update": [], "aggregate": [], "filter": [], "sort": [], "join": [], "delete": []}
         for _ in range(self.repeats):
             results["insert"].append(self.test_insert_performance())
             results["select"].append(self.test_select_performance())
@@ -83,6 +82,7 @@ class TestDatabasePerformance:
             results["aggregate"].append(self.test_aggregate_performance())
             results["filter"].append(self.test_filter_performance())
             results["sort"].append(self.test_sort_performance())
+            results["join"].append(self.test_join_performance())
             results["delete"].append(self.test_delete_performance())
             
         return results
@@ -204,6 +204,25 @@ class TestDatabasePerformance:
         if self.verbose: print(f"Sort performance on {self.num_records} [id, name, email] records: {(end_time - start_time):.2} seconds.")
         return end_time - start_time
     
+    def test_join_performance(self):
+        """
+        Tests the performance of joining two tables in the database.
+        This method creates two identical tables and performs an inner join operation between them.
+        It measures the time taken to perform the join operation and asserts that the join was successful.
+        Returns:
+            float: The time taken to perform the join operation, in seconds.
+        """
+        test_table1 = self.db.get_table("PerformanceTest")
+        test_table2 = self.db.get_table("PerformanceTest")
+        
+        start_time = time.time()
+        joined_table = test_table1.join(test_table2, "name", "name")
+        assert len(joined_table.records) == self.num_records
+        
+        end_time = time.time()
+        if self.verbose: print(f"Join performance on {self.num_records} [id, name, email] records: {(end_time - start_time):.2} seconds.")
+        return end_time - start_time
+    
     def test_delete_performance(self):
         """
         Tests the performance of deleting records from the database.
@@ -255,7 +274,7 @@ class TestDatabasePerformanceSQLite:
         Returns:
             dict: A dictionary containing the average time for each operation.
         """
-        results = {"insert": 0, "select": 0, "update": 0, "aggregate": 0, "filter": 0, "sort": 0, "delete": 0}
+        results = {"insert": 0, "select": 0, "update": 0, "aggregate": 0, "filter": 0, "sort": 0, "join": 0, "delete": 0}
         for _ in range(self.repeats):
             results["insert"] += self.test_insert_performance()
             results["select"] += self.test_select_performance()
@@ -263,6 +282,7 @@ class TestDatabasePerformanceSQLite:
             results["aggregate"] += self.test_aggregate_performance()
             results["filter"] += self.test_filter_performance()
             results["sort"] += self.test_sort_performance()
+            results["join"] += self.test_join_performance()
             results["delete"] += self.test_delete_performance()
         
         for key in results:
@@ -288,7 +308,7 @@ class TestDatabasePerformanceSQLite:
                   of results from each test run.
         """
         # Returns ALL results for each operation and repeats
-        results = {"insert": [], "select": [], "update": [], "aggregate": [], "filter": [], "sort": [], "delete": []}
+        results = {"insert": [], "select": [], "update": [], "aggregate": [], "filter": [], "sort": [], "join": [], "delete": []}
         for _ in range(self.repeats):
             results["insert"].append(self.test_insert_performance())
             results["select"].append(self.test_select_performance())
@@ -296,6 +316,7 @@ class TestDatabasePerformanceSQLite:
             results["aggregate"].append(self.test_aggregate_performance())
             results["filter"].append(self.test_filter_performance())
             results["sort"].append(self.test_sort_performance())
+            results["join"].append(self.test_join_performance())
             results["delete"].append(self.test_delete_performance())
             
         return results
@@ -411,6 +432,29 @@ class TestDatabasePerformanceSQLite:
         if self.verbose: print(f"Sort performance on {self.num_records} [id, name, email] records: {(end_time - start_time):.2} seconds.")
         return end_time - start_time
     
+    def test_join_performance(self):
+        """
+        Tests the performance of joining two tables in the SQLite database.
+        This method creates two identical tables and performs an inner join operation between them.
+        It measures the time taken to perform the join operation and asserts that the join was successful.
+        Returns:
+            float: The time taken to perform the join operation, in seconds.
+        """
+        # Drop PerformanceTest2 table if it exists
+        self.cursor.execute("DROP TABLE IF EXISTS PerformanceTest2")
+        
+        # Copy PerformanceTest table to PerformanceTest2
+        self.cursor.execute("CREATE TABLE PerformanceTest2 AS SELECT * FROM PerformanceTest")
+        
+        start_time = time.time()
+        self.cursor.execute("SELECT * FROM PerformanceTest JOIN PerformanceTest2 ON PerformanceTest.name = PerformanceTest2.name")
+        results = self.cursor.fetchall()
+        assert len(results) == self.num_records
+        
+        end_time = time.time()
+        if self.verbose: print(f"Join performance on {self.num_records} [id, name, email] records: {(end_time - start_time):.2} seconds.")
+        return end_time - start_time
+    
     def test_delete_performance(self):
         """
         Tests the performance of deleting records from the SQLite database.
@@ -459,7 +503,7 @@ def plot_results(num_records_list, resultsSegadb_list, resultsSQLite_list):
         resultsSegadb_list (list): A list of dictionaries containing the performance results for Segadb.
         resultsSQLite_list (list): A list of dictionaries containing the performance results for SQLite.
     """
-    operations = ["insert", "select", "update", "aggregate", "filter", "sort", "delete"]
+    operations = ["insert", "select", "update", "aggregate", "filter", "sort", "join", "delete"]
     for operation in operations:
         # Extract the times for the current operation
         segadb_times = np.array([results[operation] for results in resultsSegadb_list])
@@ -495,7 +539,7 @@ def main():
         avg = {key: sum(results[key]) / len(results[key]) for key in results}
         
         # Print the average time for each operation on the same line
-        for operation in ["insert", "select", "update", "aggregate", "filter", "sort", "delete"]:
+        for operation in ["insert", "select", "update", "aggregate", "filter", "sort", "join", "delete"]:
             print(f" {operation.capitalize()}: {avg[operation]:.4f}", end="")
         print()
     
