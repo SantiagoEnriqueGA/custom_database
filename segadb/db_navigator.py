@@ -23,7 +23,9 @@ KEY_MAPPING = {
     'QUIT': [ord('q'), ord('Q')],
     'REFRESH': [ord('r'), ord('R')],
     'HELP': [ord('?')],
-    'SEARCH': [ord('/')]
+    'SEARCH': [ord('/')],
+    'PAGE_UP': [curses.KEY_PPAGE],
+    'PAGE_DOWN': [curses.KEY_NPAGE]
 }
 
 def safe_execution(func):
@@ -112,6 +114,10 @@ def display_help(stdscr):
     r: Refresh data
     ?: Show this help
     /: Search
+    
+    In Tables/Views/MVs:
+    Page Up: Go to first page
+    Page Down: Go to last page
     
     Press any key to close help
     """
@@ -418,9 +424,11 @@ def display_table(stdscr, table, table_name, tables_offset):
         record_limit = min(record_limit, stdscr.getmaxyx()[0] - tables_offset - 8)
         
         current_page = 0
+        last_page = (record_count + record_limit - 1) // record_limit - 1
+        
         # While loop to keep the screen open until the user exits
         while True:
-            safe_addstr(stdscr, tables_offset + 2, 0, str(record_limit) + " records displayed per page. Page: " + str(current_page + 1) + " of " + str((record_count + record_limit - 1) // record_limit))
+            safe_addstr(stdscr, tables_offset + 2, 0, str(record_limit) + " records displayed per page. Page: " + str(current_page + 1) + " of " + str(last_page + 1))
             safe_addstr(stdscr, tables_offset + 3, 0, "-" * 80)
             
             # Display the column names
@@ -462,6 +470,14 @@ def display_table(stdscr, table, table_name, tables_offset):
             # If the user presses Down arrow key, move to the next page
             elif is_key(key, 'DOWN') and current_page < (record_count + record_limit - 1) // record_limit - 1:
                 current_page += 1
+            elif is_key(key, 'PAGE_DOWN') and current_page < (record_count + record_limit - 1) // record_limit - 1:
+                current_page = (record_count + record_limit - 1) // record_limit - 1
+            elif is_key(key, 'PAGE_UP') and current_page > 0:
+                current_page = 0
+                
+            # Clear only the table display area before refreshing
+            stdscr.move(tables_offset + 2, 0)
+            stdscr.clrtobot()
 
 @safe_execution
 def _get_record_page(table, page_num, page_size):
@@ -586,9 +602,11 @@ def display_view(stdscr, table, view_name, query, view_offset):
         record_limit = min(record_limit, stdscr.getmaxyx()[0] - view_offset - 8)
         
         current_page = 0
+        last_page = (record_count + record_limit - 1) // record_limit - 1
+        
         # While loop to keep the screen open until the user exits
         while True:
-            safe_addstr(stdscr, view_offset + 2, 0, str(record_limit) + " records displayed per page. Page: " + str(current_page + 1) + " of " + str((record_count + record_limit - 1) // record_limit))
+            safe_addstr(stdscr, view_offset + 2, 0, str(record_limit) + " records displayed per page. Page: " + str(current_page + 1) + " of " + str((last_page) + 1))
             safe_addstr(stdscr, view_offset + 3, 0, "-" * 80)
             
             # Display the column names
@@ -630,6 +648,10 @@ def display_view(stdscr, table, view_name, query, view_offset):
             # If the user presses Down arrow key, move to the next page
             elif is_key(key, 'DOWN') and current_page < (record_count + record_limit - 1) // record_limit - 1:
                 current_page += 1
+            elif is_key(key, 'PAGE_DOWN') and current_page < (record_count + record_limit - 1) // record_limit - 1:
+                current_page = (record_count + record_limit - 1) // record_limit - 1
+            elif is_key(key, 'PAGE_UP') and current_page > 0:
+                current_page = 0
             
             # Clear only the table display area before refreshing
             stdscr.move(view_offset + 2, 0)
@@ -722,8 +744,10 @@ def display_mv_view(stdscr, table, view_name, query, view_offset):
         record_limit = min(record_limit, stdscr.getmaxyx()[0] - view_offset - 8)
         
         current_page = 0
+        last_page = (record_count + record_limit - 1) // record_limit - 1
+        
         while True:
-            safe_addstr(stdscr, view_offset + 2, 0, str(record_limit) + " records displayed per page. Page: " + str(current_page + 1) + " of " + str((record_count + record_limit - 1) // record_limit))
+            safe_addstr(stdscr, view_offset + 2, 0, str(record_limit) + " records displayed per page. Page: " + str(current_page + 1) + " of " + str(last_page + 1))
             safe_addstr(stdscr, view_offset + 3, 0, "-" * 80)
             
             # Display the column names
@@ -762,6 +786,10 @@ def display_mv_view(stdscr, table, view_name, query, view_offset):
                 current_page -= 1
             elif is_key(key, 'DOWN') and current_page < (record_count + record_limit - 1) // record_limit - 1:
                 current_page += 1
+            elif is_key(key, 'PAGE_DOWN') and current_page < (record_count + record_limit - 1) // record_limit - 1:
+                current_page = (record_count + record_limit - 1) // record_limit - 1
+            elif is_key(key, 'PAGE_UP') and current_page > 0:
+                current_page = 0
             
             # Clear only the table display area before refreshing
             stdscr.move(view_offset + 2, 0)
