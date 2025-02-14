@@ -412,11 +412,15 @@ def display_table(stdscr, table, table_name, tables_offset):
         
         # Display the table records
         record_count = len(table.records)
-        record_limit = 10
+        
+        # Get max record limit (screen height - offset - header - footer)
+        record_limit = 100
+        record_limit = min(record_limit, stdscr.getmaxyx()[0] - tables_offset - 8)
+        
         current_page = 0
         # While loop to keep the screen open until the user exits
         while True:
-            safe_addstr(stdscr, tables_offset + 2, 0, "Page: " + str(current_page + 1) + " of " + str((record_count + record_limit - 1) // record_limit))
+            safe_addstr(stdscr, tables_offset + 2, 0, str(record_limit) + " records displayed per page. Page: " + str(current_page + 1) + " of " + str((record_count + record_limit - 1) // record_limit))
             safe_addstr(stdscr, tables_offset + 3, 0, "-" * 80)
             
             # Display the column names
@@ -576,11 +580,15 @@ def display_view(stdscr, table, view_name, query, view_offset):
         
         # Display the view records
         record_count = len(table.records)
-        record_limit = 10
+        
+        # Get max record limit (screen height - offset - header - footer)
+        record_limit = 100
+        record_limit = min(record_limit, stdscr.getmaxyx()[0] - view_offset - 8)
+        
         current_page = 0
         # While loop to keep the screen open until the user exits
         while True:
-            safe_addstr(stdscr, view_offset + 2, 0, "Page: " + str(current_page + 1) + " of " + str((record_count + record_limit - 1) // record_limit))
+            safe_addstr(stdscr, view_offset + 2, 0, str(record_limit) + " records displayed per page. Page: " + str(current_page + 1) + " of " + str((record_count + record_limit - 1) // record_limit))
             safe_addstr(stdscr, view_offset + 3, 0, "-" * 80)
             
             # Display the column names
@@ -708,10 +716,14 @@ def display_mv_view(stdscr, table, view_name, query, view_offset):
         col_widths = {col: max(len(str(record.data[col])) for record in table.records) for col in col_names}
 
         record_count = len(table.records)
-        record_limit = 10
+        
+        # Get max record limit (screen height - offset - header - footer)
+        record_limit = 100
+        record_limit = min(record_limit, stdscr.getmaxyx()[0] - view_offset - 8)
+        
         current_page = 0
         while True:
-            safe_addstr(stdscr, view_offset + 2, 0, "Page: " + str(current_page + 1) + " of " + str((record_count + record_limit - 1) // record_limit))
+            safe_addstr(stdscr, view_offset + 2, 0, str(record_limit) + " records displayed per page. Page: " + str(current_page + 1) + " of " + str((record_count + record_limit - 1) // record_limit))
             safe_addstr(stdscr, view_offset + 3, 0, "-" * 80)
             
             # Display the column names
