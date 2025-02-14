@@ -21,7 +21,6 @@ from .record import Record
 from .views import View, MaterializedView
 from .db_navigator import db_navigator
 
-# TODO: Add support for logging all database operations to file (use logging module)
 def log_method_call(func):
     """
     Decorator to log method calls in the Database class.
@@ -49,8 +48,8 @@ def log_method_call(func):
         
         try:
             # Log the method call
-            logging.info(
-                f"Method Call: {method_name} | "
+            self.logger.info(
+                f"Method Call: {method_name} | " 
                 f"Args: {filtered_args}"
             )
             
@@ -58,7 +57,7 @@ def log_method_call(func):
             result = func(self, *args, **kwargs)
             
             # Log successful completion
-            logging.info(
+            self.logger.info(
                 f"Method Complete: {method_name} | "
                 f"Status: Success"
             )
@@ -67,7 +66,7 @@ def log_method_call(func):
             
         except Exception as e:
             # Log any exceptions
-            logging.error(
+            self.logger.error(
                 f"Method Error: {method_name} | "
                 f"Args: {filtered_args} | "
                 f"Error: {str(e)}"
@@ -133,6 +132,7 @@ class Database:
         Initializes a new instance of the database with the given name.
         Args:
             name (str): The name of the database.
+            db_logging (bool, optional): If True, enables logging for the database. Defaults to False.
         """
         self.name = name
         self.tables = {}
@@ -197,6 +197,7 @@ class Database:
 
     # Connection and Session Management
     # ---------------------------------------------------------------------------------------------
+    @log_method_call
     def create_session(self, username):
         """
         Creates a new session for a user.
@@ -209,6 +210,7 @@ class Database:
         self.sessions[session_token] = username
         return session_token
     
+    @log_method_call
     def delete_session(self, session_token):
         """
         Deletes a session.
@@ -218,6 +220,7 @@ class Database:
         if session_token in self.sessions:
             del self.sessions[session_token]
 
+    @log_method_call
     def get_username_by_session(self, session_token):
         """
         Retrieves the username associated with a session token.
@@ -230,6 +233,7 @@ class Database:
     
     # User and Role Management
     # ---------------------------------------------------------------------------------------------
+    @log_method_call
     def register_user(self, username, password, roles=None):
         """
         Registers a new user in the database.
@@ -274,6 +278,7 @@ class Database:
                 return record.data
         return None
 
+    @log_method_call
     def add_role(self, username, role):
         """
         Add a role to a user.
@@ -304,6 +309,7 @@ class Database:
             return role in user["roles"]
         return False
     
+    @log_method_call
     def remove_user(self, username):
         """
         Removes a user from the database.
@@ -364,6 +370,7 @@ class Database:
 
     # Table Management
     # ---------------------------------------------------------------------------------------------
+    @log_method_call
     def create_table(self, table_name, columns, session_token=None):
         """
         Creates a new table in the database.
@@ -377,6 +384,7 @@ class Database:
         self._check_permission(session_token, "create_table")
         self.tables[table_name] = Table(table_name, columns)
 
+    @log_method_call
     def drop_table(self, table_name, session_token=None):
         """
         Drops a table from the database.
@@ -387,6 +395,7 @@ class Database:
         self._check_permission(session_token, "delete_table")
         del self.tables[table_name]
 
+    @log_method_call
     def update_table(self, table_name, updates, session_token=None):
         """
         Updates a table in the database.
@@ -434,6 +443,7 @@ class Database:
         """
         return self.tables.get(table_name)
     
+    @log_method_call
     def create_table_from_csv(self, dir, table_name, headers=True, delim=',', column_names=None, col_types=None, progress=False, parrallel=False, max_chunk_size=None):
         """
         Creates a table in the database from a CSV file.
@@ -589,6 +599,7 @@ class Database:
         
     # Table Operations
     # ---------------------------------------------------------------------------------------------    
+    @log_method_call
     def add_constraint(self, table_name, column, constraint, reference_table_name=None, reference_column=None):
         """
         Adds a constraint to a specified column in a table.
@@ -661,6 +672,7 @@ class Database:
      
     # Stored Procedures Management
     # ---------------------------------------------------------------------------------------------
+    @log_method_call
     def add_stored_procedure(self, name, procedure):
         """
         Add a new stored procedure to the database.
@@ -671,7 +683,8 @@ class Database:
         if name in self.stored_procedures:
             raise ValueError(f"Stored procedure {name} already exists.")
         self.stored_procedures[name] = procedure
-        
+    
+    @log_method_call
     def execute_stored_procedure(self, name, *args, **kwargs):
         """
         Execute a stored procedure.
@@ -696,6 +709,7 @@ class Database:
         
         return result
 
+    @log_method_call
     def delete_stored_procedure(self, name):
         """
         Delete a stored procedure from the database.
@@ -730,6 +744,7 @@ class Database:
     
     # Trigger Management
     # ---------------------------------------------------------------------------------------------
+    @log_method_call
     def add_trigger(self, procedure_name, trigger_type, trigger_function):
         """
         Add a trigger for a stored procedure.
@@ -746,6 +761,7 @@ class Database:
             self.triggers[trigger_type][procedure_name] = []
         self.triggers[trigger_type][procedure_name].append(trigger_function)
 
+    @log_method_call
     def execute_triggers(self, procedure_name, trigger_type, *args, **kwargs):
         """
         Execute triggers for a stored procedure.
@@ -759,6 +775,8 @@ class Database:
             for trigger in self.triggers[trigger_type][procedure_name]:
                 trigger(self, procedure_name, *args, **kwargs)
 
+    
+    @log_method_call
     def delete_trigger(self, procedure_name, trigger_type, trigger_function):
         """
         Delete a trigger for a stored procedure.
@@ -774,6 +792,7 @@ class Database:
             
     # View Management
     # ---------------------------------------------------------------------------------------------
+    @log_method_call
     def create_view(self, view_name, query):
         """
         Create a new view.
@@ -803,6 +822,7 @@ class Database:
             raise ValueError(f"View {view_name} does not exist.")
         return self.views[view_name]
 
+    @log_method_call
     def delete_view(self, view_name):
         """
         Delete a view by name.
@@ -815,6 +835,7 @@ class Database:
     
     # Materialized View Management
     # ---------------------------------------------------------------------------------------------
+    @log_method_call
     def create_materialized_view(self, view_name, query):
         """
         Create a new materialized view.
@@ -844,6 +865,7 @@ class Database:
             raise ValueError(f"Materialized view {view_name} does not exist.")
         return self.materialized_views[view_name]
 
+    @log_method_call
     def refresh_materialized_view(self, view_name):
         """
         Refresh a materialized view by name.
@@ -854,6 +876,7 @@ class Database:
             raise ValueError(f"Materialized view {view_name} does not exist.")
         self.materialized_views[view_name].refresh()
 
+    @log_method_call
     def delete_materialized_view(self, view_name):
         """
         Delete a materialized view by name.
@@ -1143,7 +1166,7 @@ class Database:
             })
 
     @staticmethod
-    def load_sample_database(name="SampleDB", n_users=10, n_orders=100, n_products=50, n_reviews=200, n_categories=10, n_suppliers=20):
+    def load_sample_database(name="SampleDB", n_users=10, n_orders=100, n_products=50, n_reviews=200, n_categories=10, n_suppliers=20, db_logging=True):
         """
         Create a sample database with predefined tables and data for testing and demonstration purposes.
         Args:
@@ -1152,7 +1175,7 @@ class Database:
             Database: An instance of the Database class populated with sample data.
         """
         # Create a new database
-        db = Database(name)
+        db = Database(name, db_logging=db_logging)
         user_manager = db.create_user_manager()
         auth = db.create_authorization()
 

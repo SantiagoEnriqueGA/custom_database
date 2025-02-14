@@ -1,6 +1,8 @@
 # Imports: Local
 from .record import Record
 
+# TODO: Add table level logging
+
 class Table:
     # Initialization and Configuration
     # ---------------------------------------------------------------------------------------------

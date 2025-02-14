@@ -1,4 +1,3 @@
-
 import unittest
 from unittest.mock import Mock
 from unittest.mock import MagicMock
@@ -8,7 +7,7 @@ import os
 
 # Change the working directory to the parent directory to allow importing the segadb package.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from segadb.database import Database
+from segadb.database import *
 from segadb.database import _process_file_chunk
 from test_utils import suppress_print
 
@@ -462,6 +461,49 @@ class TestDatabase(unittest.TestCase):
         with suppress_print():
             db.execute_stored_procedure("drop_users_with_no_orders")
         self.assertGreater(len(db.get_table("users").records), 0)
+
+
+    # Logging
+    # ---------------------------------------------------------------------------------------------
+    def test_log_method_call(self):
+        db = Database("TestDB", db_logging=True)
+        db.logger = MagicMock()
+
+        @log_method_call
+        def sample_method(self, x, y):
+            return x + y
+
+        result = sample_method(db, 1, 2)
+        self.assertEqual(result, 3)
+        db.logger.info.assert_any_call("Method Call: sample_method | Args: {'x': 1, 'y': 2}")
+        db.logger.info.assert_any_call("Method Complete: sample_method | Status: Success")
+        
+    def test_log_method_call_fail(self):
+        db = Database("TestDB", db_logging=True)
+        db.logger = MagicMock()
+
+        @log_method_call
+        def sample_method(self, x, y):
+            raise ValueError("Test Error")
+
+        with self.assertRaises(ValueError):
+            sample_method(db, 1, 2)
+        db.logger.info.assert_any_call("Method Call: sample_method | Args: {'x': 1, 'y': 2}")
+        db.logger.error.assert_any_call("Method Error: sample_method | Args: {'x': 1, 'y': 2} | Error: Test Error")
+        
+    def test_log_method_call_filter(self):
+        # Should filter password and password_hash from logs
+        db = Database("TestDB", db_logging=True)
+        db.logger = MagicMock()
+        
+        @log_method_call
+        def sample_method(self, username, password, password_hash):
+            return username + password + password_hash
+        
+        result = sample_method(db, "user", "password", "hash")
+        self.assertEqual(result, "userpasswordhash")        
+        db.logger.info.assert_any_call("Method Call: sample_method | Args: {'username': 'user', 'password': '[REDACTED]', 'password_hash': '[REDACTED]'}")
+        db.logger.info.assert_any_call("Method Complete: sample_method | Status: Success")
 
 if __name__ == '__main__':
     unittest.main()
