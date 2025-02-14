@@ -6,6 +6,8 @@ import uuid
 from math import inf
 import multiprocessing as mp
 import inspect
+import logging
+from pathlib import Path
 
 # Imports: Third Party
 import bcrypt
@@ -19,7 +21,60 @@ from .record import Record
 from .views import View, MaterializedView
 from .db_navigator import db_navigator
 
-# TODO: Add support for logging all database operations to file
+# TODO: Add support for logging all database operations to file (use logging module)
+def log_method_call(func):
+    """
+    Decorator to log method calls in the Database class.
+    Logs the method name, arguments, and return value.
+    """
+    def wrapper(self, *args, **kwargs):
+        if not self.log:
+            return func(self, *args, **kwargs)
+            
+        # Get method name and calling arguments
+        method_name = func.__name__
+        arg_names = inspect.getfullargspec(func).args[1:]  # Skip 'self'
+        
+        # Format positional arguments
+        args_dict = dict(zip(arg_names, args))
+        
+        # Combine with keyword arguments
+        all_args = {**args_dict, **kwargs}
+        
+        # Filter out sensitive information (like passwords)
+        filtered_args = {
+            k: (v if k not in ['password', 'password_hash'] else '[REDACTED]') 
+            for k, v in all_args.items()
+        }
+        
+        try:
+            # Log the method call
+            logging.info(
+                f"Method Call: {method_name} | "
+                f"Args: {filtered_args}"
+            )
+            
+            # Execute the method
+            result = func(self, *args, **kwargs)
+            
+            # Log successful completion
+            logging.info(
+                f"Method Complete: {method_name} | "
+                f"Status: Success"
+            )
+            
+            return result
+            
+        except Exception as e:
+            # Log any exceptions
+            logging.error(
+                f"Method Error: {method_name} | "
+                f"Args: {filtered_args} | "
+                f"Error: {str(e)}"
+            )
+            raise
+
+    return wrapper
 
 # Helper function for processing file chunks in parallel (cannot be defined within the Database class)
 def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_names=None, col_types=None, progress=False, headers=False):
@@ -73,7 +128,7 @@ def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_nam
 class Database:  
     # Initialization and Configuration
     # ---------------------------------------------------------------------------------------------
-    def __init__(self, name):
+    def __init__(self, name, db_logging=False):
         """
         Initializes a new instance of the database with the given name.
         Args:
@@ -87,6 +142,37 @@ class Database:
         self.active_session = None
         self.stored_procedures = {}
         self.triggers = {"before": {}, "after": {}}
+
+        # Logging setup
+        self.log = db_logging
+        if self.log:
+            # Create logs directory if it doesn't exist
+            log_dir = Path('logs')
+            log_dir.mkdir(exist_ok=True)
+            
+            # Set up log file path
+            log_file = log_dir / f'{self.name}_transaction_log.log'
+            
+            # Configure logger
+            self.logger = logging.getLogger(f'database_{self.name}')
+            self.logger.setLevel(logging.INFO)
+            
+            # Prevent duplicate handlers
+            if not self.logger.handlers:
+                # Create file handler
+                file_handler = logging.FileHandler(log_file)
+                file_handler.setLevel(logging.INFO)
+                
+                # Create formatter
+                formatter = logging.Formatter(
+                    '%(asctime)s - %(levelname)s - %(message)s'
+                )
+                file_handler.setFormatter(formatter)
+                
+                # Add handler to logger
+                self.logger.addHandler(file_handler)
+            
+            self.logger.info(f"Database '{self.name}' initialized with logging enabled")
 
         # Create the _users table for user management
         self.create_table("_users" , ["username", "password_hash", "roles"])        
@@ -122,7 +208,7 @@ class Database:
         session_token = str(uuid.uuid4())
         self.sessions[session_token] = username
         return session_token
-
+    
     def delete_session(self, session_token):
         """
         Deletes a session.
