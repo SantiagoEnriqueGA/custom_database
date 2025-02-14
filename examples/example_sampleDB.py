@@ -9,7 +9,7 @@ from segadb import *
 # Load and print a sample database
 db = Database.load_sample_database(n_users=1000, n_orders=10_000, n_products=50, 
                                    n_reviews=200, n_categories=10, n_suppliers=20,
-                                   db_logging=True)
+                                   db_logging=True, table_logging=False)
 db.print_db(index=False, limit=10, tables=True, 
             views=True, materialized_views=True,
             stored_procedures=True, triggers=True)

@@ -25,6 +25,11 @@ def log_method_call(func):
     """
     Decorator to log method calls in the Database class.
     Logs the method name, arguments, and return value.
+    
+    Args:
+        func (function): The function to decorate.
+    Returns:
+        function: The decorated function.
     """
     def wrapper(self, *args, **kwargs):
         if not self.log:
@@ -127,12 +132,13 @@ def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_nam
 class Database:  
     # Initialization and Configuration
     # ---------------------------------------------------------------------------------------------
-    def __init__(self, name, db_logging=False):
+    def __init__(self, name, db_logging=False, table_logging=False):
         """
         Initializes a new instance of the database with the given name.
         Args:
             name (str): The name of the database.
             db_logging (bool, optional): If True, enables logging for the database. Defaults to False.
+            table_logging (bool, optional): If True, enables logging for tables. Defaults to False.
         """
         self.name = name
         self.tables = {}
@@ -145,6 +151,7 @@ class Database:
 
         # Logging setup
         self.log = db_logging
+        self.table_log = table_logging
         if self.log:
             # Create logs directory if it doesn't exist
             log_dir = Path('logs')
@@ -371,18 +378,23 @@ class Database:
     # Table Management
     # ---------------------------------------------------------------------------------------------
     @log_method_call
-    def create_table(self, table_name, columns, session_token=None):
+    def create_table(self, table_name, columns, session_token=None, logging_override=False):
         """
         Creates a new table in the database.
         Args:
             table_name (str): The name of the table to be created.
             columns (list): A list of column definitions for the table.
             session_token (str, optional): The session token of the user performing the action.
+            logging_override (bool, optional): If True, enables logging for the table. Defaults to False.
+                db_logging must be enabled for this to take effect.
         Returns:
             None
         """
         self._check_permission(session_token, "create_table")
-        self.tables[table_name] = Table(table_name, columns)
+        if self.table_log or (logging_override and self.log):
+            self.tables[table_name] = Table(table_name, columns, logger=self.logger)
+        else:
+            self.tables[table_name] = Table(table_name, columns)
 
     @log_method_call
     def drop_table(self, table_name, session_token=None):
@@ -1166,7 +1178,7 @@ class Database:
             })
 
     @staticmethod
-    def load_sample_database(name="SampleDB", n_users=10, n_orders=100, n_products=50, n_reviews=200, n_categories=10, n_suppliers=20, db_logging=True):
+    def load_sample_database(name="SampleDB", n_users=10, n_orders=100, n_products=50, n_reviews=200, n_categories=10, n_suppliers=20, db_logging=False, table_logging=False):
         """
         Create a sample database with predefined tables and data for testing and demonstration purposes.
         Args:
@@ -1175,7 +1187,7 @@ class Database:
             Database: An instance of the Database class populated with sample data.
         """
         # Create a new database
-        db = Database(name, db_logging=db_logging)
+        db = Database(name, db_logging=db_logging, table_logging=table_logging)
         user_manager = db.create_user_manager()
         auth = db.create_authorization()
 

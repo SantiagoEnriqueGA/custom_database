@@ -1,13 +1,16 @@
 
 import unittest
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock, ANY
 import sys
 import os
 
 # Change the working directory to the parent directory to allow importing the segadb package.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from segadb.table import Table
+from segadb.database import Database
 from test_utils import suppress_print
+
+# TODO; Extend Table tests
 
 class TestTable(unittest.TestCase):
     """
@@ -22,6 +25,8 @@ class TestTable(unittest.TestCase):
     - test_print_table: Tests that the table can be printed with a limit and pretty format.
     - test_add_constraint1: Tests that a constraint can be added to a column and verifies the constraint.
     - test_add_constraint2: Tests that a UNIQUE constraint can be added to a column and verifies the constraint.
+    - test_logging: Tests that table operations are logged when table logging is enabled.
+    - test_logging_override: Tests that table operations are logged when table logging is disabled and logging override is enabled
     """
     @classmethod
     def setUpClass(cls):
@@ -84,6 +89,39 @@ class TestTable(unittest.TestCase):
             self.assertEqual(len(self.table.records), 1)
             self.table.try_insert({"name": "Jane Doe", "email": "john@example.com"})
             self.assertEqual(len(self.table.records), 1)  # Should not insert due to UNIQUE constraint violation
+            
+    def test_logging(self):
+        db = Database("TestDB_table", db_logging=True, table_logging=True)
+        db.logger = MagicMock()
+        
+        db.create_table("users", ["username", "password_hash", "roles"])
+        db.add_constraint("users", "username", lambda x: len(x) > 3)
+        db.get_table("users").insert({"username": "john", "password_hash": "1234", "roles": ["admin"]})
+        
+        # Ensure Method Calls are logged
+        db.logger.info.assert_any_call("Method Call: create_table | Args: {'table_name': 'users', 'columns': ['username', 'password_hash', 'roles']}")
+        
+        # Ensure Table Operations are logged
+        db.logger.info.assert_any_call('Table Log: users | Method Complete: add_constraint | Status: Success')
+        db.logger.info.assert_any_call("Table Log: users | Method Call: insert | Args: {'data': {'username': 'john', 'password_hash': '1234', 'roles': ['admin']}}")
+        db.logger.info.assert_any_call('Table Log: users | Method Complete: insert | Status: Success')
+
+    def test_logging_override(self):
+        db = Database("TestDB_table", db_logging=True, table_logging=False)
+        db.logger = MagicMock()
+        
+        db.create_table("users", ["username", "password_hash", "roles"], logging_override=True)
+        db.add_constraint("users", "username", lambda x: len(x) > 3)
+        db.get_table("users").insert({"username": "john", "password_hash": "1234", "roles": ["admin"]})
+            
+        # Ensure Method Calls are logged
+        db.logger.info.assert_any_call("Method Call: create_table | Args: {'table_name': 'users', 'columns': ['username', 'password_hash', 'roles'], 'logging_override': True}")
+        
+        # Ensure Table Operations are logged
+        db.logger.info.assert_any_call('Table Log: users | Method Complete: add_constraint | Status: Success')
+        db.logger.info.assert_any_call("Table Log: users | Method Call: insert | Args: {'data': {'username': 'john', 'password_hash': '1234', 'roles': ['admin']}}")
+        db.logger.info.assert_any_call('Table Log: users | Method Complete: insert | Status: Success')
+        
 
 if __name__ == '__main__':
     unittest.main()

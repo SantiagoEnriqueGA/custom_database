@@ -1,17 +1,84 @@
+# Imports: Standard Library
+import logging
+import inspect
+
 # Imports: Local
 from .record import Record
 
 # TODO: Add table level logging
 
+def log_method_call(func):
+    """
+    Decorator to log method calls in the Table class.
+    Logs the method name, arguments, and return value.
+    
+    Args:
+        func (function): The function to decorate.
+    Returns:
+        function: The decorated function.
+    """
+    def wrapper(self, *args, **kwargs):
+        if not hasattr(self, 'logger') or not self.logger:
+            return func(self, *args, **kwargs)
+            
+        # Get method name and calling arguments
+        method_name = func.__name__
+        arg_names = inspect.getfullargspec(func).args[1:]  # Skip 'self'
+        
+        # Format positional arguments
+        args_dict = dict(zip(arg_names, args))
+        
+        # Combine with keyword arguments
+        all_args = {**args_dict, **kwargs}
+        
+        # Filter out sensitive information (like passwords)
+        filtered_args = {
+            k: (v if k not in ['password', 'password_hash'] else '[REDACTED]') 
+            for k, v in all_args.items()
+        }
+        
+        try:
+            # Log the method call
+            self.logger.info(
+                f"Table Log: {self.name} | "
+                f"Method Call: {method_name} | " 
+                f"Args: {filtered_args}"
+            )
+            
+            # Execute the method
+            result = func(self, *args, **kwargs)
+            
+            # Log successful completion
+            self.logger.info(
+                f"Table Log: {self.name} | "
+                f"Method Complete: {method_name} | "
+                f"Status: Success"
+            )
+            
+            return result
+            
+        except Exception as e:
+            # Log any exceptions
+            self.logger.error(
+                f"Table Log: {self.name} | "
+                f"Method Error: {method_name} | "
+                f"Args: {filtered_args} | "
+                f"Error: {str(e)}"
+            )
+            raise
+
+    return wrapper
+
 class Table:
     # Initialization and Configuration
     # ---------------------------------------------------------------------------------------------
-    def __init__(self, name, columns):
+    def __init__(self, name, columns, logger=None):
         """
         Initialize a new table with a name and columns.
         Args:
             name (str): The name of the table.
             columns (list): A list of column names for the table.
+            logger (Logger, optional): A logger object to use for logging. Defaults to None.
         Attributes:
             name (str): The name of the table.
             columns (list): A list of column names for the table.
@@ -25,7 +92,12 @@ class Table:
         self.next_id = 1
         self.constraints = {column: [] for column in columns}
         self.index_cnt = 0
+        
+        # Logging
+        if logger:
+            self.logger = logger
 
+    @log_method_call
     def add_constraint(self, column, constraint, reference_table=None, reference_column=None):
         """
         Adds a constraint to a specified column in the table.
@@ -82,6 +154,7 @@ class Table:
 
     # CRUD Operations
     # ---------------------------------------------------------------------------------------------
+    @log_method_call
     def insert(self, data, record_type=Record, transaction=None, flex_ids = False):
         """
         Inserts a new record into the table.  
@@ -117,6 +190,7 @@ class Table:
     def _insert(self, record):
         self.records.append(record)
 
+    @log_method_call
     def try_insert(self, data, record_type=Record, transaction=None):
         """
         Attempts to insert data into the table. If an error occurs during the insertion,it catches the ValueError and prints an error message.
@@ -131,6 +205,7 @@ class Table:
         except ValueError as e:
             print(f"Error on insert: {e}")
             
+    @log_method_call
     def bulk_insert(self, record_list, transaction=None):
         """
         Inserts a list of records into the table.
@@ -160,6 +235,7 @@ class Table:
             self.next_id += 1
         self.records.extend(new_records)  
     
+    @log_method_call
     def delete(self, record_id, transaction=None):
         """
         Deletes a record from the database.
@@ -183,6 +259,7 @@ class Table:
             self.records.remove(record)
             record.remove_from_index(record_id)
 
+    @log_method_call
     def update(self, record_id, data, transaction=None):
         """
         Update a record in the database.
@@ -207,6 +284,7 @@ class Table:
             record.add_to_index(self.index_cnt)
             self.index_cnt += 1
             
+    @log_method_call
     def get_id_by_column(self, column, value):
         """
         Get the ID of the record with the specified value in the specified column.
@@ -219,6 +297,7 @@ class Table:
         record = next((r for r in self.records if r.data.get(column) == value), None)
         return record.id if record else None
 
+    @log_method_call
     def select(self, condition):
         """
         Selects records from the table that satisfy the given condition.
@@ -380,4 +459,3 @@ class Table:
 
         if limit is not None and len(self.records) > limit:
             print(f"--Showing first {limit} of {len(self.records)} records.--")
-    

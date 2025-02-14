@@ -57,6 +57,14 @@ class TestDatabase(unittest.TestCase):
         - test_add_trigger: Tests adding a trigger to the database.
         - test_execute_triggers: Tests executing triggers.
         - test_delete_trigger: Tests deleting a trigger from the database.
+    # Loading Sample Database
+        - test_load_sample_database: Tests loading the sample database.
+        - test_load_sample_database_custom: Tests loading a custom sample database.
+        - test_load_sample_database_exec: Tests executing a stored procedure from the sample database.
+    # Logging
+        - test_log_method_call: Tests logging a method call.
+        - test_log_method_call_fail: Tests logging a method call that raises an error.
+        - test_log_method_call_filter: Tests logging a method call with filtered arguments.
     """
     @classmethod
     def setUpClass(cls):
@@ -462,11 +470,10 @@ class TestDatabase(unittest.TestCase):
             db.execute_stored_procedure("drop_users_with_no_orders")
         self.assertGreater(len(db.get_table("users").records), 0)
 
-
     # Logging
     # ---------------------------------------------------------------------------------------------
     def test_log_method_call(self):
-        db = Database("TestDB", db_logging=True)
+        db = Database("TestDB_database", db_logging=True)
         db.logger = MagicMock()
 
         @log_method_call
