@@ -208,7 +208,7 @@ The following are the results of running the tests:
 
 ```sh
 (segadb_env) PS ...\custom_database> python .\tests\run_all_tests.py
-Testing CustomFernet Class                                
+Testing CustomFernet Class
 .........Testing Database Class
 .........................................Testing DatabasePartial Class
 .....Testing file: example_UsersAuth.py
@@ -235,20 +235,20 @@ Testing CustomFernet Class
 ..Testing Index Class
 ....Testing Record Class
 .............Testing safe_execution decorator
-.....Delete performance on 5000 [id, name, email] records: 0.0099 seconds.
-.Insert performance for 5000 [id, name, email] records: 0.94 seconds.
-.Join performance for 5000 records: 2.7 seconds.
-.Load performance for 5000 records: 0.9 seconds.
+.....Delete performance on 5000 [id, name, email] records: 0.016 seconds.
+.Insert performance for 5000 [id, name, email] records: 1.0 seconds.
+.Join performance for 5000 records: 3.1 seconds.
+.Load performance for 5000 records: 1.0 seconds.
 .Restore performance for 5000 records: 0.0 seconds.
-.Save performance for 5000 records: 0.11 seconds.
-.Select performance of 1 out of 5000 [id, name, email] records: 0.001 seconds.
-.Update performance on 5000 [id, name, email] records: 0.5 seconds.
+.Save performance for 5000 records: 0.13 seconds.
+.Select performance of 1 out of 5000 [id, name, email] records: 0.0 seconds.
+.Update performance on 5000 [id, name, email] records: 0.58 seconds.
 .Testing Storage Class
 ......................Testing Table Class
-..........Testing Transaction Class
+................................Testing Transaction Class
 .......................
 ----------------------------------------------------------------------
-Ran 162 tests in 67.245s
+Ran 184 tests in 71.998s
 
 OK
 ```
