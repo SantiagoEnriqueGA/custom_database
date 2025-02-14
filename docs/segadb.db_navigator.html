@@ -169,6 +169,7 @@ Args:<br>
 &nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;bool:&nbsp;True&nbsp;if&nbsp;the&nbsp;key&nbsp;matches&nbsp;any&nbsp;of&nbsp;the&nbsp;mapped&nbsp;keys,&nbsp;False&nbsp;otherwise<br>
 Returns:</span></dd></dl>
+ <dl><dt><a name="-remove_leading_spaces"><strong>remove_leading_spaces</strong></a>(code: str) -&gt; str</dt><dd><span class="code">Remove&nbsp;leading&nbsp;spaces&nbsp;from&nbsp;each&nbsp;line&nbsp;of&nbsp;the&nbsp;given&nbsp;code.</span></dd></dl>
  <dl><dt><a name="-safe_addstr"><strong>safe_addstr</strong></a>(stdscr, y: int, x: int, text: str, attr=None)</dt><dd><span class="code">Safely&nbsp;add&nbsp;a&nbsp;string&nbsp;to&nbsp;the&nbsp;screen,&nbsp;handling&nbsp;boundary&nbsp;errors.</span></dd></dl>
  <dl><dt><a name="-safe_execution"><strong>safe_execution</strong></a>(func)</dt><dd><span class="code">Decorator&nbsp;to&nbsp;handle&nbsp;exceptions&nbsp;and&nbsp;log&nbsp;errors&nbsp;for&nbsp;functions.</span></dd></dl>
  <dl><dt><a name="-search_prompt"><strong>search_prompt</strong></a>(stdscr, items: List[str]) -&gt; Optional[int]</dt><dd><span class="code">Display&nbsp;search&nbsp;prompt&nbsp;and&nbsp;return&nbsp;index&nbsp;of&nbsp;matched&nbsp;item.</span></dd></dl>
@@ -179,7 +180,7 @@ Returns:</span></dd></dl>
     
 <tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
 <td class="singlecolumn"><strong>Dict</strong> = typing.Dict<br>
-<strong>KEY_MAPPING</strong> = {'DOWN': [258, 115, 83], 'ENTER': [343, 10, 13], 'HELP': [63], 'LEFT': [260, 97, 65], 'QUIT': [113, 81], 'REFRESH': [114, 82], 'RIGHT': [261, 100, 68], 'SEARCH': [47], 'UP': [259, 119, 87]}<br>
+<strong>KEY_MAPPING</strong> = {'DOWN': [258, 115, 83], 'ENTER': [343, 10, 13], 'HELP': [63], 'LEFT': [260, 97, 65], 'PAGE_DOWN': [338], 'PAGE_UP': [339], 'QUIT': [113, 81], 'REFRESH': [114, 82], 'RIGHT': [261, 100, 68], 'SEARCH': [47], ...}<br>
 <strong>List</strong> = typing.List<br>
 <strong>Optional</strong> = typing.Optional</td></tr></table>
 </body></html>

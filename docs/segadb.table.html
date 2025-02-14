@@ -36,8 +36,16 @@ td.singlecolumn { width: 100%; }
 <tr class="heading-text decor">
 <td class="title">&nbsp;<br><strong class="title"><a href="segadb.html" class="white">segadb</a>.table</strong></td>
 </tr></table>
-    <p><span class="code">#&nbsp;Imports:&nbsp;Local</span></p>
+    <p><span class="code">#&nbsp;Imports:&nbsp;Standard&nbsp;Library</span></p>
 <p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="inspect.html">inspect</a><br>
+</td><td class="multicolumn"><a href="logging.html">logging</a><br>
+</td><td class="multicolumn"></td><td class="multicolumn"></td></tr></table></td></tr></table><p>
 <table class="section">
 <tr class="decor index-decor heading-text">
 <td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Classes</strong></td></tr>
@@ -57,15 +65,16 @@ td.singlecolumn { width: 100%; }
 <td class="section-title" colspan=3>&nbsp;<br><a name="Table">class <strong>Table</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
     
 <tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
-<td class="decor title-decor" colspan=2><span class="code"><a href="#Table">Table</a>(name,&nbsp;columns)<br>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#Table">Table</a>(name,&nbsp;columns,&nbsp;logger=None)<br>
 &nbsp;<br>
 <br>&nbsp;</span></td></tr>
 <tr><td>&nbsp;</td>
 <td class="singlecolumn">Methods defined here:<br>
-<dl><dt><a name="Table-__init__"><strong>__init__</strong></a>(self, name, columns)</dt><dd><span class="code">Initialize&nbsp;a&nbsp;new&nbsp;table&nbsp;with&nbsp;a&nbsp;name&nbsp;and&nbsp;columns.<br>
+<dl><dt><a name="Table-__init__"><strong>__init__</strong></a>(self, name, columns, logger=None)</dt><dd><span class="code">Initialize&nbsp;a&nbsp;new&nbsp;table&nbsp;with&nbsp;a&nbsp;name&nbsp;and&nbsp;columns.<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;table.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;columns&nbsp;(list):&nbsp;A&nbsp;list&nbsp;of&nbsp;column&nbsp;names&nbsp;for&nbsp;the&nbsp;table.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;logger&nbsp;(Logger,&nbsp;optional):&nbsp;A&nbsp;logger&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;use&nbsp;for&nbsp;logging.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
 Attributes:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;table.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;columns&nbsp;(list):&nbsp;A&nbsp;list&nbsp;of&nbsp;column&nbsp;names&nbsp;for&nbsp;the&nbsp;table.<br>
@@ -73,14 +82,7 @@ Attributes:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;next_id&nbsp;(int):&nbsp;The&nbsp;ID&nbsp;to&nbsp;be&nbsp;assigned&nbsp;to&nbsp;the&nbsp;next&nbsp;record.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;constraints&nbsp;(dict):&nbsp;A&nbsp;dictionary&nbsp;to&nbsp;store&nbsp;constraints&nbsp;for&nbsp;each&nbsp;column.</span></dd></dl>
 
-<dl><dt><a name="Table-add_constraint"><strong>add_constraint</strong></a>(self, column, constraint, reference_table=None, reference_column=None)</dt><dd><span class="code">Adds&nbsp;a&nbsp;constraint&nbsp;to&nbsp;a&nbsp;specified&nbsp;column&nbsp;in&nbsp;the&nbsp;table.<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;column&nbsp;(str):&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;column&nbsp;to&nbsp;which&nbsp;the&nbsp;constraint&nbsp;will&nbsp;be&nbsp;added.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;constraint&nbsp;(str):&nbsp;The&nbsp;constraint&nbsp;to&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;column.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;reference_table&nbsp;(<a href="#Table">Table</a>,&nbsp;optional):&nbsp;The&nbsp;table&nbsp;that&nbsp;the&nbsp;foreign&nbsp;key&nbsp;references.&nbsp;Required&nbsp;for&nbsp;foreign&nbsp;key&nbsp;constraints.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;reference_column&nbsp;(str,&nbsp;optional):&nbsp;The&nbsp;column&nbsp;in&nbsp;the&nbsp;reference&nbsp;table&nbsp;that&nbsp;the&nbsp;foreign&nbsp;key&nbsp;references.&nbsp;Required&nbsp;for&nbsp;foreign&nbsp;key&nbsp;constraints.<br>
-Raises:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;ValueError:&nbsp;If&nbsp;the&nbsp;specified&nbsp;column&nbsp;does&nbsp;not&nbsp;exist&nbsp;in&nbsp;the&nbsp;table.</span></dd></dl>
+<dl><dt><a name="Table-add_constraint"><strong>add_constraint</strong></a> = wrapper(self, *args, **kwargs)<span class="grey"><span class="heading-text"> from log_method_call.<locals></span></span></dt></dl>
 
 <dl><dt><a name="Table-aggregate"><strong>aggregate</strong></a>(self, group_column, agg_column, agg_func)</dt><dd><span class="code">Perform&nbsp;an&nbsp;aggregation&nbsp;on&nbsp;a&nbsp;specified&nbsp;column&nbsp;using&nbsp;the&nbsp;provided&nbsp;aggregation&nbsp;function.<br>
 Args:<br>
@@ -90,16 +92,9 @@ Args:<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Table">Table</a>:&nbsp;A&nbsp;new&nbsp;table&nbsp;containing&nbsp;the&nbsp;result&nbsp;of&nbsp;the&nbsp;aggregation.</span></dd></dl>
 
-<dl><dt><a name="Table-bulk_insert"><strong>bulk_insert</strong></a>(self, record_list, transaction=None)</dt><dd><span class="code">Inserts&nbsp;a&nbsp;list&nbsp;of&nbsp;records&nbsp;into&nbsp;the&nbsp;table.<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;record_list&nbsp;(list):&nbsp;A&nbsp;list&nbsp;of&nbsp;dictionaries&nbsp;where&nbsp;each&nbsp;dictionary&nbsp;represents&nbsp;a&nbsp;record&nbsp;to&nbsp;be&nbsp;inserted.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;transaction&nbsp;(Transaction,&nbsp;optional):&nbsp;An&nbsp;optional&nbsp;transaction&nbsp;<a href="builtins.html#object">object</a>.&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;provided,&nbsp;the&nbsp;bulk&nbsp;insert&nbsp;operation&nbsp;will&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;transaction.&nbsp;Defaults&nbsp;to&nbsp;None.</span></dd></dl>
+<dl><dt><a name="Table-bulk_insert"><strong>bulk_insert</strong></a> = wrapper(self, *args, **kwargs)<span class="grey"><span class="heading-text"> from log_method_call.<locals></span></span></dt></dl>
 
-<dl><dt><a name="Table-delete"><strong>delete</strong></a>(self, record_id, transaction=None)</dt><dd><span class="code">Deletes&nbsp;a&nbsp;record&nbsp;from&nbsp;the&nbsp;database.<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;record_id&nbsp;(int):&nbsp;The&nbsp;ID&nbsp;of&nbsp;the&nbsp;record&nbsp;to&nbsp;delete.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;transaction&nbsp;(Transaction,&nbsp;optional):&nbsp;An&nbsp;optional&nbsp;transaction&nbsp;<a href="builtins.html#object">object</a>.&nbsp;If&nbsp;provided,&nbsp;the&nbsp;delete&nbsp;operation&nbsp;will&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;transaction.&nbsp;Defaults&nbsp;to&nbsp;None.</span></dd></dl>
+<dl><dt><a name="Table-delete"><strong>delete</strong></a> = wrapper(self, *args, **kwargs)<span class="grey"><span class="heading-text"> from log_method_call.<locals></span></span></dt></dl>
 
 <dl><dt><a name="Table-filter"><strong>filter</strong></a>(self, condition)</dt><dd><span class="code">Filter&nbsp;records&nbsp;based&nbsp;on&nbsp;a&nbsp;condition.<br>
 Args:<br>
@@ -107,24 +102,9 @@ Args:<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Table">Table</a>:&nbsp;A&nbsp;new&nbsp;table&nbsp;containing&nbsp;the&nbsp;filtered&nbsp;records.</span></dd></dl>
 
-<dl><dt><a name="Table-get_id_by_column"><strong>get_id_by_column</strong></a>(self, column, value)</dt><dd><span class="code">Get&nbsp;the&nbsp;ID&nbsp;of&nbsp;the&nbsp;record&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;in&nbsp;the&nbsp;specified&nbsp;column.<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;column&nbsp;(str):&nbsp;The&nbsp;column&nbsp;to&nbsp;search&nbsp;for&nbsp;the&nbsp;value.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;value:&nbsp;The&nbsp;value&nbsp;to&nbsp;search&nbsp;for&nbsp;in&nbsp;the&nbsp;column.<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;int:&nbsp;The&nbsp;ID&nbsp;of&nbsp;the&nbsp;record&nbsp;with&nbsp;the&nbsp;specified&nbsp;value&nbsp;in&nbsp;the&nbsp;specified&nbsp;column.</span></dd></dl>
+<dl><dt><a name="Table-get_id_by_column"><strong>get_id_by_column</strong></a> = wrapper(self, *args, **kwargs)<span class="grey"><span class="heading-text"> from log_method_call.<locals></span></span></dt></dl>
 
-<dl><dt><a name="Table-insert"><strong>insert</strong></a>(self, data, record_type=&lt;class 'segadb.record.Record'&gt;, transaction=None, flex_ids=False)</dt><dd><span class="code">Inserts&nbsp;a&nbsp;new&nbsp;record&nbsp;into&nbsp;the&nbsp;table.&nbsp;&nbsp;<br>
-If&nbsp;a&nbsp;transaction&nbsp;is&nbsp;provided,&nbsp;the&nbsp;operation&nbsp;is&nbsp;added&nbsp;to&nbsp;the&nbsp;transaction.&nbsp;&nbsp;<br>
-If&nbsp;the&nbsp;data&nbsp;contains&nbsp;an&nbsp;"id"&nbsp;field,&nbsp;it&nbsp;is&nbsp;used&nbsp;as&nbsp;the&nbsp;record&nbsp;ID;&nbsp;otherwise,&nbsp;the&nbsp;next&nbsp;available&nbsp;ID&nbsp;is&nbsp;used.&nbsp;&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;(dict):&nbsp;The&nbsp;data&nbsp;to&nbsp;be&nbsp;inserted&nbsp;as&nbsp;a&nbsp;new&nbsp;record.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;transaction&nbsp;(Transaction,&nbsp;optional):&nbsp;An&nbsp;optional&nbsp;transaction&nbsp;<a href="builtins.html#object">object</a>.&nbsp;If&nbsp;provided,&nbsp;the&nbsp;operation&nbsp;will&nbsp;be&nbsp;added&nbsp;to&nbsp;the&nbsp;transaction.<br>
-Raises:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;ConstraintError:&nbsp;If&nbsp;the&nbsp;data&nbsp;violates&nbsp;any&nbsp;table&nbsp;constraints.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;ValueError:&nbsp;If&nbsp;the&nbsp;ID&nbsp;is&nbsp;already&nbsp;in&nbsp;use.<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;None</span></dd></dl>
+<dl><dt><a name="Table-insert"><strong>insert</strong></a> = wrapper(self, *args, **kwargs)<span class="grey"><span class="heading-text"> from log_method_call.<locals></span></span></dt></dl>
 
 <dl><dt><a name="Table-join"><strong>join</strong></a>(self, other_table, on_column, other_column)</dt><dd><span class="code">Perform&nbsp;an&nbsp;inner&nbsp;join&nbsp;with&nbsp;another&nbsp;table&nbsp;on&nbsp;specified&nbsp;columns.<br>
 Args:<br>
@@ -139,11 +119,7 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;limit&nbsp;(int,&nbsp;optional):&nbsp;The&nbsp;maximum&nbsp;number&nbsp;of&nbsp;records&nbsp;to&nbsp;print.&nbsp;If&nbsp;None,&nbsp;all&nbsp;records&nbsp;are&nbsp;printed.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;pretty&nbsp;(bool,&nbsp;optional):&nbsp;If&nbsp;True,&nbsp;prints&nbsp;the&nbsp;table&nbsp;in&nbsp;a&nbsp;pretty&nbsp;format&nbsp;using&nbsp;the&nbsp;tabulate&nbsp;library.&nbsp;Defaults&nbsp;to&nbsp;False.</span></dd></dl>
 
-<dl><dt><a name="Table-select"><strong>select</strong></a>(self, condition)</dt><dd><span class="code">Selects&nbsp;records&nbsp;from&nbsp;the&nbsp;table&nbsp;that&nbsp;satisfy&nbsp;the&nbsp;given&nbsp;condition.<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;condition&nbsp;(function):&nbsp;A&nbsp;function&nbsp;that&nbsp;takes&nbsp;a&nbsp;record&nbsp;as&nbsp;input&nbsp;and&nbsp;returns&nbsp;True&nbsp;if&nbsp;the&nbsp;record&nbsp;satisfies&nbsp;the&nbsp;condition,&nbsp;False&nbsp;otherwise.<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;list:&nbsp;A&nbsp;list&nbsp;of&nbsp;records&nbsp;that&nbsp;satisfy&nbsp;the&nbsp;condition.</span></dd></dl>
+<dl><dt><a name="Table-select"><strong>select</strong></a> = wrapper(self, *args, **kwargs)<span class="grey"><span class="heading-text"> from log_method_call.<locals></span></span></dt></dl>
 
 <dl><dt><a name="Table-sort"><strong>sort</strong></a>(self, column, ascending=True)</dt><dd><span class="code">Sorts&nbsp;the&nbsp;records&nbsp;in&nbsp;the&nbsp;table&nbsp;based&nbsp;on&nbsp;the&nbsp;specified&nbsp;column.<br>
 Args:<br>
@@ -152,20 +128,9 @@ Args:<br>
 Returns:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Table">Table</a>:&nbsp;A&nbsp;new&nbsp;table&nbsp;containing&nbsp;the&nbsp;sorted&nbsp;records.</span></dd></dl>
 
-<dl><dt><a name="Table-try_insert"><strong>try_insert</strong></a>(self, data, record_type=&lt;class 'segadb.record.Record'&gt;, transaction=None)</dt><dd><span class="code">Attempts&nbsp;to&nbsp;insert&nbsp;data&nbsp;into&nbsp;the&nbsp;table.&nbsp;If&nbsp;an&nbsp;error&nbsp;occurs&nbsp;during&nbsp;the&nbsp;insertion,it&nbsp;catches&nbsp;the&nbsp;ValueError&nbsp;and&nbsp;prints&nbsp;an&nbsp;error&nbsp;message.<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;(dict):&nbsp;The&nbsp;data&nbsp;to&nbsp;be&nbsp;inserted&nbsp;into&nbsp;the&nbsp;table.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;transaction&nbsp;(optional):&nbsp;The&nbsp;transaction&nbsp;context&nbsp;for&nbsp;the&nbsp;insertion.&nbsp;Default&nbsp;is&nbsp;None.<br>
-Raises:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;ValueError:&nbsp;If&nbsp;there&nbsp;is&nbsp;an&nbsp;issue&nbsp;with&nbsp;the&nbsp;data&nbsp;insertion.</span></dd></dl>
+<dl><dt><a name="Table-try_insert"><strong>try_insert</strong></a> = wrapper(self, *args, **kwargs)<span class="grey"><span class="heading-text"> from log_method_call.<locals></span></span></dt></dl>
 
-<dl><dt><a name="Table-update"><strong>update</strong></a>(self, record_id, data, transaction=None)</dt><dd><span class="code">Update&nbsp;a&nbsp;record&nbsp;in&nbsp;the&nbsp;database.<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;record_id&nbsp;(int):&nbsp;The&nbsp;ID&nbsp;of&nbsp;the&nbsp;record&nbsp;to&nbsp;update.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;(dict):&nbsp;A&nbsp;dictionary&nbsp;containing&nbsp;the&nbsp;updated&nbsp;data&nbsp;for&nbsp;the&nbsp;record.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;transaction&nbsp;(optional):&nbsp;A&nbsp;transaction&nbsp;<a href="builtins.html#object">object</a>&nbsp;to&nbsp;add&nbsp;the&nbsp;update&nbsp;operation&nbsp;to.&nbsp;If&nbsp;not&nbsp;provided,&nbsp;the&nbsp;update&nbsp;is&nbsp;performed&nbsp;immediately.<br>
-Raises:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;ConstraintError:&nbsp;If&nbsp;the&nbsp;data&nbsp;violates&nbsp;any&nbsp;constraints.</span></dd></dl>
+<dl><dt><a name="Table-update"><strong>update</strong></a> = wrapper(self, *args, **kwargs)<span class="grey"><span class="heading-text"> from log_method_call.<locals></span></span></dt></dl>
 
 <hr>
 Data descriptors defined here:<br>
@@ -175,5 +140,18 @@ Data descriptors defined here:<br>
 <dl><dt><strong>__weakref__</strong></dt>
 <dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
 </dl>
-</td></tr></table></td></tr></table>
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor functions-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
+    
+<tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt><a name="-log_method_call"><strong>log_method_call</strong></a>(func)</dt><dd><span class="code">Decorator&nbsp;to&nbsp;log&nbsp;method&nbsp;calls&nbsp;in&nbsp;the&nbsp;<a href="#Table">Table</a>&nbsp;class.<br>
+Logs&nbsp;the&nbsp;method&nbsp;name,&nbsp;arguments,&nbsp;and&nbsp;return&nbsp;value.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;func&nbsp;(function):&nbsp;The&nbsp;function&nbsp;to&nbsp;decorate.<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;function:&nbsp;The&nbsp;decorated&nbsp;function.</span></dd></dl>
+</td></tr></table>
 </body></html>

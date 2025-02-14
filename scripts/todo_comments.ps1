@@ -10,7 +10,7 @@ Get-ChildItem -Recurse -Filter *.py | Where-Object {
             $todoComment = [PSCustomObject]@{
                 FileName   = $file.FullName -replace ".*custom_database", "custom_database"
                 LineNumber = $global:lineNumber
-                Line       = $_
+                Line       = $_.TrimStart()
             }
             $todoComment
         }
