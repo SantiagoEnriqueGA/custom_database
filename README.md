@@ -57,8 +57,12 @@ Since the project is educational, learning and understanding how databases work,
     - `decrypt()`: Decrypts the encrypted data using a custom Fernet implementation.
 - **User Management and Authorization**: Manage users, their roles, and permissions. See [`User`, `UserManager`, and `Authorization`](segadb/users.py).
 - **View and Materialized View Management**: Create, retrieve, refresh, and delete views and materialized views. See [`View` and `MaterializedView`](segadb/views.py).
+- **Stored Procedures and Triggers**: Create and use stored procedures and triggers.
+- **Constraints**: Add and enforce constraints on table columns.
+- **Logging**: Logging for Database and Table level operations.
 - **Cryptographic Support**: Encrypt and decrypt data using a custom Fernet implementation. See [`CustomFernet`](segadb/crypto.py).
 - **Database Navigator**: View the contents of the database in the console with curses. See [`DB Navigator`](segadb/db_navigator.py).
+
 
 ## Installation
 
@@ -204,9 +208,9 @@ The following are the results of running the tests:
 
 ```sh
 (segadb_env) PS ...\custom_database> python .\tests\run_all_tests.py
-Testing CustomFernet Class
+Testing CustomFernet Class                                
 .........Testing Database Class
-......................................Testing DatabasePartial Class
+.........................................Testing DatabasePartial Class
 .....Testing file: example_UsersAuth.py
 .Testing file: example_backupRecovery.py
 .Testing file: example_change_ids.py
@@ -231,20 +235,20 @@ Testing CustomFernet Class
 ..Testing Index Class
 ....Testing Record Class
 .............Testing safe_execution decorator
-.....Delete performance on 5000 [id, name, email] records: 0.008 seconds.
-.Insert performance for 5000 [id, name, email] records: 1.0 seconds.
-.Join performance for 5000 records: 3.0 seconds.
-.Load performance for 5000 records: 1.0 seconds.
+.....Delete performance on 5000 [id, name, email] records: 0.0099 seconds.
+.Insert performance for 5000 [id, name, email] records: 0.94 seconds.
+.Join performance for 5000 records: 2.7 seconds.
+.Load performance for 5000 records: 0.9 seconds.
 .Restore performance for 5000 records: 0.0 seconds.
 .Save performance for 5000 records: 0.11 seconds.
-.Select performance of 1 out of 5000 [id, name, email] records: 0.0 seconds.
+.Select performance of 1 out of 5000 [id, name, email] records: 0.001 seconds.
 .Update performance on 5000 [id, name, email] records: 0.5 seconds.
 .Testing Storage Class
 ......................Testing Table Class
-........Testing Transaction Class
+..........Testing Transaction Class
 .......................
 ----------------------------------------------------------------------
-Ran 157 tests in 62.958s
+Ran 162 tests in 67.245s
 
 OK
 ```
