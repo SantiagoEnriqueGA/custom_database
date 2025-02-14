@@ -1,6 +1,7 @@
 # Imports: Standard Library
 import logging
 import inspect
+from typing import Callable, Any
 
 # Imports: Local
 from .record import Record
@@ -94,6 +95,39 @@ class Table:
         # Logging
         if logger:
             self.logger = logger
+    
+    def _is_valid_constraint_function(self, constraint: Any) -> bool:
+        """
+        Validates if a constraint is a proper callable function with the correct signature.
+        
+        Args:
+            constraint: The constraint to validate
+            
+        Returns:
+            bool: True if the constraint is valid, False otherwise
+        """
+        # Check if the constraint is callable
+        if not callable(constraint):
+            return False
+            
+        # Get the function signature
+        try:
+            sig = inspect.signature(constraint)
+        except ValueError:
+            # Built-in functions might raise ValueError
+            return False
+            
+        # Check if the function takes exactly one parameter
+        if len(sig.parameters) != 1:
+            return False
+            
+        # Check if the parameter can accept any value (no strict type annotations)
+        param = list(sig.parameters.values())[0]
+        if param.annotation != inspect.Parameter.empty:
+            if param.annotation not in (Any, type(None)):
+                return False
+                
+        return True
 
     @log_method_call
     def add_constraint(self, column, constraint, reference_table=None, reference_column=None):
@@ -128,11 +162,17 @@ class Table:
                 foreign_key_constraint.reference_column = reference_column
                 self.constraints[column].append(foreign_key_constraint)
             
-            # For OTHER constraints, add the provided constraint function
-            # TODO: Add support for other constraint types
             # TODO: Check if the constraint is a valid function
+            # For OTHER constraints, add the provided constraint function
+            elif not self._is_valid_constraint_function(constraint):
+                raise ValueError(
+                    "Invalid constraint function. Constraint must be a callable that:"
+                    "\n- Takes exactly one parameter"
+                    "\n- Has compatible type annotations (if any)"
+                )
             else:
                 self.constraints[column].append(constraint)
+
         else:
             raise ValueError(f"Column {column} does not exist in the table.")
 

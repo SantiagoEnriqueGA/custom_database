@@ -110,6 +110,16 @@ class TestTable(unittest.TestCase):
     def test_add_constraintForeignKeyFail(self):
         with self.assertRaises(ValueError):
             self.table.add_constraint("email", 'FOREIGN_KEY')
+
+    def test_add_constraintInvalidFunction(self):
+        with self.assertRaises(ValueError):
+            # Invalid constraint function ie. not a callable
+            self.table.add_constraint("email", 123)
+
+        with self.assertRaises(ValueError):
+            # Invalid constraint function ie. function with wrong number of parameters
+            self.table.add_constraint("email", lambda x, y: x > y)                    
+
             
     # CRUD Operations
     # ---------------------------------------------------------------------------------------------
