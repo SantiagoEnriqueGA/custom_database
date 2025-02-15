@@ -128,12 +128,11 @@ class TestTable(unittest.TestCase):
         self.assertEqual(len(self.table.records), 1)
         self.assertEqual(self.table.records[0].data["name"], "John Doe")
     
-    # TODO: Make this fail
-    # def test_insert_fail(self):
-    #     with self.assertRaises(ValueError):
-    #         # Should fail due typo in column name
-    #         self.table.insert({"name": "John Doe", "emails": "john@example.com"})
-        
+    def test_insert_fail(self):
+        with self.assertRaises(ValueError):
+            # Should fail due typo in column name
+            self.table.insert({"name": "John Doe", "emails": "john@example.com"})
+
     def test_try_insert(self):
         self.table.try_insert({"name": "John Doe", "email": "john@example.com"})
         self.assertEqual(len(self.table.records), 1)

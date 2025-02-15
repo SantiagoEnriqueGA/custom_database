@@ -121,10 +121,10 @@ class TestStorage(unittest.TestCase):
         
     def test_compress_decompress(self):
         table = self.db.get_table("Users")
-        table.insert({"user_id": 1, "name": "Alice", "email": "alice@abc.com"})
-        table.insert({"user_id": 2, "name": "Bob", "email": "bob@abc.com"})
-        table.insert({"user_id": 3, "name": "Charlie", "email": "charlie@abc.com"})
-        table.insert({"user_id": 4, "name": "David", "email": "david@abc.com"})
+        table.insert({"id": 1, "name": "Alice", "email": "alice@abc.com"})
+        table.insert({"id": 2, "name": "Bob", "email": "bob@abc.com"})
+        table.insert({"id": 3, "name": "Charlie", "email": "charlie@abc.com"})
+        table.insert({"id": 4, "name": "David", "email": "david@abc.com"})
         Storage.save(self.db, self.filename, compress=True)
         loaded_db = Storage.load(self.filename, compression=True)
         self.assertEqual(loaded_db.name, "TestDB")

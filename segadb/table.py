@@ -162,7 +162,6 @@ class Table:
                 foreign_key_constraint.reference_column = reference_column
                 self.constraints[column].append(foreign_key_constraint)
             
-            # TODO: Check if the constraint is a valid function
             # For OTHER constraints, add the provided constraint function
             elif not self._is_valid_constraint_function(constraint):
                 raise ValueError(
@@ -216,6 +215,14 @@ class Table:
                 raise ValueError(f"ID {record_id} is already in use.")
         if "id" in data:
             del data["id"]
+
+        # Check if the data column names match the table column names (minus the id column)
+        if record_type == Record:   # Only check for standard records (custom records can have unique column behavior)
+            if set(data.keys()) != set(self.columns) - {"id"}:
+                raise ValueError(f"Data column names do not match table column names."
+                                f"Expected: {self.columns}"
+                                f"Received: {data.keys()}")
+
         record = record_type(record_id, data)
         record.add_to_index(self.index_cnt)
         self.index_cnt += 1
