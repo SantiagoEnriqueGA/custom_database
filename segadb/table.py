@@ -2,6 +2,9 @@
 import logging
 import inspect
 from typing import Callable, Any
+from multiprocessing import Pool, cpu_count
+from functools import partial
+import math
 
 # Imports: Local
 from .record import Record
@@ -67,6 +70,40 @@ def log_method_call(func):
             raise
 
     return wrapper
+
+class _ChunkProcessor:
+    """
+    Helper class to process chunks of records in parallel while maintaining original order.
+    """
+    @staticmethod
+    def process_chunk(args):
+        """
+        Worker function to process a chunk of records.
+        Args:
+            args (tuple): Contains (chunk, start_id, start_index, record_type, chunk_number)
+        Returns:
+            tuple: Contains (chunk_number, list of processed records)
+        """
+        chunk, start_id, start_index, record_type, chunk_number = args
+        new_records = []
+        current_id = start_id
+        current_index = start_index
+        
+        for record in chunk:
+            # Remove ID if present
+            record_data = record.copy()
+            if "id" in record_data:
+                del record_data["id"]
+            
+            # Create new record
+            new_record = record_type(current_id, record_data)
+            new_record.add_to_index(current_index)
+            new_records.append(new_record)
+            
+            current_id += 1
+            current_index += 1
+            
+        return (chunk_number, new_records)
 
 class Table:
     # Initialization and Configuration
@@ -259,9 +296,9 @@ class Table:
             transaction (Transaction, optional): An optional transaction object. 
                 If provided, the bulk insert operation will be added to the transaction. Defaults to None.
         """
-        # Check constraints for first record to ensure consistency
-        if record_list:
-            self._check_constraints(record_list[0])
+        # Check constraints for all records to ensure consistency
+        for record in record_list:
+            self._check_constraints(record)
         if transaction:
             transaction.add_operation(lambda: self._bulk_insert(record_list))
         else:
@@ -278,8 +315,92 @@ class Table:
             self.index_cnt += 1
             new_records.append(new_record)
             self.next_id += 1
-        self.records.extend(new_records)  
-    
+        self.records.extend(new_records)
+
+    @log_method_call
+    def parallel_insert(self, record_list, max_workers=None, chunk_size=None, record_type=Record):
+        """
+        Inserts records in parallel using multiprocessing while maintaining original order.
+        
+        Args:
+            record_list (list): List of dictionaries where each dictionary represents a record to be inserted.
+            max_workers (int, optional): Maximum number of worker processes. Defaults to CPU count - 1.
+            chunk_size (int, optional): Size of chunks to process in parallel. Defaults to len(record_list)/workers.
+            record_type (type, optional): Type of record to create. Defaults to Record.
+        
+        Returns:
+            int: Number of records successfully inserted.
+            
+        Raises:
+            ValueError: If record_list is empty or if there are constraint violations.
+        """
+        if not record_list:
+            raise ValueError("Record list cannot be empty")
+        
+        # Validate all records to ensure data consistency
+        if record_list:
+            for record in record_list:
+                self._check_constraints(record)
+        
+        # If less than 5001 records, use the regular insert method
+        if len(record_list) <= 5000:
+            for record in record_list:
+                self.insert(record)
+            return len(record_list)
+        
+        # Configure workers and chunk size
+        max_workers = max_workers or max(1, cpu_count() - 1)
+        if chunk_size is None:
+            chunk_size = math.ceil(len(record_list) / max_workers)
+        
+        # Split records into chunks
+        chunks = [record_list[i:i + chunk_size] 
+                 for i in range(0, len(record_list), chunk_size)]
+        
+        # Calculate starting IDs and indices for each chunk
+        start_ids = [(self.next_id + i * chunk_size) - 1 for i in range(len(chunks))]
+        start_indices = [self.index_cnt + i * chunk_size for i in range(len(chunks))]
+        
+        # Prepare arguments for each chunk, including chunk number
+        chunk_args = [(chunk, start_id, start_index, record_type, i) 
+                     for i, (chunk, start_id, start_index) in enumerate(zip(chunks, start_ids, start_indices))]
+        
+        # Process chunks in parallel
+        with Pool(max_workers) as pool:
+            results = pool.map(_ChunkProcessor.process_chunk, chunk_args)
+        
+        # Sort results by chunk number and flatten
+        sorted_results = sorted(results, key=lambda x: x[0])
+        all_new_records = []
+        for _, chunk_records in sorted_results:
+            all_new_records.extend(chunk_records)
+        
+        # Update table state
+        self.records.extend(all_new_records)
+        self.next_id = max(r.id for r in all_new_records) + 1
+        self.index_cnt += len(all_new_records)
+        
+        return len(all_new_records)
+
+    def parallel_try_insert(self, record_list, max_workers=None, chunk_size=None, record_type=Record):
+        """
+        Attempts to insert records in parallel, catching and logging any errors.
+        
+        Args:
+            record_list (list): List of dictionaries where each dictionary represents a record to be inserted.
+            max_workers (int, optional): Maximum number of worker processes.
+            chunk_size (int, optional): Size of chunks to process in parallel.
+            record_type (type, optional): Type of record to create.
+        
+        Returns:
+            int: Number of records successfully inserted.
+        """
+        try:
+            return self.parallel_insert(record_list, max_workers, chunk_size, record_type)
+        except ValueError as e:
+            print(f"Error on parallel insert: {e}")
+            return 0
+        
     @log_method_call
     def delete(self, record_id, transaction=None):
         """
@@ -322,6 +443,7 @@ class Table:
             self._update(record_id, data)
 
     def _update(self, record_id, data):
+        # Record is None if record_id is not found in the table
         record = next((r for r in self.records if r.id == record_id), None)
         if record:
             record.remove_from_index(record.id)
@@ -352,6 +474,15 @@ class Table:
             list: A list of records that satisfy the condition.
         """
         return [record for record in self.records if condition(record)]
+    
+    @log_method_call
+    def truncate(self):
+        """
+        Truncates the table by deleting all records.
+        """
+        self.records = []
+        self.next_id = 1
+        self.index_cnt = 0
 
     # Table Operations
     # ---------------------------------------------------------------------------------------------

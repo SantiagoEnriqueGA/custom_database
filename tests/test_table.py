@@ -8,7 +8,6 @@ from joblib import Logger
 
 # Change the working directory to the parent directory to allow importing the segadb package.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from segadb import table
 from segadb.table import Table
 from segadb.database import Database
 from test_utils import suppress_print
@@ -36,6 +35,22 @@ class TestTable(unittest.TestCase):
         - test_update_miss: Test the update method of the Table class with a missing record.
         - test_select: Test the select method of the Table class.
         - test_select_miss: Test the select method of the Table class with no results.
+    # CRUD Operations - Parallel
+        - test_parallel_insert: Test basic parallel insertion functionality.
+        - test_parallel_insert_custom_workers: Test parallel insert with custom configurations.
+        - test_parallel_insert_custom_chunk_size: Test parallel insert with custom chunk size.
+        - test_parallel_insert_empty: Test parallel insert with empty record list.
+        - test_parallel_insert_with_ids: Test parallel insert with pre-existing IDs in data.
+        - test_parallel_insert_large_dataset: Test parallel insert with a large number of records.
+        - test_parallel_insert_constraint_violation: Test parallel insert with constraint violations.
+        - test_parallel_try_insert: Test parallel try_insert with valid and invalid data.
+        - test_parallel_try_insert_fail: Test parallel try_insert with constraint violations.
+        - test_truncate_empty_table: Test truncating an empty table.
+        - test_truncate_with_records: Test truncating a table with existing records.
+        - test_truncate_and_reinsert: Test inserting records after truncating.
+        - test_truncate_with_constraints: Test that constraints are preserved after truncate.
+        - test_truncate_multiple_times: Test truncating table multiple times in succession.
+        - test_truncate_and_parallel_insert: Test parallel insert after truncate.
     # Table Operations
         - test_join: Test the join method of the Table class.
         - test_join_miss: Test the join method of the Table class with no results.
@@ -120,7 +135,6 @@ class TestTable(unittest.TestCase):
             # Invalid constraint function ie. function with wrong number of parameters
             self.table.add_constraint("email", lambda x, y: x > y)                    
 
-            
     # CRUD Operations
     # ---------------------------------------------------------------------------------------------
     def test_insert(self):
@@ -189,7 +203,203 @@ class TestTable(unittest.TestCase):
         self.table.insert({"name": "Jane Doe", "email": "jane@example.com"})
         results = self.table.select(lambda record: record.data["name"] == "Bob Doe")
         self.assertEqual(len(results), 0)
+
+    def test_truncate_empty_table(self):
+        """Test truncating an empty table"""
+        self.table.truncate()
+        self.assertEqual(len(self.table.records), 0)
+        self.assertEqual(self.table.next_id, 1)
+        self.assertEqual(self.table.index_cnt, 0)
+
+    def test_truncate_with_records(self):
+        """Test truncating a table with existing records"""
+        # Insert some records first
+        records = [
+            {"name": "John", "email": "john@example.com"},
+            {"name": "Jane", "email": "jane@example.com"},
+            {"name": "Bob", "email": "bob@example.com"}
+        ]
+        self.table.bulk_insert(records)
+        
+        # Verify records were inserted
+        self.assertGreater(len(self.table.records), 0)
+        
+        # Truncate and verify
+        self.table.truncate()
+        self.assertEqual(len(self.table.records), 0)
+        self.assertEqual(self.table.next_id, 1)
+        self.assertEqual(self.table.index_cnt, 0)
+
+    def test_truncate_and_reinsert(self):
+        """Test inserting records after truncating"""
+        # Initial insert
+        initial_records = [
+            {"name": "Initial1", "email": "initial1@example.com"},
+            {"name": "Initial2", "email": "initial2@example.com"}
+        ]
+        self.table.bulk_insert(initial_records)
+        
+        # Truncate
+        self.table.truncate()
+        
+        # Insert new records
+        new_records = [
+            {"name": "New1", "email": "new1@example.com"},
+            {"name": "New2", "email": "new2@example.com"}
+        ]
+        self.table.bulk_insert(new_records)
+        
+        # Verify new records start with ID 1
+        self.assertEqual(len(self.table.records), 2)
+        self.assertEqual(self.table.records[0].id, 1)
+        self.assertEqual(self.table.records[1].id, 2)
+        self.assertEqual(self.table.next_id, 3)
+
+    def test_truncate_with_constraints(self):
+        """Test that constraints are preserved after truncate"""
+        # Add a constraint
+        self.table.add_constraint("name", lambda x: len(x) <= 10)
+        
+        # Insert valid records
+        self.table.insert({"name": "John", "email": "john@example.com"})
+        
+        # Truncate
+        self.table.truncate()
+        
+        # Verify constraint still works
+        with self.assertRaises(ValueError):
+            with suppress_print():
+                self.table.insert({"name": "VeryLongName", "email": "long@example.com"})
+
+    def test_truncate_multiple_times(self):
+        """Test truncating table multiple times in succession"""
+        # Initial insert
+        self.table.insert({"name": "John", "email": "john@example.com"})
+        
+        # Multiple truncates
+        self.table.truncate()
+        self.table.truncate()
+        self.table.truncate()
+        
+        # Verify state
+        self.assertEqual(len(self.table.records), 0)
+        self.assertEqual(self.table.next_id, 1)
+        self.assertEqual(self.table.index_cnt, 0)
+
+    def test_truncate_and_parallel_insert(self):
+        """Test parallel insert after truncate"""
+        # Initial insert
+        initial_records = [{"name": f"Initial{i}", "email": f"initial{i}@example.com"} 
+                        for i in range(100)]
+        self.table.bulk_insert(initial_records)
+        
+        # Truncate
+        self.table.truncate()
+        
+        # Parallel insert
+        parallel_records = [{"name": f"Parallel{i}", "email": f"parallel{i}@example.com"} 
+                        for i in range(100)]
+        self.table.parallel_insert(parallel_records)
+        
+        # Verify
+        self.assertEqual(len(self.table.records), 100)
+        self.assertEqual(self.table.records[0].id, 1)
+        self.assertEqual(self.table.next_id, 101)
+        self.assertEqual(self.table.index_cnt, 100)
             
+    # CRUD Operations - Parallel
+    # ---------------------------------------------------------------------------------------------
+        # CRUD Operations - Parallel
+    # ---------------------------------------------------------------------------------------------
+    def test_parallel_insert(self):
+        """Test basic parallel insertion functionality"""
+        records = [{"name": f"John Doe{i}", "email": "john@example.com"} for i in range(100)]
+        self.table.parallel_insert(records)
+        self.assertEqual(len(self.table.records), 100)
+        # Verify IDs are sequential
+        ids = [record.id for record in self.table.records]
+        self.assertEqual(ids, list(range(self.table.records[0].id, self.table.records[-1].id + 1)))
+
+    def test_parallel_insert_custom_workers(self):
+        """Test parallel insert with custom configurations"""
+        records = [{"name": f"John Doe{i}", "email": "john@example.com"} for i in range(1000)]
+        # Test with specific number of workers
+        inserted = self.table.parallel_insert(records, max_workers=2)
+        self.assertEqual(inserted, 1000)
+        
+    def test_parallel_insert_custom_chunk_size(self):
+        records = [{"name": f"John Doe{i}", "email": "john@example.com"} for i in range(1000)]
+        # Test with specific chunk size
+        inserted = self.table.parallel_insert(records, chunk_size=100)
+        self.assertEqual(inserted, 1000)
+
+    def test_parallel_insert_empty(self):
+        """Test parallel insert with empty record list"""
+        with self.assertRaises(ValueError):
+            self.table.parallel_insert([])
+
+    def test_parallel_insert_with_ids(self):
+        """Test parallel insert with pre-existing IDs in data"""
+        records = [{"id": i, "name": f"John{i}", "email": "john@example.com"} for i in range(100)]
+        self.table.parallel_insert(records)
+        # Verify IDs are sequential and original IDs were ignored
+        ids = [record.id for record in self.table.records]
+        self.assertEqual(ids, list(range(self.table.records[0].id, self.table.records[-1].id + 1)))
+
+    def test_parallel_insert_large_dataset(self):
+        """Test parallel insert with a large number of records"""
+        records = [{"name": f"User{i}", "email": f"user{i}@example.com"} for i in range(10000)]
+        inserted = self.table.parallel_insert(records)
+        self.assertEqual(inserted, 10000)
+        self.assertEqual(len(self.table.records), 10000)
+
+    def test_parallel_insert_constraint_violation(self):
+        """Test parallel insert with constraint violations"""
+        # Add a constraint to the table
+        self.table.add_constraint("name", lambda x: len(x) <= 10)
+        records = [
+            {"name": "John", "email": "john@example.com"},  # Valid
+            {"name": "VeryLongName1234567890", "email": "long@example.com"},  # Invalid
+        ]
+        with self.assertRaises(ValueError):
+            with suppress_print():
+                self.table.parallel_insert(records) 
+
+    def test_parallel_try_insert(self):
+        """Test parallel try_insert with valid and invalid data"""
+        records = [{"name": f"John{i}", "email": "john@example.com"} for i in range(100)]
+        # First insertion should succeed
+        inserted = self.table.parallel_try_insert(records)
+        self.assertEqual(inserted, 100)
+
+    def test_parallel_try_insert_fail(self):
+        """Test parallel try_insert with constraint violations"""
+         # Add a constraint to the table
+        self.table.add_constraint("name", lambda x: len(x) <= 5)        
+        
+        # Second insertion should fail constraint violations, inserting no records
+        records = [{"name": f"Jane{i}", "email": "jane@example.com"} for i in range(100)]
+        with suppress_print():
+            self.table.parallel_try_insert(records)
+        self.assertEqual(len(self.table.records), 0)
+
+    def test_parallel_insert_concurrent_modifications(self):
+        """Test parallel insert while other operations are happening"""
+        initial_records = [{"name": f"Initial{i}", "email": "initial@example.com"} for i in range(100)]
+        self.table.bulk_insert(initial_records)
+        
+        # Prepare parallel insertion records
+        parallel_records = [{"name": f"Parallel{i}", "email": "parallel@example.com"} for i in range(100)]
+        
+        # Insert records in parallel
+        inserted = self.table.parallel_insert(parallel_records)
+        self.assertEqual(inserted, 100)
+        
+        # Verify all records are present and IDs are sequential
+        self.assertEqual(len(self.table.records), 200)
+        ids = [record.id for record in self.table.records]
+        self.assertEqual(ids, list(range(self.table.records[0].id, self.table.records[-1].id + 1)))
+
     # Table Operations
     # ---------------------------------------------------------------------------------------------
     def test_join(self):
