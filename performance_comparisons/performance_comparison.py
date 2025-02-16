@@ -102,8 +102,12 @@ class TestDatabasePerformance:
         
         # Test inserting records
         start_time = time.time()
-        for i in range(self.num_records):
-            test_table.insert({"id": i, "name": f"User{i}", "email": f"user{i}@example.com"})
+        # for i in range(self.num_records):
+        #     test_table.insert({"id": i, "name": f"User{i}", "email": f"user{i}@example.com"})
+
+        records = [{"id": i, "name": f"User{i}", "email": f"user{i}@example.com"} for i in range(self.num_records)]
+        test_table.parallel_insert(records)
+
         assert len(test_table.records) == self.num_records
         
         end_time = time.time()
@@ -489,8 +493,10 @@ def tsplot(ax, data, x, **kw):
     std_dev = np.std(data, axis=0)
     ci_bounds = (mean_estimate - std_dev, mean_estimate + std_dev)
     
-    # Plot the data (mean and confidence intervals)
-    ax.fill_between(x, ci_bounds[0], ci_bounds[1], alpha=0.2, **kw)
+    # Remove 'label' from kw before passing to fill_between
+    fill_kw = {k: v for k, v in kw.items() if k != "label"}
+
+    ax.fill_between(x, ci_bounds[0], ci_bounds[1], alpha=0.2, **fill_kw)
     ax.plot(x, mean_estimate, **kw)
     ax.margins(x=0)     # Remove margins to prevent clipping
 
@@ -512,13 +518,14 @@ def plot_results(num_records_list, resultsSegadb_list, resultsSQLite_list):
         # Plot the results
         plt.figure(figsize=(10, 5))
         ax = plt.gca()
-        tsplot(ax, np.array(segadb_times).T, x=num_records_list)
-        tsplot(ax, np.array(sqlite_times).T, x=num_records_list)
+        tsplot(ax, np.array(segadb_times).T, x=num_records_list, color='b', label='segadb')
+        tsplot(ax, np.array(sqlite_times).T, x=num_records_list, color='g', label='SQLite')
         plt.xlabel('Number of Records')
         plt.ylabel('Time (seconds)')
         plt.title(f'Performance Comparison for {operation.capitalize()} Operation')
-        plt.legend(['', 'segadb', '', 'SQLite'])
+        plt.legend()
         plt.grid(True)
+        plt.tight_layout()
         # plt.show()
         plt.savefig(f"performance_comparisons/perf_comp_{operation}.png", dpi=600)
 
