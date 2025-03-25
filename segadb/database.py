@@ -8,6 +8,10 @@ import multiprocessing as mp
 import inspect
 import logging
 from pathlib import Path
+import socket
+import threading
+import json
+import time
 
 # Imports: Third Party
 import bcrypt
@@ -20,6 +24,7 @@ from .table import Table
 from .record import Record
 from .views import View, MaterializedView
 from .db_navigator import db_navigator
+from .record import ImageRecord
 
 def log_method_call(func):
     """
@@ -201,7 +206,152 @@ class Database:
         """
         self.authorization = Authorization(self)
         return self.authorization        
+    
+    # Server Socket Methods
+    # ---------------------------------------------------------------------------------------------   
+    def run(self):
+        """
+        Keeps the database running indefinitely.
+        This method can be used to listen for commands or keep the database alive.
+        """
+        self.running = True
+        print(f"Database '{self.name}' is now running...")
+        while self.running:
+            # Simulate database activity or listen for commands
+            time.sleep(1)  # Prevent high CPU usage
+        print(f"Database '{self.name}' has stopped.")
 
+    def start_in_thread(self):
+        """
+        Starts the database in a separate thread.
+        """
+        # Run the database in a separate thread, daemonized (will stop when the main thread stops)
+        self.thread = threading.Thread(target=self.run, daemon=True)
+        self.thread.start()
+        print(f"Database '{self.name}' started in a separate thread.")
+
+    def start_socket_server(self, host='127.0.0.1', port=65432):
+        """
+        Starts a socket server to listen for commands.
+        """
+        self.server_running = True
+        self.server_thread = threading.Thread(target=self._socket_server, args=(host, port), daemon=True)
+        self.server_thread.start()
+        print(f"Database '{self.name}' socket server started on {host}:{port}")
+    
+    def _socket_server(self, host, port):
+        """
+        Internal method to handle socket server operations.
+        """
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+            server_socket.bind((host, port))
+            server_socket.listen()
+            print(f"Socket server listening on {host}:{port}")
+            while self.server_running:
+                try:
+                    client_socket, addr = server_socket.accept()
+                    with client_socket:
+                        print(f"Connection from {addr}")
+                        data = client_socket.recv(1024).decode('utf-8')
+                        if data:
+                            response = self._handle_command(data)
+                            client_socket.sendall(response.encode('utf-8'))
+                except Exception as e:
+                    print(f"Socket server error: {e}")
+                    
+    def stop(self):
+        """
+        Stops the database thread.
+        """
+        self.running = False
+        # If the database is running in a separate thread, join the thread to stop it
+        if hasattr(self, 'thread'):
+            self.thread.join()
+        print(f"Database '{self.name}' has been stopped.")
+
+    def stop_socket_server(self):
+        """
+        Stops the socket server.
+        """
+        self.server_running = False
+        print(f"Database '{self.name}' socket server stopped.")
+
+    def _handle_command(self, command):
+        """
+        Handles commands received via the socket server.
+        """
+        try:
+            command_data = json.loads(command)
+            action = command_data.get("action")
+            params = command_data.get("params", {})
+            
+            if action == "stop":
+                self.stop()
+                return json.dumps({"status": "success", "message": "Database stopped."})
+            
+            elif action == "start":
+                self.start_in_thread()
+                return json.dumps({"status": "success", "message": "Database started."})
+            
+            elif action == "insert":
+                table_name = params.get("table")
+                record = params.get("record")
+                if table_name and record:
+                    self.get_table(table_name).insert(record)
+                    return json.dumps({"status": "success", "message": f"Record inserted into {table_name}."})
+                return json.dumps({"status": "error", "message": "Invalid insert parameters."})
+            
+            elif action == "query":
+                table_name = params.get("table")
+                filter_condition = params.get("filter")
+                if table_name:
+                    table = self.get_table(table_name)
+                    if table:
+                        if filter_condition:
+                            # Apply the filter condition
+                            filtered_table = table.filter(eval(filter_condition))
+                            return json.dumps({
+                                "status": "success",
+                                "data": [record.data for record in filtered_table.records]
+                            })
+                        else:
+                            # Return all records if no filter is provided
+                            return json.dumps({
+                                "status": "success",
+                                "data": [record.data for record in table.records]
+                            })
+                return json.dumps({"status": "error", "message": "Table not found."})
+            
+            else:
+                return json.dumps({"status": "error", "message": "Unknown action."})
+        except Exception as e:
+            return json.dumps({"status": "error", "message": str(e)})
+    
+    def _serialize_table(self, table):
+        """
+        Serialize a table to a dictionary.
+        """
+        return {
+            "name": table.name,
+            "columns": table.columns,
+            "records": [{
+                "id": record.id,
+                "type": record._type(),
+                "data": record.to_dict() if isinstance(record, ImageRecord) else {k: (v.decode() if isinstance(v, bytes) else v) for k, v in record.data.items()},
+                "index": record.index.to_dict(),
+            } for record in table.records],
+            "next_id": table.next_id,
+            "constraints": {
+                column: [
+                    {
+                        "name": constraint.__name__,
+                        "reference_table": getattr(constraint, "reference_table", None),
+                        "reference_column": getattr(constraint, "reference_column", None)
+                    } for constraint in constraints
+                ] for column, constraints in table.constraints.items()
+            },
+        }
+    
     # Connection and Session Management
     # ---------------------------------------------------------------------------------------------
     @log_method_call

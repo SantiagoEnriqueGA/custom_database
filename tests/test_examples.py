@@ -1,4 +1,3 @@
-
 import unittest
 import glob
 import os
@@ -26,23 +25,15 @@ class TestExampleExceptions(unittest.TestCase):
         
         if 'example_millionRowLoad.py' in example_file:
             from examples.example_millionRowLoad import main    
-            print(f"Testing file: {strip_file_path(example_file)}")
+            print(f"\nTesting file: {strip_file_path(example_file)}", end="", flush=True)
             with suppress_print():
                 main()
         
         if 'example_storageCompression.py' in example_file:
             from examples.example_storageCompression import main
-            print(f"Testing file: {strip_file_path(example_file)}")
+            print(f"\nTesting file: {strip_file_path(example_file)}", end="", flush=True)
             with suppress_print():
                 main()
-        
-        if 'example_storageCompressionLarge.py' in example_file:
-            from examples.example_storageCompressionLarge import main
-            print(f"Testing file: {strip_file_path(example_file)}")
-            pass # Skip this test case. Too slow. Covered by example_storageCompression.py.
-            # with suppress_print():
-            #     main()
-
 
 class TestExamples(unittest.TestCase):
     """
@@ -68,6 +59,12 @@ def load_tests(loader, tests, pattern):
     
     # Dynamically generate test cases for each example file.
     for example_file in example_files:
+        # Skip specific files entirely
+        if any(skip in example_file for skip in ['example_storageCompressionLarge.py', 'example_dbServer.py', 'example_dbServerClient.py']):
+            # Skip the file example_storageCompressionLarge.py as it is too large to test.
+            # Skip the files example_dbServer.py and example_dbServerClient.py as they must be run on separate processes.
+            continue
+        
         test_name = f'test_{os.path.basename(example_file)}'
         
         def test_func(self, example_file=example_file):
@@ -82,10 +79,7 @@ def load_tests(loader, tests, pattern):
                 spec.loader.exec_module(example_module)
         
         # Dynamically add the test function to the TestExamples class.
-        # If example file runs in __main__, use a lambda function to call the test function.
-        test_exeptions = ['example_millionRowLoad.py', 'example_storageCompression.py', 'example_storageCompressionLarge.py']
-        test_exeptions = [f'test_{name}' for name in test_exeptions]
-        if test_name in test_exeptions:
+        if 'example_millionRowLoad.py' in example_file or 'example_storageCompression.py' in example_file:
             setattr(TestExamples, test_name, lambda self, example_file=example_file: TestExampleExceptions().test_main(example_file))
         else:
             setattr(TestExamples, test_name, test_func)
