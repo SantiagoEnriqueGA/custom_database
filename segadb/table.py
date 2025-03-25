@@ -563,40 +563,39 @@ class Table:
 
         return agg_table
 
-    def filter(self, condition, parallel=True):
+    def filter(self, condition):
         """
         Filter records based on a condition.
         Args:
             condition (function): A function that takes a record as input and returns True if the record satisfies the condition, False otherwise.
-            parallel (bool, optional): If True, filters in parallel. Defaults to True.
         Returns:
             Table: A new table containing the filtered records.
         """
         filtered_records = [record for record in self.records if condition(record)]
         filtered_table = Table(f"{self.name}_filtered", self.columns)
         
-        if parallel and len(filtered_records) > 0:
-            filtered_table.parallel_insert([record.data for record in filtered_records])
+        if len(filtered_records) > 0:
+            filtered_table.bulk_insert([record.data for record in filtered_records])
+            
         else:
             for record in filtered_records:
                 filtered_table.insert(record.data)
         return filtered_table
     
-    def sort(self, column, ascending=True, parallel=True):
+    def sort(self, column, ascending=True):
         """
         Sorts the records in the table based on the specified column.
         Args:
             column (str): The column to sort by.
             ascending (bool, optional): If True, sorts in ascending order. Defaults to True.
-            parallel (bool, optional): If True, sorts in parallel. Defaults to True.
         Returns:
             Table: A new table containing the sorted records.
         """
         sorted_records = sorted(self.records, key=lambda record: record.data.get(column), reverse=not ascending)
         new_table = Table(f"{self.name}_sorted", self.columns)
         
-        if parallel and len(sorted_records) > 0:
-            new_table.parallel_insert([record.data for record in sorted_records])
+        if len(sorted_records) > 0:
+            new_table.bulk_insert([record.data for record in sorted_records])
         else:
             for record in sorted_records:
                 new_table.insert(record.data)
