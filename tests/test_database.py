@@ -257,7 +257,7 @@ class TestDatabase(unittest.TestCase):
             writer.writerow([2, "Jane Doe", "jane@example.com"])
             csvfile_path = csvfile.name
 
-        db.create_table_from_csv(csvfile_path, "Users", headers=True, parrallel=True)
+        db.create_table_from_csv(csvfile_path, "Users", headers=True, parallel=True)
         table = db.get_table("Users")
         self.assertIsNotNone(table)
         self.assertEqual(len(table.records), 2)

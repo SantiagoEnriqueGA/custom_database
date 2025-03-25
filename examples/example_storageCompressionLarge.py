@@ -21,7 +21,7 @@ def main():
     user_manager.login_user("admin", "password123")
 
     # Create a new table from a CSV file
-    db.create_table_from_csv("example_datasets/reviews.csv", table_name="tbl", headers=True, parrallel=True, progress=False)
+    db.create_table_from_csv("example_datasets/reviews.csv", table_name="tbl", headers=True, parallel=True, progress=False)
     
     # Save the database to a file
     print("\nSaving to example_storage/example_database.segadb:")

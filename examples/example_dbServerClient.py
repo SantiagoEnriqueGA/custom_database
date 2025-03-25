@@ -35,7 +35,7 @@ command = {
     }
 }
 response = send_command(host, port, command)
-print(f"\nRespose from insert on users:\n{response}")
+print(f"\nResponse from insert on users:\n{response}")
 
 # Query the "users" table
 # ------------------------------------------------------------------------

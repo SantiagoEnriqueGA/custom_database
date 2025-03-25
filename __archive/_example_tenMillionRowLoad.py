@@ -42,7 +42,7 @@ def main():
     db.create_table_from_csv("example_datasets/measurements_tenMillion.txt", "MillionRowTable_MP", 
                                              headers=False, delim=';', 
                                              column_names=['station', 'measure'],  col_types=[str, float],
-                                             progress=False, parrallel=True, max_chunk_size=5_000
+                                             progress=False, parallel=True, max_chunk_size=5_000
                                              )
     end_time = time.time()
     print(f"Time to load table with multiprocessing: {(end_time - start_time):.2f} seconds")

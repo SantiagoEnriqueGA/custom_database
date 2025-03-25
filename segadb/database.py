@@ -606,7 +606,7 @@ class Database:
         return self.tables.get(table_name)
     
     @log_method_call
-    def create_table_from_csv(self, dir, table_name, headers=True, delim=',', column_names=None, col_types=None, progress=False, parrallel=False, max_chunk_size=None):
+    def create_table_from_csv(self, dir, table_name, headers=True, delim=',', column_names=None, col_types=None, progress=False, parallel=False, max_chunk_size=None):
         """
         Creates a table in the database from a CSV file.
         Args:
@@ -621,7 +621,7 @@ class Database:
         Example:
             db.create_table_from_csv('/path/to/file.csv', 'my_table', headers=True, delim=';', column_names=['col1', 'col2'], col_types=[str, int], progress=True)
         """
-        if parrallel:
+        if parallel:
             self._create_table_from_csv_mp(dir, table_name, headers, delim, column_names, col_types, progress, max_chunk_size)
             return
             
