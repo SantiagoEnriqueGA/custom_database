@@ -11,6 +11,7 @@ from .users import User, UserManager, Authorization
 from .views import View, MaterializedView
 from .crypto import CustomFernet
 from .db_navigator import db_navigator
+from .socketClient import SocketClient
 
 __all__ = [
     "Database",
@@ -31,5 +32,6 @@ __all__ = [
     "View",
     "MaterializedView",
     "CustomFernet",
-    "db_navigator"
+    "db_navigator",
+    "SocketClient",
 ]
