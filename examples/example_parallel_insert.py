@@ -3,6 +3,7 @@ import os
 import random
 from faker import Faker
 from multiprocessing import freeze_support
+import time
 
 # Change the working directory to the parent directory to allow importing the segadb package.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -10,7 +11,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from segadb import *
 
 def insert():
-    NUM_RECORDS = 10000
+    NUM_RECORDS = 100_000
 
     # Create a new database
     db = Database("MyTestDB")
@@ -31,16 +32,22 @@ def insert():
     ]
 
     # Insert records in parallel using multiprocessing
+    start = time.time()
     table.parallel_insert(records)
-    print(f"Inserted {NUM_RECORDS} records in parallel")
+    end = time.time()
+    print(f"Time: {end - start:.2f} seconds: Inserted {NUM_RECORDS:,} records in parallel")
 
     # Insert records in parallel using multiprocessing with custom configuration
+    start = time.time()
     table.parallel_insert(records, max_workers=3, chunk_size=1000) 
-    print(f"Inserted {NUM_RECORDS} records in parallel with custom configuration")
+    end = time.time()
+    print(f"Time: {end - start:.2f} seconds: Inserted {NUM_RECORDS:,} records in parallel with custom configuration")
 
     # Insert records in parallel using safe version of insert
+    start = time.time()
     table.parallel_try_insert(records)
-    print(f"Inserted {NUM_RECORDS} records in parallel using safe version of insert")
+    end = time.time()
+    print(f"Time: {end - start:.2f} seconds: Inserted {NUM_RECORDS:,} records in parallel with safe version")
 
 
 if __name__ == '__main__':
