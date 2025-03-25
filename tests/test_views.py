@@ -6,7 +6,7 @@ import os
 # Change the working directory to the parent directory to allow importing the segadb package.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from segadb.views import View, MaterializedView
-from test_utils import suppress_print
+from tests.utils import suppress_print
 
 class TestViews(unittest.TestCase):
     """
@@ -16,6 +16,10 @@ class TestViews(unittest.TestCase):
     - test_view_get_data: Tests the get_data method of a View instance.
     - test_view_query_to_string: Tests the _query_to_string method of a View instance.
     """
+    @classmethod
+    def setUpClass(cls):
+        print("\nTesting Views Class", end="", flush=True)
+        
     def test_view_initialization(self):
         query = Mock(return_value=[{"id": 1, "name": "Alice"}])
         view = View("TestView", query)
@@ -46,6 +50,10 @@ class TestMaterializedView(TestViews):
     - test_materialized_view_refresh: Tests the refresh method of a MaterializedView instance.
     - test_materialized_view_query_to_string: Tests the _query_to_string method of a MaterializedView instance.
     """
+    @classmethod
+    def setUpClass(cls):
+        print("\nTesting MaterializedView Class", end="", flush=True)
+        
     def test_materialized_view_initialization(self):
         query = Mock(return_value=[{"id": 1, "name": "Alice"}])
         mview = MaterializedView("TestMaterializedView", query)

@@ -10,7 +10,7 @@ from joblib import Logger
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from segadb.table import Table
 from segadb.database import Database
-from test_utils import suppress_print
+from tests.utils import suppress_print
 
 class TestTable(unittest.TestCase):
     """
@@ -73,7 +73,7 @@ class TestTable(unittest.TestCase):
     """
     @classmethod
     def setUpClass(cls):
-        print("Testing Table Class")
+        print("\nTesting Table Class", end="", flush=True)
 
     def setUp(self):
         self.table = Table("Users", ["id", "name", "email"])

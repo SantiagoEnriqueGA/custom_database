@@ -35,7 +35,7 @@ class TestImports(unittest.TestCase):
     """
     @classmethod
     def setUpClass(cls):
-        print("Testing Imports")
+        print("\nTesting Imports", end="", flush=True)
     
     def test_individual_imports(self):
         assert db is not None

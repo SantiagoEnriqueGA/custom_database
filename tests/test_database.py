@@ -9,7 +9,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from segadb.database import *
 from segadb.database import _process_file_chunk
-from test_utils import suppress_print
+from tests.utils import suppress_print
 
 class TestDatabase(unittest.TestCase):
     """
@@ -68,7 +68,7 @@ class TestDatabase(unittest.TestCase):
     """
     @classmethod
     def setUpClass(cls):
-        print("Testing Database Class")
+        print("\nTesting Database Class", end="", flush=True)
 
     # Initialization and Configuration
     # ---------------------------------------------------------------------------------------------

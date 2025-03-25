@@ -22,7 +22,7 @@ class TestSafeExecution(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("Testing safe_execution decorator")
+        print("\nTesting safe_execution decorator", end="", flush=True)
 
     def test_successful_function(self):
         @safe_execution

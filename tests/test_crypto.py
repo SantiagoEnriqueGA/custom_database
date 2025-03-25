@@ -26,7 +26,7 @@ class TestCustomFernet(unittest.TestCase):
     """
     @classmethod
     def setUpClass(cls):
-        print("Testing CustomFernet Class")
+        print("\nTesting CustomFernet Class", end="", flush=True)
     
     def setUp(self):
         self.key = CustomFernet.generate_key()

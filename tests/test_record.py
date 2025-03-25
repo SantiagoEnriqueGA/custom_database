@@ -10,7 +10,7 @@ from PIL import Image
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from segadb.record import Record, VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord, EncryptedRecord
 from segadb.crypto import CustomFernet
-from test_utils import suppress_print
+from tests.utils import suppress_print
 
 class TestRecord(unittest.TestCase):
     """
@@ -32,7 +32,7 @@ class TestRecord(unittest.TestCase):
     """
     @classmethod
     def setUpClass(cls):
-        print("Testing Record Class")
+        print("\nTesting Record Class", end="", flush=True)
 
     def test_record_creation(self):
         record = Record(1, {"name": "John Doe"})

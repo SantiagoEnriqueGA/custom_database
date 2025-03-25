@@ -8,7 +8,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from segadb.database import Database
 from segadb.transaction import Transaction
-from test_utils import suppress_print
+from tests.utils import suppress_print
 
 class TestTransaction(unittest.TestCase):
     """
@@ -21,7 +21,7 @@ class TestTransaction(unittest.TestCase):
     """
     @classmethod
     def setUpClass(cls):
-        print("Testing Transaction Class")
+        print("\nTesting Transaction Class", end="", flush=True)
 
     def setUp(self):
         self.db = Database("TestDB")

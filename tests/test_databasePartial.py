@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from segadb.databasePartial import PartialDatabase
 from segadb.database import Database
 from segadb.storage import Storage
-from test_utils import suppress_print
+from tests.utils import suppress_print
 
 class TestDatabasePartial(unittest.TestCase):
     """
@@ -26,7 +26,7 @@ class TestDatabasePartial(unittest.TestCase):
     """
     @classmethod
     def setUpClass(cls):
-        print("Testing DatabasePartial Class")
+        print("\nTesting DatabasePartial Class", end="", flush=True)
 
     def setUp(self):
         db = Database.load_sample_database(n_users=100, n_orders=200)

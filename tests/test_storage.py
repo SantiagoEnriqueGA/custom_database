@@ -10,7 +10,7 @@ from segadb.database import Database
 from segadb.storage import Storage
 from segadb.record import Record, VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord, EncryptedRecord
 from segadb.crypto import CustomFernet
-from test_utils import suppress_print
+from tests.utils import suppress_print
 
 class TestStorage(unittest.TestCase):
     """
@@ -44,7 +44,7 @@ class TestStorage(unittest.TestCase):
     """
     @classmethod
     def setUpClass(cls):
-        print("Testing Storage Class")
+        print("\nTesting Storage Class", end="", flush=True)
 
     def setUp(self):
         self.db = Database("TestDB")

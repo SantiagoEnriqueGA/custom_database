@@ -7,7 +7,7 @@ import importlib.util
 import contextlib
 import io
 
-from test_utils import suppress_print
+from tests.utils import suppress_print
 
 # Change the working directory to the parent directory to allow importing the segadb package.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -72,8 +72,7 @@ def load_tests(loader, tests, pattern):
         
         def test_func(self, example_file=example_file):
             """Tests the functionality of a given example file by importing it as a module and executing it."""
-            print(f"Testing file: {strip_file_path(example_file)}")
-            
+            print(f"\nTesting file: {strip_file_path(example_file)}", end="", flush=True)            
             # Import the example file as a module and execute it.
             spec = importlib.util.spec_from_file_location("module.name", example_file)
             example_module = importlib.util.module_from_spec(spec)

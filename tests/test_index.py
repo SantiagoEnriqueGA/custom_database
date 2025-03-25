@@ -20,7 +20,7 @@ class TestIndex(unittest.TestCase):
     """
     @classmethod
     def setUpClass(cls):
-        print("Testing Index Class")
+        print("\nTesting Index Class", end="", flush=True)
 
     def setUp(self):
         self.index = Index()

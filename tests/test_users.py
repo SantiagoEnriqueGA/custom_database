@@ -8,7 +8,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from segadb.database import Database
 from segadb.users import User, UserManager, Authorization, PRESET_ROLES
-from test_utils import suppress_print
+from tests.utils import suppress_print
 
 class TestUser(unittest.TestCase):
     """
@@ -17,6 +17,10 @@ class TestUser(unittest.TestCase):
     - test_user_creation: Tests the creation of a User object.
     - test_user_roles: Tests the roles of a User object.
     """
+    @classmethod
+    def setUpClass(cls):
+        print("\nTesting User Class", end="", flush=True)
+        
     def setUp(self):
         self.username = "testuser"
         self.password = "password123"
@@ -43,6 +47,10 @@ class TestUserManager(unittest.TestCase):
     - test_logout_user: Tests logging out a user.
     - test_remove_user: Tests removing a user.
     """
+    @classmethod
+    def setUpClass(cls):
+        print("\nTesting UserManager Class", end="", flush=True)
+        
     def setUp(self):
         self.db = Mock(spec=Database)
         self.user_manager = UserManager(self.db)
@@ -85,6 +93,10 @@ class TestAuthorization(unittest.TestCase):
     - test_add_permission: Tests adding a permission to a user.
     - test_check_permission: Tests checking if a user has a permission.
     """
+    @classmethod
+    def setUpClass(cls):
+        print("\nTesting Authorization Class", end="", flush=True)
+        
     def setUp(self):
         self.db = Mock(spec=Database)
         self.authorization = Authorization(self.db)
