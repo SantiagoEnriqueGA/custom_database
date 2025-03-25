@@ -496,17 +496,29 @@ class Table:
         Returns:
             Table: A new table containing the joined records.
         """
+        # Create a lookup dictionary for the other table
+        other_table_lookup = {}
+        for other_record in other_table.records:
+            key = other_record.data.get(other_column)
+            if key not in other_table_lookup:
+                other_table_lookup[key] = []
+            other_table_lookup[key].append(other_record.data)
+    
+        # Perform the join using the lookup dictionary
         joined_records = []
         for record in self.records:
-            for other_record in other_table.records:
-                if record.data.get(on_column) == other_record.data.get(other_column):
-                    joined_record = {**record.data, **other_record.data}
+            key = record.data.get(on_column)
+            if key in other_table_lookup:
+                for other_data in other_table_lookup[key]:
+                    joined_record = {**record.data, **other_data}
                     joined_records.append(joined_record)
-        
+    
+        # Create the resulting table
         joined_columns = list(set(self.columns + other_table.columns))
         joined_table = Table(f"{self.name}_join_{other_table.name}", joined_columns)
+    
         joined_table.bulk_insert(joined_records)
-        
+    
         return joined_table
 
     def aggregate(self, group_column, agg_column, agg_func):
@@ -551,33 +563,43 @@ class Table:
 
         return agg_table
 
-    def filter(self, condition):
+    def filter(self, condition, parallel=True):
         """
         Filter records based on a condition.
         Args:
             condition (function): A function that takes a record as input and returns True if the record satisfies the condition, False otherwise.
+            parallel (bool, optional): If True, filters in parallel. Defaults to True.
         Returns:
             Table: A new table containing the filtered records.
         """
         filtered_records = [record for record in self.records if condition(record)]
         filtered_table = Table(f"{self.name}_filtered", self.columns)
-        for record in filtered_records:
-            filtered_table.insert(record.data)
+        
+        if parallel and len(filtered_records) > 0:
+            filtered_table.parallel_insert([record.data for record in filtered_records])
+        else:
+            for record in filtered_records:
+                filtered_table.insert(record.data)
         return filtered_table
     
-    def sort(self, column, ascending=True):
+    def sort(self, column, ascending=True, parallel=True):
         """
         Sorts the records in the table based on the specified column.
         Args:
             column (str): The column to sort by.
             ascending (bool, optional): If True, sorts in ascending order. Defaults to True.
+            parallel (bool, optional): If True, sorts in parallel. Defaults to True.
         Returns:
             Table: A new table containing the sorted records.
         """
         sorted_records = sorted(self.records, key=lambda record: record.data.get(column), reverse=not ascending)
         new_table = Table(f"{self.name}_sorted", self.columns)
-        for record in sorted_records:
-            new_table.insert(record.data)
+        
+        if parallel and len(sorted_records) > 0:
+            new_table.parallel_insert([record.data for record in sorted_records])
+        else:
+            for record in sorted_records:
+                new_table.insert(record.data)
         return new_table
     
     # Utility Methods
