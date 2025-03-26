@@ -237,7 +237,7 @@ class Database:
             time.sleep(1)  # Prevent high CPU usage
         print(f"Database '{self.name}' has stopped.")
 
-    def start_in_thread(self):
+    def start_db_in_thread(self):
         """
         Starts the database in a separate thread.
         """
@@ -332,7 +332,7 @@ class Database:
                 return json.dumps({"status": "success", "message": "Database stopped."})
             
             elif action == "start":
-                self.start_in_thread()
+                self.start_db_in_thread()
                 return json.dumps({"status": "success", "message": "Database started."})
             
             elif action == "ping":
@@ -457,6 +457,7 @@ class Database:
                                 # Return all records if no filter is provided
                                 return json.dumps({
                                     "status": "success",
+                                    "columns": table.columns,
                                     "data": self._serialize_table_data(table)
                                 })
                         except Exception as e:
@@ -470,7 +471,11 @@ class Database:
                 if procedure_name:
                     try:
                         result = self.execute_stored_procedure(procedure_name, **procedure_params)
-                        return json.dumps({"status": "success", "data": self._serialize_table_data(result)})
+                        return json.dumps({
+                            "status": "success", 
+                            "columns": result.columns,
+                            "data": self._serialize_table_data(result)
+                        })
                     except ValueError as e:
                         return json.dumps({"status": "error", "message": str(e)})
                     except Exception as e:
@@ -1650,11 +1655,17 @@ def {procedure_name}(db, *args, **kwargs):
         # ----------------------------------------------------------------------------------
         # Define a trigger function to log before executing a stored procedure
         def log_before_procedure(db, procedure_name, *args, **kwargs):
-            print(f"Log before executing stored procedure: {procedure_name} with args: {args} and kwargs: {kwargs}")
-
+            if db.logger:
+                db.logger.info(f"Before executing stored procedure: {procedure_name} with args: {args} and kwargs: {kwargs}")
+            else:
+                print(f"Log before executing stored procedure: {procedure_name} with args: {args} and kwargs: {kwargs}")
+        
         # Define a trigger function to log after executing a stored procedure
         def log_after_procedure(db, procedure_name, *args, **kwargs):
-            print(f"Log after executing stored procedure: {procedure_name} with args: {args} and kwargs: {kwargs}")
+            if db.logger:
+                db.logger.info(f"After executing stored procedure: {procedure_name} with args: {args} and kwargs: {kwargs}")
+            else:
+                print(f"Log after executing stored procedure: {procedure_name} with args: {args} and kwargs: {kwargs}")
 
         # Add triggers for the stored procedure
         db.add_trigger("get_orders_by_user", "before", log_before_procedure)

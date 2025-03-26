@@ -11,7 +11,7 @@ from .users import User, UserManager, Authorization
 from .views import View, MaterializedView
 from .crypto import CustomFernet
 from .db_navigator import db_navigator
-from .socketClient import SocketClient
+from .socketClient import SocketClient, SocketUtilities
 
 __all__ = [
     "Database",
@@ -34,4 +34,5 @@ __all__ = [
     "CustomFernet",
     "db_navigator",
     "SocketClient",
+    "SocketUtilities",
 ]

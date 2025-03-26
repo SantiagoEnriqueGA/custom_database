@@ -16,7 +16,7 @@ host = '127.0.0.1'
 port = 65432
 
 # Start the database in a separate thread
-db.start_in_thread()
+db.start_db_in_thread()
 
 # Start the socket server
 db.start_socket_server(host=host, port=port)

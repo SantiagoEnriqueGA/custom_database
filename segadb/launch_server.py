@@ -29,7 +29,7 @@ def main():
         return
 
     # Start the database in a separate thread
-    db.start_in_thread()
+    db.start_db_in_thread()
 
     # Start the socket server
     db.start_socket_server(host=args.host, port=args.port)
