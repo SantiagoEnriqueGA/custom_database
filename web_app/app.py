@@ -125,9 +125,7 @@ def execute_procedure():
 @app.route('/db_info', methods=['GET'])
 @login_required
 def db_info():
-    # TODO: Create a get_db_info method in the SocketClient and use it here
-    command = {"action": "get_db_info"}
-    response = socket_client.send_command(command)
+    response = socket_client.get_db_info()
     if response.get('status') == 'success':
         return render_template('db_info.html', info=response.get('data', {}))
     return render_template('db_info.html', error=response.get('message', 'Failed to get database info'))

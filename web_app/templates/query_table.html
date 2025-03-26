@@ -10,11 +10,14 @@
     <form id="query-table-form">
         <label for="table">Table Name:</label>
         <input type="text" id="table" name="table" required><br>
-        <label for="filter">Filter (e.g., "record.data['column'] == 'value'"):</label>
+        <label for="filter">Filter (e.g., "lambda record: record.data['category'] == 'Electronics'"):</label>
         <input type="text" id="filter" name="filter"><br>
         <button type="submit">Query Table</button>
     </form>
-    <pre id="query-table-result"></pre>
+    <div id="query-table-result">
+        <h2>Query Results</h2>
+        <div id="table-content"></div>
+    </div>
     <a href="{{ url_for('home') }}">Back to Home</a>
     <script>
         document.getElementById('query-table-form').addEventListener('submit', async (e) => {
@@ -27,7 +30,27 @@
                 body: JSON.stringify({ table, filter })
             });
             const data = await response.json();
-            document.getElementById('query-table-result').innerText = JSON.stringify(data, null, 2);
+            const tableContent = document.getElementById('table-content');
+            if (data.status === 'success') {
+                const rows = data.data;
+                if (rows.length > 0) {
+                    const columns = Object.keys(rows[0]);
+                    let html = '<table border="1"><thead><tr>';
+                    columns.forEach(col => html += `<th>${col}</th>`);
+                    html += '</tr></thead><tbody>';
+                    rows.forEach(row => {
+                        html += '<tr>';
+                        columns.forEach(col => html += `<td>${row[col]}</td>`);
+                        html += '</tr>';
+                    });
+                    html += '</tbody></table>';
+                    tableContent.innerHTML = html;
+                } else {
+                    tableContent.innerHTML = '<p>No data available in this table.</p>';
+                }
+            } else {
+                tableContent.innerHTML = `<p>Error: ${data.message}</p>`;
+            }
         });
     </script>
 </body>

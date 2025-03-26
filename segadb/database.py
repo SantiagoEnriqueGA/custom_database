@@ -502,7 +502,24 @@ def {procedure_name}(db, *args, **kwargs):
                         return json.dumps({"status": "error", "message": f"Error creating stored procedure: {str(e)}"})
                 return json.dumps({"status": "error", "message": "Invalid create_procedure parameters."})
 
-            # --- Default for unknown actions ---
+            elif action == "get_db_info":
+                try:
+                    db_info = {
+                        "name": self.name,
+                        "size_mb": round(self.get_db_size() / (1024 * 1024), 4),
+                        "auth_required": self._is_auth_required(),
+                        "active_user": self.get_username_by_session(self.active_session),
+                        "session_id": self.active_session,
+                        "tables_count": len(self.tables),
+                        "views_count": len(self.views),
+                        "materialized_views_count": len(self.materialized_views),
+                        "stored_procedures_count": len(self.stored_procedures),
+                        "triggers_count": len(self.triggers["before"]) + len(self.triggers["after"]),
+                        "users_count": len(self.tables.get("_users").records) if "_users" in self.tables else 0,
+                    }
+                    return json.dumps({"status": "success", "data": db_info})
+                except Exception as e:
+                    return json.dumps({"status": "error", "message": str(e)})
             else:
                 return json.dumps({"status": "error", "message": "Unknown action."})
             

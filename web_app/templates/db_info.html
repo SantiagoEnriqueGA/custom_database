@@ -10,12 +10,19 @@
     {% if error %}
         <p>Error: {{ error }}</p>
     {% else %}
-        <p>Database Size: {{ info.db_size }} bytes</p>
-        <p>Number of Tables: {{ info.num_tables }}</p>
-        <p>Number of Views: {{ info.num_views }}</p>
-        <p>Number of Materialized Views: {{ info.num_materialized_views }}</p>
-        <p>Number of Stored Procedures: {{ info.num_stored_procedures }}</p>
-        <p>Number of Triggers: {{ info.num_triggers }}</p>
+        <ul>
+            <li><strong>Database Name:</strong> {{ info.name }}</li>
+            <li><strong>Database Size:</strong> {{ info.size_mb }} MB</li>
+            <li><strong>Authorization Required:</strong> {{ info.auth_required }}</li>
+            <li><strong>Active User:</strong> {{ info.active_user }}</li>
+            <li><strong>Session ID:</strong> {{ info.session_id }}</li>
+            <li><strong>Number of Tables:</strong> {{ info.tables_count }}</li>
+            <li><strong>Number of Views:</strong> {{ info.views_count }}</li>
+            <li><strong>Number of Materialized Views:</strong> {{ info.materialized_views_count }}</li>
+            <li><strong>Number of Stored Procedures:</strong> {{ info.stored_procedures_count }}</li>
+            <li><strong>Number of Triggers:</strong> {{ info.triggers_count }}</li>
+            <li><strong>Number of Users:</strong> {{ info.users_count }}</li>
+        </ul>
     {% endif %}
     <a href="{{ url_for('home') }}">Back to Home</a>
 </body>

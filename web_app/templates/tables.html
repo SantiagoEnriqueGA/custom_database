@@ -10,11 +10,23 @@
     {% if error %}
         <p>Error: {{ error }}</p>
     {% else %}
-        <ul>
-            {% for table in tables %}
-                <li>{{ table }} <button onclick="dropTable('{{ table }}')">Drop</button></li>
-            {% endfor %}
-        </ul>
+        <div style="display: flex;">
+            <div>
+                <ul>
+                    {% for table in tables %}
+                        <li>
+                            {{ table }} 
+                            <button onclick="dropTable('{{ table }}')">Drop</button>
+                            <button onclick="viewTable('{{ table }}')">View</button>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div id="table-data" style="margin-left: 20px; flex-grow: 1;">
+                <h2>Table Data</h2>
+                <div id="table-content"></div>
+            </div>
+        </div>
     {% endif %}
     <a href="{{ url_for('home') }}">Back to Home</a>
     <script>
@@ -32,6 +44,36 @@
                 }
             }
         }
+
+        async function viewTable(tableName) {
+            const response = await fetch('/query_table', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ table: tableName })
+            });
+            const data = await response.json();
+            const tableContent = document.getElementById('table-content');
+            if (data.status === 'success') {
+                const rows = data.data;
+                if (rows.length > 0) {
+                    const columns = Object.keys(rows[0]);
+                    let html = '<table border="1"><thead><tr>';
+                    columns.forEach(col => html += `<th>${col}</th>`);
+                    html += '</tr></thead><tbody>';
+                    rows.forEach(row => {
+                        html += '<tr>';
+                        columns.forEach(col => html += `<td>${row[col]}</td>`);
+                        html += '</tr>';
+                    });
+                    html += '</tbody></table>';
+                    tableContent.innerHTML = html;
+                } else {
+                    tableContent.innerHTML = '<p>No data available in this table.</p>';
+                }
+            } else {
+                tableContent.innerHTML = `<p>Error: ${data.message}</p>`;
+            }
+        }
     </script>
 </body>
-</html>
+</html> 

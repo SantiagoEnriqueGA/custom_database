@@ -236,7 +236,17 @@ class SocketClient:
             }
         }
         return self.send_command(command)
-
+    
+    # -- General Database Information --
+    def get_db_info(self):
+        """
+        
+        Retrieve general information about the database.
+        """
+        command = {
+            "action": "get_db_info"
+        }
+        return self.send_command(command)
 
 class SocketUtilities:
     @staticmethod
