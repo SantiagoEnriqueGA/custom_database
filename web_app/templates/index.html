@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Server Info</title>
+    <script>
+        async function fetchPing() {
+            const response = await fetch('/ping');
+            const data = await response.json();
+            document.getElementById('ping-result').innerText = JSON.stringify(data, null, 2);
+        }
+
+        async function fetchTables() {
+            const response = await fetch('/list_tables');
+            const data = await response.json();
+            document.getElementById('tables-result').innerText = JSON.stringify(data, null, 2);
+        }
+    </script>
+</head>
+<body>
+    <h1>Database Server Info</h1>
+    <button onclick="fetchPing()">Ping Server</button>
+    <pre id="ping-result"></pre>
+
+    <button onclick="fetchTables()">List Tables</button>
+    <pre id="tables-result"></pre>
+</body>
+</html>
