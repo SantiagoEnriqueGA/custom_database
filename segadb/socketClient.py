@@ -248,6 +248,100 @@ class SocketClient:
         }
         return self.send_command(command)
 
+    # --- Views ---
+    def query_view(self, view_name):
+        """
+        Query a view.
+        """
+        command = {
+            "action": "query_view",
+            "params": {
+                "view_name": view_name
+            }
+        }
+        return self.send_command(command)
+
+    def create_view(self, view_name, query_code):
+        """
+        Create a new view.
+        """
+        command = {
+            "action": "create_view",
+            "params": {
+                "view_name": view_name,
+                "query_code": query_code
+            }
+        }
+        return self.send_command(command)
+
+    def drop_view(self, view_name):
+        """
+        Drop a view.
+        """
+        command = {
+            "action": "drop_view",
+            "params": {
+                "view_name": view_name
+            }
+        }
+        return self.send_command(command)
+
+    def list_views(self):
+        """
+        List all views.
+        """
+        command = {
+            "action": "list_views"
+        }
+        return self.send_command(command)
+
+    # --- Materialized Views ---
+    def query_materialized_view(self, view_name):
+        """
+        Query a materialized view.
+        """
+        command = {
+            "action": "query_materialized_view",
+            "params": {
+                "view_name": view_name
+            }
+        }
+        return self.send_command(command)
+
+    def create_materialized_view(self, view_name, query_code):
+        """
+        Create a new materialized view.
+        """
+        command = {
+            "action": "create_materialized_view",
+            "params": {
+                "view_name": view_name,
+                "query_code": query_code
+            }
+        }
+        return self.send_command(command)
+
+    def drop_materialized_view(self, view_name):
+        """
+        Drop a materialized view.
+        """
+        command = {
+            "action": "drop_materialized_view",
+            "params": {
+                "view_name": view_name
+            }
+        }
+        return self.send_command(command)
+
+    def list_materialized_views(self):
+        """
+        List all materialized views.
+        """
+        command = {
+            "action": "list_materialized_views"
+        }
+        return self.send_command(command)
+
 class SocketUtilities:
     @staticmethod
     def print_results(data, columns, limit=10, offset=4):

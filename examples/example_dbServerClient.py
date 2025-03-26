@@ -133,3 +133,65 @@ print(f"\nResponse from query on users:")
 print(f"Status: {response.get('status')}")
 print("Data:")
 SocketUtilities.print_results(response.get("data"), response.get("columns"))
+
+
+# --- Database Information ---
+print_header("Database Information")
+# ------------------------------------------------------------------------
+# Get Database Information
+response = socket.get_db_info()
+print(f"Response from get_db_info command:")
+print(f"Status: {response.get('status')}")
+if response.get('status') == 'success':
+    for key, value in response.get('data', {}).items():
+        print(f"\t{key:25}: {value}")
+
+
+# --- Views ---
+print_header("Views")
+# ------------------------------------------------------------------------
+# List Views
+response = socket.list_views()
+print(f"Response from list_views command:\n{response}")
+
+# Query a View
+response = socket.query_view(view_name="laptop_view")
+print(f"\nResponse from query on laptop_view:")
+print(f"Status: {response.get('status')}")
+print("Data:")
+SocketUtilities.print_results(response.get("data"), response.get("columns"))
+
+# Create a View
+response = socket.create_view(view_name="phone_view", query_code="return db.filter_table('orders', lambda record: record.data['product'] == 'Phone')")
+print(f"\nResponse from create_view command:\n{response}")
+
+# Drop a View
+response = socket.drop_view(view_name="phone_view")
+print(f"\nResponse from drop_view command:\n{response}")
+
+
+
+# --- Materialized Views ---
+print_header("Materialized Views")
+# ------------------------------------------------------------------------
+# List Materialized Views
+response = socket.list_materialized_views()
+print(f"Response from list_materialized_views command:\n{response}")
+
+# Query a Materialized View
+response = socket.query_materialized_view(view_name="mv_ordersUserEven")
+print(f"\nResponse from query on mv_ordersUserEven:")
+print(f"Status: {response.get('status')}")
+print("Data:")
+SocketUtilities.print_results(response.get("data"), response.get("columns"))
+
+# Create a Materialized View
+response = socket.create_materialized_view(view_name="phone_view", query_code="return db.filter_table('orders', lambda record: record.data['product'] == 'Phone')")
+print(f"\nResponse from create_materialized_view command:\n{response}")
+
+# Drop a Materialized View
+response = socket.drop_materialized_view(view_name="phone_view")
+print(f"\nResponse from drop_materialized_view command:\n{response}")
+
+
+

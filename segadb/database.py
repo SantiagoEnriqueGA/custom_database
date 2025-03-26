@@ -296,6 +296,39 @@ class Database:
         """
         Handles commands received via the socket server. Extended version.
         Parses JSON command, validates parameters, checks permissions, executes action, and returns JSON response.
+        List of supported actions:
+            Server Control:
+                - stop: Stops the database.
+                - start: Starts the database in a separate thread.
+                - ping: Checks if the server is alive.
+            Authentication:
+                - register_user: Registers a new user.
+                - login_user: Logs in a user and returns a session token.
+                - logout_user: Logs out a user using the session token.
+            Table Management:
+                - create_table: Creates a new table.
+                - drop_table: Drops an existing table.
+                - list_tables: Lists all tables in the database.
+            Record Operations:
+                - insert: Inserts a record into a table.
+                - update: Updates a record in a table.
+                - delete: Deletes a record from a table.
+                - query: Queries a table with optional filter condition.
+            Stored Procedures:
+                - execute_procedure: Executes a stored procedure.
+                - create_procedure: Creates a new stored procedure.
+            Database Information:
+                - get_db_info: Retrieves information about the database.
+            Views:
+                - query_view: Queries a view.
+                - create_view: Creates a new view.
+                - drop_view: Drops an existing view.
+                - list_views: Lists all views in the database.
+            Materialized Views:
+                - query_materialized_view: Queries a materialized view.
+                - create_materialized_view: Creates a new materialized view.
+                - drop_materialized_view: Drops an existing materialized view.
+                - list_materialized_views: Lists all materialized views in the database.
 
         Expected JSON command format:
         {
@@ -520,6 +553,90 @@ def {procedure_name}(db, *args, **kwargs):
                     return json.dumps({"status": "success", "data": db_info})
                 except Exception as e:
                     return json.dumps({"status": "error", "message": str(e)})
+            # --- Views ---
+            elif action == "query_view":
+                view_name = params.get("view_name")
+                if view_name:
+                    try:
+                        view = self.get_view(view_name)
+                        return json.dumps({
+                            "status": "success",
+                            "columns": view.get_data().columns,
+                            "data": self._serialize_table_data(view.get_data())
+                        })
+                    except ValueError as e:
+                        return json.dumps({"status": "error", "message": str(e)})
+                return json.dumps({"status": "error", "message": "Invalid view name."})
+
+            elif action == "create_view":
+                view_name = params.get("view_name")
+                query_code = params.get("query_code")
+                if view_name and query_code:
+                    try:
+                        exec(f"def {view_name}():\n    {query_code.replace('\n', '\n    ')}", globals())
+                        query_function = globals()[view_name]
+                        self.create_view(view_name, query_function)
+                        return json.dumps({"status": "success", "message": f"View {view_name} created."})
+                    except Exception as e:
+                        return json.dumps({"status": "error", "message": f"Error creating view: {str(e)}"})
+                return json.dumps({"status": "error", "message": "Invalid create_view parameters."})
+
+            elif action == "drop_view":
+                view_name = params.get("view_name")
+                if view_name:
+                    try:
+                        self.delete_view(view_name)
+                        return json.dumps({"status": "success", "message": f"View {view_name} dropped."})
+                    except ValueError as e:
+                        return json.dumps({"status": "error", "message": str(e)})
+                return json.dumps({"status": "error", "message": "Invalid view name."})
+
+            elif action == "list_views":
+                return json.dumps({"status": "success", "data": list(self.views.keys())})
+
+            # --- Materialized Views ---
+            elif action == "query_materialized_view":
+                view_name = params.get("view_name")
+                if view_name:
+                    try:
+                        mv = self.get_materialized_view(view_name)
+                        return json.dumps({
+                            "status": "success",
+                            "columns": mv.data.columns,
+                            "data": self._serialize_table_data(mv.data)
+                        })
+                    except ValueError as e:
+                        return json.dumps({"status": "error", "message": str(e)})
+                return json.dumps({"status": "error", "message": "Invalid materialized view name."})
+
+
+            # TODO: FIX MV Creation
+            elif action == "create_materialized_view":
+                view_name = params.get("view_name")
+                query_code = params.get("query_code")                
+                if view_name and query_code:
+                    try:
+                        # Dynamically create the query function with access to `db`
+                        query_function = eval(f"lambda: {query_code}", {"db": self}, globals(), locals())
+                        
+                        self.create_materialized_view(view_name, query_function)
+                        return json.dumps({"status": "success", "message": f"Materialized view {view_name} created."})
+                    except Exception as e:
+                        return json.dumps({"status": "error", "message": f"Error creating materialized view: {str(e)}"})
+                return json.dumps({"status": "error", "message": "Invalid create_materialized_view parameters."})
+
+            elif action == "drop_materialized_view":
+                view_name = params.get("view_name")
+                if view_name:
+                    try:
+                        self.delete_materialized_view(view_name)
+                        return json.dumps({"status": "success", "message": f"Materialized view {view_name} dropped."})
+                    except ValueError as e:
+                        return json.dumps({"status": "error", "message": str(e)})
+                return json.dumps({"status": "error", "message": "Invalid materialized view name."})
+
+            elif action == "list_materialized_views":
+                return json.dumps({"status": "success", "data": list(self.materialized_views.keys())})
             else:
                 return json.dumps({"status": "error", "message": "Unknown action."})
             
