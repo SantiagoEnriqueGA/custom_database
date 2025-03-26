@@ -18,6 +18,11 @@ Since the project is educational, learning and understanding how databases work,
 - `tdqm`: Used for progress bars in the large data processing.
 - `faker`: Used for generating fake data for testing purposes.
 
+The database library provides the following interfaces:
+1. **Python API**: Directly use the library's Python modules for database operations.  
+2. **Socket API**: Launch a database server from a `.segadb` file and interact with it using a socket client.
+3. **Curses Interface**: Navigate through the database in the console with the DB Navigator. (Read-only)
+4. **Web GUI**: A simple web interface for interacting with the database. **(Future)**
 
 ## Table of Contents
 <!-- Add Links to Other Sections Here! -->
@@ -62,6 +67,9 @@ Since the project is educational, learning and understanding how databases work,
 - **Logging**: Logging for Database and Table level operations.
 - **Cryptographic Support**: Encrypt and decrypt data using a custom Fernet implementation. See [`CustomFernet`](segadb/crypto.py).
 - **Database Navigator**: View the contents of the database in the console with curses. See [`DB Navigator`](segadb/db_navigator.py).
+- **Server and Client Communication**: 
+  - Launch a database server from a `.segadb` file. See [`launch_server.py`](segadb/launch_server.py).
+  - Interact with the server using a socket client. See [`socketClient.py`](segadb/socketClient.py).
 
 
 ## Installation
@@ -288,6 +296,8 @@ The project directory structure is as follows:
   - [`views.py`](segadb/views.py): Implements the `View` and `MaterializedView` classes for view management.
   - [`crypto.py`](segadb/crypto.py): Implements the `CustomFernet` class for encryption and decryption.
   - [`db_navigator.py`](segadb/db_navigator.py): Implements the `DBNavigator` class for navigating the database in the console.
+  - [`launch_server.py`](segadb/launch_server.py): Launches a database server from a `.segadb` file.
+  - [`socketClient.py`](segadb/socketClient.py): Provides a client interface for interacting with the database server.
 - **tests/**: Contains unit and performance tests for the database library.
   - [`run_all_tests.py`](tests/run_all_tests.py): Runs all available tests.
   - [`test_utils.py`](tests/test_utils.py): Utility functions for tests.
