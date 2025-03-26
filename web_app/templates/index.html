@@ -2,28 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Database Server Info</title>
-    <script>
-        async function fetchPing() {
-            const response = await fetch('/ping');
-            const data = await response.json();
-            document.getElementById('ping-result').innerText = JSON.stringify(data, null, 2);
-        }
-
-        async function fetchTables() {
-            const response = await fetch('/list_tables');
-            const data = await response.json();
-            document.getElementById('tables-result').innerText = JSON.stringify(data, null, 2);
-        }
-    </script>
+    <title>Database Control Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <h1>Database Server Info</h1>
-    <button onclick="fetchPing()">Ping Server</button>
-    <pre id="ping-result"></pre>
-
-    <button onclick="fetchTables()">List Tables</button>
-    <pre id="tables-result"></pre>
+    <h1>Database Control Panel</h1>
+    <nav>
+        <ul>
+            {% if not logged_in %}
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+            {% else %}
+            <li><form action="{{ url_for('logout') }}" method="post"><button type="submit">Logout</button></form></li>
+            <li><a href="{{ url_for('list_tables') }}">List Tables</a></li>
+            <li><a href="{{ url_for('create_table') }}">Create Table</a></li>
+            <li><a href="{{ url_for('insert_record') }}">Insert Record</a></li>
+            <li><a href="{{ url_for('query_table') }}">Query Table</a></li>
+            <li><a href="{{ url_for('create_procedure') }}">Create Stored Procedure</a></li>
+            <li><a href="{{ url_for('db_info') }}">Database Info</a></li>
+            {% endif %}
+        </ul>
+    </nav>
 </body>
 </html>

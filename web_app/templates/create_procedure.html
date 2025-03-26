@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Stored Procedure</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Create Stored Procedure</h1>
+    <form id="create-procedure-form">
+        <label for="procedure_name">Procedure Name:</label>
+        <input type="text" id="procedure_name" name="procedure_name" required><br>
+        <label for="procedure_code">Procedure Code:</label>
+        <textarea id="procedure_code" name="procedure_code" required></textarea><br>
+        <button type="submit">Create Procedure</button>
+    </form>
+    <pre id="create-procedure-result"></pre>
+    <a href="{{ url_for('home') }}">Back to Home</a>
+    <script>
+        document.getElementById('create-procedure-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const procedure_name = document.getElementById('procedure_name').value;
+            const procedure_code = document.getElementById('procedure_code').value;
+            const response = await fetch('/create_procedure', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ procedure_name, procedure_code })
+            });
+            const data = await response.json();
+            document.getElementById('create-procedure-result').innerText = JSON.stringify(data, null, 2);
+        });
+    </script>
+</body>
+</html>

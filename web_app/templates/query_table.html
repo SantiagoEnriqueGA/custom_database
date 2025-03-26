@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Query Table</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Query Table</h1>
+    <form id="query-table-form">
+        <label for="table">Table Name:</label>
+        <input type="text" id="table" name="table" required><br>
+        <label for="filter">Filter (e.g., "record.data['column'] == 'value'"):</label>
+        <input type="text" id="filter" name="filter"><br>
+        <button type="submit">Query Table</button>
+    </form>
+    <pre id="query-table-result"></pre>
+    <a href="{{ url_for('home') }}">Back to Home</a>
+    <script>
+        document.getElementById('query-table-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const table = document.getElementById('table').value;
+            const filter = document.getElementById('filter').value || null;
+            const response = await fetch('/query_table', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ table, filter })
+            });
+            const data = await response.json();
+            document.getElementById('query-table-result').innerText = JSON.stringify(data, null, 2);
+        });
+    </script>
+</body>
+</html>

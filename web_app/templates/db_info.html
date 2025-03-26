@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Database Info</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Database Info</h1>
+    {% if error %}
+        <p>Error: {{ error }}</p>
+    {% else %}
+        <p>Database Size: {{ info.db_size }} bytes</p>
+        <p>Number of Tables: {{ info.num_tables }}</p>
+        <p>Number of Views: {{ info.num_views }}</p>
+        <p>Number of Materialized Views: {{ info.num_materialized_views }}</p>
+        <p>Number of Stored Procedures: {{ info.num_stored_procedures }}</p>
+        <p>Number of Triggers: {{ info.num_triggers }}</p>
+    {% endif %}
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>

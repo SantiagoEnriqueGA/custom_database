@@ -1,4 +1,3 @@
-/* Basic styling for the web app */
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
@@ -10,7 +9,17 @@ h1 {
     color: #333;
 }
 
-button {
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 10px;
+}
+
+button, input[type="submit"] {
     margin: 10px 0;
     padding: 10px 20px;
     background-color: #007bff;
@@ -20,8 +29,17 @@ button {
     cursor: pointer;
 }
 
-button:hover {
+button:hover, input[type="submit"]:hover {
     background-color: #0056b3;
+}
+
+input[type="text"], input[type="password"], textarea {
+    width: 100%;
+    max-width: 400px;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 pre {
@@ -29,4 +47,19 @@ pre {
     padding: 10px;
     border-radius: 5px;
     overflow-x: auto;
+    max-width: 600px;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }

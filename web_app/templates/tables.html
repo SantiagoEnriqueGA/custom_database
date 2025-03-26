@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tables</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Tables</h1>
+    {% if error %}
+        <p>Error: {{ error }}</p>
+    {% else %}
+        <ul>
+            {% for table in tables %}
+                <li>{{ table }} <button onclick="dropTable('{{ table }}')">Drop</button></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <a href="{{ url_for('home') }}">Back to Home</a>
+    <script>
+        async function dropTable(tableName) {
+            if (confirm(`Are you sure you want to drop table '${tableName}'?`)) {
+                const response = await fetch('/drop_table', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `table_name=${tableName}`
+                });
+                const data = await response.json();
+                alert(JSON.stringify(data, null, 2));
+                if (data.status === 'success') {
+                    window.location.reload();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
