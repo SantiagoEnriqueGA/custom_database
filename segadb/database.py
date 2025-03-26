@@ -267,7 +267,7 @@ class Database:
                 try:
                     client_socket, addr = server_socket.accept()
                     with client_socket:
-                        print(f"Connection from {addr}")
+                        print(f"Connection from {addr}", end="")
                         data = client_socket.recv(1024).decode('utf-8')
                         if data:
                             response = self._handle_command(data)
@@ -320,6 +320,8 @@ class Database:
             action = command_data.get("action")
             params = command_data.get("params", {})
             session_token = params.get("session_token") # Extract session token if provided
+            
+            print(f" with command: {action}")
 
             if not action:
                 return json.dumps({"status": "error", "message": "Missing 'action' in command."})
@@ -462,7 +464,6 @@ class Database:
                 return json.dumps({"status": "error", "message": "Table not found."})
             
             # --- Stored Procedure Execution ---
-            # TODO: Fix new stored procedures
             elif action == "execute_procedure":
                 procedure_name = params.get("procedure_name")
                 procedure_params = params.get("procedure_params", {})
@@ -482,7 +483,12 @@ class Database:
                 if procedure_name and procedure_code:
                     try:
                         # Create a dynamic function from the provided code
-                        exec(f"def {procedure_name}(db, *args, **kwargs):\n{procedure_code}")
+                        # Ensure proper indentation for the procedure code
+                        full_code = f"""
+def {procedure_name}(db, *args, **kwargs):
+    {procedure_code.replace('\n', '\n    ')}
+"""
+                        exec(full_code, globals(), locals())
                         procedure = locals()[procedure_name]
 
                         self.add_stored_procedure(procedure_name, procedure)
@@ -1036,27 +1042,27 @@ class Database:
         self.stored_procedures[name] = procedure
     
     @log_method_call
-    def execute_stored_procedure(self, name, *args, **kwargs):
+    def execute_stored_procedure(self, procedure_name, *args, **kwargs):
         """
         Execute a stored procedure.
         Args:
-            name (str): The name of the stored procedure.
+            procedure_name (str): The name of the stored procedure.
             *args: Positional arguments to pass to the stored procedure.
             **kwargs: Keyword arguments to pass to the stored procedure.
         Returns:
             The result of the stored procedure execution.
         """
-        if name not in self.stored_procedures:
-            raise ValueError(f"Stored procedure {name} does not exist.")
+        if procedure_name not in self.stored_procedures:
+            raise ValueError(f"Stored procedure {procedure_name} does not exist.")
         
         # Execute 'before' triggers
-        self.execute_triggers(name, "before", *args, **kwargs)
+        self.execute_triggers(procedure_name, "before", *args, **kwargs)
         
         # Execute the stored procedure
-        result = self.stored_procedures[name](self, *args, **kwargs)
+        result = self.stored_procedures[procedure_name](self, *args, **kwargs)
         
         # Execute 'after' triggers
-        self.execute_triggers(name, "after", *args, **kwargs)
+        self.execute_triggers(procedure_name, "after", *args, **kwargs)
         
         return result
 

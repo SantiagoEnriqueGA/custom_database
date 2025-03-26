@@ -174,7 +174,10 @@ print(f"\nResponse from query on users:")
 if response.get("status") == "success":
     print(response.get("status"))
     print("Data:")
+    c = 0
     for record in response.get("data"):
+        c += 1
+        if c > 10: print("\t..."); break
         print(f"\t{record.get('user_id')} | {record.get('name')} | {record.get('email')}")
 else:
     print(response)
@@ -239,14 +242,24 @@ command = {
     }
 }
 response = socket.send_command(command)
-print(f"Response from execute_procedure command:\n{response}")
+print(f"Response from execute_procedure command:")
+if response.get("status") == "success":
+    print(response.get("status"))
+    print("Data:")
+    c = 0
+    for record in response.get("data"):
+        c += 1
+        if c > 10: print("\t..."); break
+        print(f"\t{record.get('order_id')} | {record.get('product')} | {record.get('price')} | {record.get('order_date')}")
+else:
+    print(response)
 
 # Add a stored procedure
 command = {
     "action": "create_procedure",
     "params": {
         "procedure_name": "get_users_by_name_starting_with",
-        "procedure_code": "    return db.filter_table('users', lambda record: record.data['name'].startswith(name))"
+        "procedure_code": "name = kwargs.get('name'); return db.filter_table('users', lambda record: record.data['name'].startswith(name))"
     }
 }
 response = socket.send_command(command)
@@ -261,7 +274,17 @@ command = {
     }
 }
 response = socket.send_command(command)
-print(f"\nResponse from execute_procedure command:\n{response}")
+print(f"\nResponse from query on users:")
+if response.get("status") == "success":
+    print(response.get("status"))
+    print("Data:")
+    c = 0
+    for record in response.get("data"):
+        c += 1
+        if c > 10: print("\t..."); break
+        print(f"\t{record.get('user_id')} | {record.get('name')} | {record.get('email')}")
+else:
+    print(response)
 
 
 
