@@ -496,7 +496,7 @@ class TestDatabase(unittest.TestCase):
         with self.assertRaises(ValueError):
             sample_method(db, 1, 2)
         db.logger.info.assert_any_call("Method Call: sample_method | Args: {'x': 1, 'y': 2}")
-        db.logger.error.assert_any_call("Method Error: sample_method | Args: {'x': 1, 'y': 2} | Error: Test Error")
+        db.logger.error.assert_any_call("Method Error: sample_method | Args: {'x': 1, 'y': 2} | Error Type: ValueError: Test ErrorError: Test Error")
         
     def test_log_method_call_filter(self):
         # Should filter password and password_hash from logs

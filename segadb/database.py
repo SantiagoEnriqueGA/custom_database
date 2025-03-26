@@ -37,48 +37,49 @@ def log_method_call(func):
         function: The decorated function.
     """
     def wrapper(self, *args, **kwargs):
-        if not self.log:
+        if not hasattr(self, 'log') or not self.log: # Check if logging is enabled and initialized
             return func(self, *args, **kwargs)
-            
+
         # Get method name and calling arguments
         method_name = func.__name__
         arg_names = inspect.getfullargspec(func).args[1:]  # Skip 'self'
-        
+
         # Format positional arguments
         args_dict = dict(zip(arg_names, args))
-        
+
         # Combine with keyword arguments
         all_args = {**args_dict, **kwargs}
-        
+
         # Filter out sensitive information (like passwords)
         filtered_args = {
-            k: (v if k not in ['password', 'password_hash'] else '[REDACTED]') 
+            k: (v if k not in ['password', 'password_hash'] else '[REDACTED]')
             for k, v in all_args.items()
         }
-        
+
         try:
             # Log the method call
             self.logger.info(
-                f"Method Call: {method_name} | " 
+                f"Method Call: {method_name} | "
                 f"Args: {filtered_args}"
             )
-            
+
             # Execute the method
             result = func(self, *args, **kwargs)
-            
+
             # Log successful completion
             self.logger.info(
                 f"Method Complete: {method_name} | "
                 f"Status: Success"
             )
-            
+
             return result
-            
+
         except Exception as e:
             # Log any exceptions
             self.logger.error(
                 f"Method Error: {method_name} | "
                 f"Args: {filtered_args} | "
+                f"Error Type: {type(e).__name__}: {str(e)}"
                 f"Error: {str(e)}"
             )
             raise
@@ -88,8 +89,8 @@ def log_method_call(func):
 # Helper function for processing file chunks in parallel (cannot be defined within the Database class)
 def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_names=None, col_types=None, progress=False, headers=False):
     """
-    Process each file chunk in a different process.  
-    IDs count up from chunk_start.  
+    Process each file chunk in a different process.
+    IDs count up from chunk_start.
     Args:
         file_name (str): The name of the file to process.
         chunk_start (int): The start position of the chunk in the file.
@@ -134,7 +135,7 @@ def _process_file_chunk(file_name, chunk_start, chunk_end, delim=',', column_nam
             pbar.close()
     return rows
 
-class Database:  
+class Database:
     # Initialization and Configuration
     # ---------------------------------------------------------------------------------------------
     def __init__(self, name, db_logging=False, table_logging=False):
@@ -153,42 +154,57 @@ class Database:
         self.active_session = None
         self.stored_procedures = {}
         self.triggers = {"before": {}, "after": {}}
+        self.running = False
+        self.server_running = False
+        self.thread = None
+        self.server_thread = None
+        self.logger = None # Initialize logger attribute
 
         # Logging setup
         self.log = db_logging
         self.table_log = table_logging
         if self.log:
-            # Create logs directory if it doesn't exist
-            log_dir = Path('logs')
-            log_dir.mkdir(exist_ok=True)
-            
-            # Set up log file path
-            log_file = log_dir / f'{self.name}_transaction_log.log'
-            
-            # Configure logger
-            self.logger = logging.getLogger(f'database_{self.name}')
-            self.logger.setLevel(logging.INFO)
-            
-            # Prevent duplicate handlers
-            if not self.logger.handlers:
-                # Create file handler
-                file_handler = logging.FileHandler(log_file)
-                file_handler.setLevel(logging.INFO)
-                
-                # Create formatter
-                formatter = logging.Formatter(
-                    '%(asctime)s - %(levelname)s - %(message)s'
-                )
-                file_handler.setFormatter(formatter)
-                
-                # Add handler to logger
-                self.logger.addHandler(file_handler)
-            
-            self.logger.info(f"Database '{self.name}' initialized with logging enabled")
+            self._setup_logging()
 
         # Create the _users table for user management
-        self.create_table("_users" , ["username", "password_hash", "roles"])        
-        
+        # Use internal method to bypass permission checks if needed during init
+        self._internal_create_table("_users" , ["username", "password_hash", "roles"])  
+    
+    def _setup_logging(self):
+        """Sets up the logger for the database."""
+        log_dir = Path('logs')
+        log_dir.mkdir(exist_ok=True)
+        log_file = log_dir / f'{self.name}_database_log.log' # Changed name slightly
+
+        self.logger = logging.getLogger(f'database_{self.name}')
+        self.logger.setLevel(logging.INFO)
+
+        if not self.logger.handlers:
+            file_handler = logging.FileHandler(log_file)
+            file_handler.setLevel(logging.INFO)
+            formatter = logging.Formatter(
+                '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
+            )
+            file_handler.setFormatter(formatter)
+            self.logger.addHandler(file_handler)
+
+            # Optional: Add console handler for immediate feedback
+            # console_handler = logging.StreamHandler()
+            # console_handler.setLevel(logging.INFO)
+            # console_handler.setFormatter(formatter)
+            # self.logger.addHandler(console_handler)
+
+        self.logger.info(f"Database '{self.name}' initialized with logging enabled.")
+
+    def _internal_create_table(self, table_name, columns):
+        """Internal method to create a table without permission checks."""
+        if table_name not in self.tables:
+            # Use table_logging setting during initialization
+            use_table_log = self.table_log and self.log
+            self.tables[table_name] = Table(table_name, columns, logger=self.logger if use_table_log else None)
+            if self.log:
+                self.logger.info(f"Internal: Table '{table_name}' created.")
+
     def create_user_manager(self):
         """
         Create a new instance of the UserManager class.
@@ -276,15 +292,39 @@ class Database:
         self.server_running = False
         print(f"Database '{self.name}' socket server stopped.")
 
-    def _handle_command(self, command):
+    def _handle_command(self, command_json):
         """
-        Handles commands received via the socket server.
+        Handles commands received via the socket server. Extended version.
+        Parses JSON command, validates parameters, checks permissions, executes action, and returns JSON response.
+
+        Expected JSON command format:
+        {
+            "action": "command_name",
+            "params": {
+                "param1": "value1",
+                "param2": "value2",
+                "session_token": "optional_token_for_auth"
+                // ... other params specific to action
+            }
+        }
+
+        Returns JSON response format:
+        {
+            "status": "success" | "error",
+            "message": "Optional message detailing success or error cause",
+            "data": "Optional data payload (e.g., query results)"
+        }
         """
         try:
-            command_data = json.loads(command)
+            command_data = json.loads(command_json)
             action = command_data.get("action")
             params = command_data.get("params", {})
+            session_token = params.get("session_token") # Extract session token if provided
+
+            if not action:
+                return json.dumps({"status": "error", "message": "Missing 'action' in command."})
             
+            # --- Server Control ---
             if action == "stop":
                 self.stop()
                 return json.dumps({"status": "success", "message": "Database stopped."})
@@ -293,13 +333,109 @@ class Database:
                 self.start_in_thread()
                 return json.dumps({"status": "success", "message": "Database started."})
             
+            elif action == "ping":
+                return json.dumps({"status": "success", "message": "pong"})
+            
+            # --- Authentication ---
+            elif action == "register_user":
+                username = params.get("username")
+                password = params.get("password")
+                roles = params.get("roles", [])
+                if username and password:
+                    try:
+                        self.register_user(username, password, roles)
+                        return json.dumps({"status": "success", "message": f"User {username} registered."})
+                    except ValueError as e:
+                        return json.dumps({"status": "error", "message": str(e)})
+                return json.dumps({"status": "error", "message": "Invalid registration parameters."})
+
+            elif action == "login_user":
+                username = params.get("username")
+                password = params.get("password")
+                if username and password:
+                    user = self.authenticate_user(username, password)
+                    if user:
+                        session_token = self.create_session(username)
+                        return json.dumps({"status": "success", "message": f"User {username} logged in.", "session_token": session_token})
+                    else:
+                        return json.dumps({"status": "error", "message": "Invalid credentials."})
+                return json.dumps({"status": "error", "message": "Invalid login parameters."})
+
+            elif action == "logout_user":
+                if session_token:
+                    self.delete_session(session_token)
+                    return json.dumps({"status": "success", "message": "User logged out."})
+                return json.dumps({"status": "error", "message": "No session to logout."})
+
+            # --- Table Management ---
+            elif action == "create_table":
+                table_name = params.get("table_name")
+                columns = params.get("columns")
+                if table_name and columns:
+                    try:
+                        self.create_table(table_name, columns, session_token)
+                        return json.dumps({"status": "success", "message": f"Table {table_name} created."})
+                    except PermissionError as e:
+                        return json.dumps({"status": "error", "message": str(e)})
+                return json.dumps({"status": "error", "message": "Invalid table creation parameters."})
+
+            elif action == "drop_table":
+                table_name = params.get("table_name")
+                if table_name:
+                    try:
+                        self.drop_table(table_name, session_token)
+                        return json.dumps({"status": "success", "message": f"Table {table_name} dropped."})
+                    except PermissionError as e:
+                        return json.dumps({"status": "error", "message": str(e)})
+                return json.dumps({"status": "error", "message": "Invalid table name."})
+
+            elif action == "list_tables":
+                table_list = list(self.tables.keys())
+                return json.dumps({"status": "success", "data": table_list})
+
+            # --- Record Operations ---
             elif action == "insert":
                 table_name = params.get("table")
                 record = params.get("record")
                 if table_name and record:
-                    self.get_table(table_name).insert(record)
-                    return json.dumps({"status": "success", "message": f"Record inserted into {table_name}."})
+                    try:
+                        self.get_table(table_name).insert(record)
+                        return json.dumps({"status": "success", "message": f"Record inserted into {table_name}."})
+                    except Exception as e:
+                        return json.dumps({"status": "error", "message": str(e)})
                 return json.dumps({"status": "error", "message": "Invalid insert parameters."})
+            
+            elif action == "update":
+                table_name = params.get("table")
+                record_id = params.get("record_id")
+                updates = params.get("updates")
+
+                if table_name and record_id and updates:
+                    try:
+                        table = self.get_table(table_name)
+                        if table:
+                            table.update(record_id, updates)
+                            return json.dumps({"status": "success", "message": f"Record {record_id} in {table_name} updated."})
+                        else:
+                            return json.dumps({"status": "error", "message": f"Table {table_name} not found."})
+                    except Exception as e:
+                        return json.dumps({"status": "error", "message": str(e)})
+                return json.dumps({"status": "error", "message": "Invalid update parameters."})
+
+            elif action == "delete":
+                table_name = params.get("table")
+                record_id = params.get("record_id")
+                if table_name and record_id:
+                    try:
+                        table = self.get_table(table_name)
+                        if table:
+                            table.delete(record_id)
+                            return json.dumps({"status": "success", "message": f"Record {record_id} deleted from {table_name}."})
+                        else:
+                            return json.dumps({"status": "error", "message": f"Table {table_name} not found."})
+                    except Exception as e:
+                        return json.dumps({"status": "error", "message": str(e)})
+                return json.dumps({"status": "error", "message": "Invalid delete parameters."})
             
             elif action == "query":
                 table_name = params.get("table")
@@ -307,49 +443,102 @@ class Database:
                 if table_name:
                     table = self.get_table(table_name)
                     if table:
-                        if filter_condition:
-                            # Apply the filter condition
-                            filtered_table = table.filter(eval(filter_condition))
-                            return json.dumps({
-                                "status": "success",
-                                "data": [record.data for record in filtered_table.records]
-                            })
-                        else:
-                            # Return all records if no filter is provided
-                            return json.dumps({
-                                "status": "success",
-                                "data": [record.data for record in table.records]
-                            })
+                        try:
+                            if filter_condition:
+                                # Apply the filter condition
+                                filtered_table = table.filter(eval(filter_condition))
+                                return json.dumps({
+                                    "status": "success",
+                                    "data": self._serialize_table_data(filtered_table)
+                                })
+                            else:
+                                # Return all records if no filter is provided
+                                return json.dumps({
+                                    "status": "success",
+                                    "data": self._serialize_table_data(table)
+                                })
+                        except Exception as e:
+                            return json.dumps({"status": "error", "message": str(e)})
                 return json.dumps({"status": "error", "message": "Table not found."})
             
+            # --- Stored Procedure Execution ---
+            # TODO: Fix new stored procedures
+            elif action == "execute_procedure":
+                procedure_name = params.get("procedure_name")
+                procedure_params = params.get("procedure_params", {})
+                if procedure_name:
+                    try:
+                        result = self.execute_stored_procedure(procedure_name, **procedure_params)
+                        return json.dumps({"status": "success", "data": self._serialize_table_data(result)})
+                    except ValueError as e:
+                        return json.dumps({"status": "error", "message": str(e)})
+                    except Exception as e:
+                        return json.dumps({"status": "error", "message": str(e)})
+                return json.dumps({"status": "error", "message": "Invalid procedure name."})
+            
+            elif action == "create_procedure":
+                procedure_name = params.get("procedure_name")
+                procedure_code = params.get("procedure_code")
+                if procedure_name and procedure_code:
+                    try:
+                        # Create a dynamic function from the provided code
+                        exec(f"def {procedure_name}(db, *args, **kwargs):\n{procedure_code}")
+                        procedure = locals()[procedure_name]
+
+                        self.add_stored_procedure(procedure_name, procedure)
+                        return json.dumps({"status": "success", "message": f"Stored procedure {procedure_name} created."})
+                    except Exception as e:
+                        return json.dumps({"status": "error", "message": f"Error creating stored procedure: {str(e)}"})
+                return json.dumps({"status": "error", "message": "Invalid create_procedure parameters."})
+
+            # --- Default for unknown actions ---
             else:
                 return json.dumps({"status": "error", "message": "Unknown action."})
+            
         except Exception as e:
             return json.dumps({"status": "error", "message": str(e)})
     
-    def _serialize_table(self, table):
+    def _serialize_records(self, records):
+        """Helper to serialize a list of Record objects to JSON-compatible dictionaries."""
+        serialized_list = []
+        for record in records:
+             serializable_data = {k: (v.decode() if isinstance(v, bytes) else v)
+                                  for k, v in record.data.items()}
+             serializable_data['_record_id'] = record.id # Include record ID
+             serialized_list.append(serializable_data)
+        return serialized_list
+
+    def _serialize_table_data(self, table):
+        """Serialize just the records of a table."""
+        if not table:
+            return []
+        return self._serialize_records(table.records)
+
+    def _serialize_constraints(self, constraints_dict):
+         """Serialize constraint information."""
+         serializable_constraints = {}
+         for column, constraints in constraints_dict.items():
+             serializable_constraints[column] = []
+             for constraint_func in constraints:
+                 constraint_info = {"name": constraint_func.__name__}
+                 # Add details for specific constraints if needed (e.g., FOREIGN KEY)
+                 if hasattr(constraint_func, "_constraint_type") and constraint_func._constraint_type == "FOREIGN_KEY":
+                     constraint_info["reference_table"] = getattr(constraint_func, "reference_table_name", None)
+                     constraint_info["reference_column"] = getattr(constraint_func, "reference_column", None)
+                 serializable_constraints[column].append(constraint_info)
+         return serializable_constraints
+
+    def _serialize_full_table(self, table):
         """
-        Serialize a table to a dictionary.
+        Serialize a table (including metadata) to a dictionary.
         """
+        if not table: return None
         return {
             "name": table.name,
             "columns": table.columns,
-            "records": [{
-                "id": record.id,
-                "type": record._type(),
-                "data": record.to_dict() if isinstance(record, ImageRecord) else {k: (v.decode() if isinstance(v, bytes) else v) for k, v in record.data.items()},
-                "index": record.index.to_dict(),
-            } for record in table.records],
+            "records": self._serialize_records(table.records), # Use helper
             "next_id": table.next_id,
-            "constraints": {
-                column: [
-                    {
-                        "name": constraint.__name__,
-                        "reference_table": getattr(constraint, "reference_table", None),
-                        "reference_column": getattr(constraint, "reference_column", None)
-                    } for constraint in constraints
-                ] for column, constraints in table.constraints.items()
-            },
+            "constraints": self._serialize_constraints(table.constraints), # Use helper
         }
     
     # Connection and Session Management

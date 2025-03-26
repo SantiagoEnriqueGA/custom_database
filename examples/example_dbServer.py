@@ -8,9 +8,9 @@ from segadb import *
 import time
 
 # Create a new database
-db = Database.load_sample_database(n_users=10, n_orders=10, n_products=100, 
-                                   n_reviews=20, n_categories=3, n_suppliers=3,
-                                   db_logging=True, table_logging=False)
+db = Database.load_sample_database(n_users=10, n_orders=10_000, n_products=100, 
+                                   n_reviews=200, n_categories=10, n_suppliers=10,
+                                   db_logging=False, table_logging=False)
 
 host = '127.0.0.1'
 port = 65432
