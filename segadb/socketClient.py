@@ -1,5 +1,6 @@
 import socket
 import json
+import time
 
 class SocketClient:
     """
@@ -51,12 +52,16 @@ class SocketClient:
     # --- Server Control ---
     def ping(self):
         """
-        Ping the server to check if it is running.
+        Ping the server to check if it is running and measure response time.
         """
         command = {
             "action": "ping"
         }
-        return self.send_command(command)
+        start_time = time.time()
+        response = self.send_command(command)
+        end_time = time.time()
+        response["response_time"] = end_time - start_time
+        return response
     
     def stop(self):
         """
