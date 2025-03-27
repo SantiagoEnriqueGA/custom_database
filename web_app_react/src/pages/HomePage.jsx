@@ -8,7 +8,7 @@ function HomePage() {
 
   return (
     <div>
-      <h1>Welcome to SegaDB Admin</h1>
+      <h1>SegaDB Contol Pannel</h1>
       {isAuthenticated ? (
         <p>You are logged in{username ? ` as ${username}` : ''}.</p>
         // Add links or information relevant to the home page

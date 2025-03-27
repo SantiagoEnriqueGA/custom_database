@@ -14,7 +14,7 @@ function Navbar() {
 
     return (
         <nav className="navbar">
-            <Link to="/" className="navbar-brand">SegaDB Admin</Link>
+            <Link to="/" className="navbar-brand">SegaDB Home</Link>
             <ul className="navbar-nav">
                 {isAuthenticated ? (
                     <>
