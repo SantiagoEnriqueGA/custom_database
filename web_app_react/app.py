@@ -58,12 +58,21 @@ def login_required(f):
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_react_app(path):
-    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
+    # Handle API routes separately
+    if path.startswith('api/'):
+        log.warning(f"Attempted to serve API path as static file: {path}")
+        # Find the correct API handler or return 404 if none match
+        # This block might not be strictly necessary if API routes are defined before this catch-all
+        return jsonify({"status": "error", "message": "API endpoint not found through static serving."}), 404
+
+    # Serve static files if they exist
+    static_file_path = os.path.join(app.static_folder, path)
+    if path != "" and os.path.exists(static_file_path):
         log.info(f"Serving static file: {path}")
         return send_from_directory(app.static_folder, path)
     else:
-        log.info("Serving React app index.html")
-        # Check if index.html exists in the static folder
+        # Serve index.html for SPA routing fallback
+        log.info(f"Serving React app index.html for path: {path}")
         index_path = os.path.join(app.static_folder, 'index.html')
         if not os.path.exists(index_path):
             log.error(f"React build not found at {app.static_folder}/index.html. Run 'npm run build' in web_app_react.")
@@ -118,6 +127,7 @@ def logout():
             log.warning("Could not connect to DB to perform server-side logout.")
     return jsonify({'status': 'success', 'message': 'Logged out successfully'})
 
+# --- Table Endpoints ---
 @app.route('/api/tables', methods=['GET'])
 @login_required
 def list_tables():
@@ -250,6 +260,57 @@ def query_table(table_name):
 
     response = client.query_table(table_name, filter_condition)
     return jsonify(response)
+
+# --- View Endpoints --- START NEW ---
+@app.route('/api/views', methods=['GET'])
+@login_required
+def list_views():
+    client = get_socket_client()
+    if not client: return jsonify({'status': 'error', 'message': 'Database connection error'}), 500
+
+    response = client.list_views()
+    if response.get('status') != 'success':
+        response['data'] = []
+    return jsonify(response)
+
+@app.route('/api/views/<string:view_name>/query', methods=['POST']) # POST for consistency, though GET might work
+@login_required
+def query_view(view_name):
+    client = get_socket_client()
+    if not client: return jsonify({'status': 'error', 'message': 'Database connection error'}), 500
+
+    if not view_name:
+        return jsonify({'status': 'error', 'message': 'View name required'}), 400
+
+    # Views likely don't support arbitrary filters in the current backend implementation
+    response = client.query_view(view_name)
+    return jsonify(response)
+
+# --- Materialized View Endpoints ---
+@app.route('/api/materialized_views', methods=['GET'])
+@login_required
+def list_materialized_views():
+    client = get_socket_client()
+    if not client: return jsonify({'status': 'error', 'message': 'Database connection error'}), 500
+
+    response = client.list_materialized_views()
+    if response.get('status') != 'success':
+        response['data'] = []
+    return jsonify(response)
+
+@app.route('/api/materialized_views/<string:view_name>/query', methods=['POST']) # POST for consistency
+@login_required
+def query_materialized_view(view_name):
+    client = get_socket_client()
+    if not client: return jsonify({'status': 'error', 'message': 'Database connection error'}), 500
+
+    if not view_name:
+        return jsonify({'status': 'error', 'message': 'Materialized view name required'}), 400
+
+    # Materialized views likely don't support arbitrary filters either
+    response = client.query_materialized_view(view_name)
+    return jsonify(response)
+# --- View Endpoints --- END NEW ---
 
 
 @app.route('/api/procedures', methods=['POST'])

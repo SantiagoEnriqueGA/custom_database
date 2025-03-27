@@ -21,7 +21,7 @@ function Navbar() {
                         <li><Link to="/tables">Tables</Link></li>
                         <li><Link to="/create-table">Create Table</Link></li>
                         <li><Link to="/insert-record">Insert Record</Link></li>
-                        <li><Link to="/query-table">Query Table</Link></li>
+                        <li><Link to="/query-builder">Query Builder</Link></li>
                         <li><Link to="/create-procedure">Create Procedure</Link></li>
                         <li><Link to="/db-info">DB Info</Link></li>
                         <li><button onClick={handleLogout} className="logout-button">Logout</button></li>

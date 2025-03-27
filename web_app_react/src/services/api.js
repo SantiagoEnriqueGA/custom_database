@@ -1,3 +1,4 @@
+// src/services/api.js
 import axios from 'axios';
 
 // Use environment variable or hardcode for development
@@ -18,6 +19,18 @@ export const listTables = () => apiClient.get('/tables');
 export const createTable = (tableName, columns) => apiClient.post('/tables', { table_name: tableName, columns: columns });
 export const dropTable = (tableName) => apiClient.delete(`/tables/${tableName}`);
 export const queryTable = (tableName, filter) => apiClient.post(`/tables/${tableName}/query`, { filter }); // Be cautious with filter!
+
+// --- Views --- START NEW ---
+export const listViews = () => apiClient.get('/views');
+export const queryView = (viewName) => apiClient.post(`/views/${viewName}/query`);
+// Add create/drop view functions if needed later
+// --- Views --- END NEW ---
+
+// --- Materialized Views --- START NEW ---
+export const listMaterializedViews = () => apiClient.get('/materialized_views');
+export const queryMaterializedView = (viewName) => apiClient.post(`/materialized_views/${viewName}/query`);
+// Add create/drop/refresh materialized view functions if needed later
+// --- Materialized Views --- END NEW ---
 
 // --- Records ---
 export const insertRecord = (tableName, record) => apiClient.post(`/tables/${tableName}/records`, { record });
@@ -42,11 +55,11 @@ apiClient.interceptors.response.use(
         // Potentially redirect to login if 401 Unauthorized
         if (error.response?.status === 401) {
             // Maybe trigger a global logout action here
-            console.warn("Unauthorized request. Redirecting or handling logout.");
+            console.warn("Unauthorized request. Consider redirecting to login.");
             // Example: window.location.href = '/login'; (Hard redirect)
             // Or better: use context/state management to update auth status
         }
-        return Promise.reject(error);
+        return Promise.reject(error); // Important: reject the promise so components can catch it
     }
 );
 

@@ -8,11 +8,11 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import TablesPage from './pages/TablesPage';
 import CreateTablePage from './pages/CreateTablePage';
-import QueryTablePage from './pages/QueryTablePage';       // <-- Import
-import InsertRecordPage from './pages/InsertRecordPage';     // <-- Import
-import CreateProcedurePage from './pages/CreateProcedurePage'; // <-- Import
-import DbInfoPage from './pages/DbInfoPage';             // <-- Import
-import NotFoundPage from './pages/NotFoundPage';           // <-- Import (Optional)
+import QueryBuilderPage from './pages/QueryBuilderPage';
+import InsertRecordPage from './pages/InsertRecordPage';
+import CreateProcedurePage from './pages/CreateProcedurePage';
+import DbInfoPage from './pages/DbInfoPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
   return (
@@ -28,17 +28,14 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/tables" element={<TablesPage />} />
             <Route path="/create-table" element={<CreateTablePage />} />
-            {/* Add routes for other pages */}
-            <Route path="/query-table" element={<QueryTablePage />} />       {/* <-- Add Route */}
-            {/* Specific table query? Maybe later: <Route path="/tables/:tableName/query" element={<QueryTablePage />} /> */}
-            <Route path="/insert-record" element={<InsertRecordPage />} />     {/* <-- Add Route */}
-            {/* Specific table insert? Maybe later: <Route path="/tables/:tableName/insert" element={<InsertRecordPage />} /> */}
-            <Route path="/create-procedure" element={<CreateProcedurePage />} />{/* <-- Add Route */}
-            <Route path="/db-info" element={<DbInfoPage />} />             {/* <-- Add Route */}
+            <Route path="/query-builder" element={<QueryBuilderPage />} />
+            <Route path="/insert-record" element={<InsertRecordPage />} />
+            <Route path="/create-procedure" element={<CreateProcedurePage />} />
+            <Route path="/db-info" element={<DbInfoPage />} />
           </Route>
 
           {/* Catch All Not Found Route */}
-          <Route path="*" element={<NotFoundPage />} /> {/* <-- Add Route (Optional) */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
     </div>
