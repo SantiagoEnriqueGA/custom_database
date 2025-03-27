@@ -18,8 +18,8 @@ function Navbar() {
             <ul className="navbar-nav">
                 {isAuthenticated ? (
                     <>
-                        <li><Link to="/tables">Tables</Link></li>
                         <li><Link to="/database-objects">Database Objects</Link></li> 
+                        <li><Link to="/create-table">Create Table</Link></li>
                         <li><Link to="/insert-record">Insert Record</Link></li>
                         <li><Link to="/query-builder">Query Builder</Link></li>
                         <li><Link to="/create-procedure">Create Procedure</Link></li>

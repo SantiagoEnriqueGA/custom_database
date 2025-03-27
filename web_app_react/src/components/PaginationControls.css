@@ -1,0 +1,127 @@
+/* src/components/PaginationControls.css */
+
+.pagination-controls {
+    display: flex;
+    justify-content: space-between; /* Align info left, buttons right */
+    align-items: center;
+    padding: 15px 5px; /* Add some padding */
+    margin-top: 15px; /* Space above the controls */
+    border-top: 1px solid #444; /* Separator line */
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    gap: 15px; /* Increased gap for better spacing when wrapped */
+}
+
+/* Style for disabled state */
+.pagination-controls.disabled {
+    opacity: 0.6;
+    pointer-events: none; /* Prevent interactions */
+}
+
+
+/* Rows per Page Selector */
+.pagination-rows-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.pagination-rows-selector label {
+    font-size: 0.9em;
+    color: #ccc;
+    white-space: nowrap;
+}
+.pagination-rows-selector select {
+    padding: 4px 8px;
+    font-size: 0.9em;
+    border-radius: 4px;
+    background-color: #333;
+    color: #eee;
+    border: 1px solid #555;
+    cursor: pointer;
+}
+.pagination-rows-selector select:focus {
+    outline: 1px solid #646cff;
+    border-color: #646cff;
+}
+
+
+/* Info Text */
+.pagination-info {
+    font-size: 0.9em;
+    color: #ccc;
+    text-align: center; /* Center info text if it wraps alone */
+    flex-grow: 1; /* Allow info to take available space */
+    min-width: 150px; /* Ensure some space for info */
+}
+
+/* Buttons Container */
+.pagination-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between buttons and page indicator */
+    justify-content: flex-end; /* Keep buttons grouped to the right */
+}
+
+.pagination-page-indicator {
+    font-size: 0.9em;
+    color: #ccc;
+    margin: 0 5px; /* Add horizontal margin */
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+/* General Button Style */
+.pagination-button {
+    padding: 5px 10px; /* Adjusted padding */
+    font-size: 0.9em;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #3a3a3a;
+    border: 1px solid #555;
+    color: #eee;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+.pagination-button:hover:not(:disabled) {
+    background-color: #4a4a4a;
+    border-color: #666;
+}
+
+.pagination-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Specific styles for first/last buttons */
+.pagination-button.edge {
+    padding: 5px 8px; /* Slightly less horizontal padding */
+    font-weight: bold;
+}
+
+/* Ensure button text is readable */
+.pagination-button.prev,
+.pagination-button.next {
+    min-width: 70px; /* Give prev/next buttons some minimum width */
+    text-align: center;
+}
+
+/* Media query for smaller screens if needed */
+@media (max-width: 600px) {
+    .pagination-controls {
+        flex-direction: column; /* Stack elements vertically */
+        align-items: center; /* Center items when stacked */
+        gap: 10px;
+    }
+    .pagination-buttons {
+        justify-content: center; /* Center buttons when stacked */
+        width: 100%; /* Allow buttons to take full width if needed */
+    }
+    .pagination-info {
+         order: -1; /* Move info text above buttons on small screens */
+         text-align: center;
+         width: 100%;
+    }
+    .pagination-rows-selector {
+        justify-content: center; /* Center rows selector */
+        width: 100%;
+    }
+}
