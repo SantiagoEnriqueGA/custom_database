@@ -49,14 +49,19 @@ function InsertRecordPage() {
     }
 
     let parsedRecord;
+    console.log("Raw recordData from textarea:", recordData); 
+
     try {
       parsedRecord = JSON.parse(recordData);
+      console.log("Parsed record:", parsedRecord); // <<< ADD THIS LINE
       if (typeof parsedRecord !== 'object' || parsedRecord === null) {
+        // This check might be redundant if JSON.parse throws for non-objects, but safe to keep
         throw new Error('Input must be a valid JSON object.');
       }
     } catch (jsonError) {
+      console.error("JSON parsing failed:", jsonError); 
       setError(`Invalid JSON data: ${jsonError.message}`);
-      return;
+      return; // Error handled
     }
 
     setLoadingInsert(true);
