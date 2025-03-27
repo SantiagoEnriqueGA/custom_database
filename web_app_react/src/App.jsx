@@ -6,7 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 // Import Pages
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
-import TablesPage from './pages/TablesPage';
+import DatabaseObjects from './pages/DatabaseObjects';
 import CreateTablePage from './pages/CreateTablePage';
 import QueryBuilderPage from './pages/QueryBuilderPage';
 import InsertRecordPage from './pages/InsertRecordPage';
@@ -26,7 +26,7 @@ function App() {
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<HomePage />} />
-            <Route path="/tables" element={<TablesPage />} />
+            <Route path="/database-objects" element={<DatabaseObjects />} />
             <Route path="/create-table" element={<CreateTablePage />} />
             <Route path="/query-builder" element={<QueryBuilderPage />} />
             <Route path="/insert-record" element={<InsertRecordPage />} />
