@@ -97,4 +97,4 @@ function CreateTablePage() {
   );
 }
 
-export default CreateTablePage;s
+export default CreateTablePage;
