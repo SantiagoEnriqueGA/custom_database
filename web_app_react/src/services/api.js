@@ -22,8 +22,8 @@ export const queryTable = (tableName, filter) => apiClient.post(`/tables/${table
 // --- Records ---
 export const insertRecord = (tableName, record) => apiClient.post(`/tables/${tableName}/records`, { record });
 // Add updateRecord, deleteRecord similarly...
-// export const updateRecord = (tableName, recordId, updates) => apiClient.put(...)
-// export const deleteRecord = (tableName, recordId) => apiClient.delete(...)
+export const updateRecord = (tableName, recordId, updates) => apiClient.put(`/tables/${tableName}/records/${recordId}`, { updates });
+export const deleteRecord = (tableName, recordId) => apiClient.delete(`/tables/${tableName}/records/${recordId}`);
 
 
 // --- Procedures ---

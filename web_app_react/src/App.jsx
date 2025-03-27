@@ -3,16 +3,16 @@ import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Import Pages
+// Import Pages - Make sure these files exist in src/pages/
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import TablesPage from './pages/TablesPage';
 import CreateTablePage from './pages/CreateTablePage';
-import QueryTablePage from './pages/QueryTablePage';
-import InsertRecordPage from './pages/InsertRecordPage';
-import CreateProcedurePage from './pages/CreateProcedurePage';
-import DbInfoPage from './pages/DbInfoPage';
-import NotFoundPage from './pages/NotFoundPage'; // Create this
+// import QueryTablePage from './pages/QueryTablePage';
+// import InsertRecordPage from './pages/InsertRecordPage';
+// import CreateProcedurePage from './pages/CreateProcedurePage';
+// import DbInfoPage from './pages/DbInfoPage';
+// import NotFoundPage from './pages/NotFoundPage'; // Example: Create a simple 404 page
 
 function App() {
   return (
@@ -27,18 +27,18 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/tables" element={<TablesPage />} />
-            <Route path="/create-table" element={<CreateTablePage />} />
-            <Route path="/query-table" element={<QueryTablePage />} />
-             {/* Dynamic route for specific table query/insert */}
+            <Route path="/create-table" element={<CreateTablePage />} /> {/* Ensure this page exists */}
+            {/* Add routes for other pages as you create them */}
+            {/* <Route path="/query-table" element={<QueryTablePage />} />
             <Route path="/tables/:tableName/query" element={<QueryTablePage />} />
             <Route path="/tables/:tableName/insert" element={<InsertRecordPage />} />
-            <Route path="/insert-record" element={<InsertRecordPage />} /> {/* Generic insert */}
+            <Route path="/insert-record" element={<InsertRecordPage />} />
             <Route path="/create-procedure" element={<CreateProcedurePage />} />
-            <Route path="/db-info" element={<DbInfoPage />} />
+            <Route path="/db-info" element={<DbInfoPage />} /> */}
           </Route>
 
           {/* Catch All Not Found Route */}
-          <Route path="*" element={<NotFoundPage />} />
+          {/* <Route path="*" element={<NotFoundPage />} /> */}
         </Routes>
       </main>
     </div>
