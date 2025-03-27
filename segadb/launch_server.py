@@ -5,14 +5,26 @@
 
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 import argparse
 import time
-from segadb import Storage
+import signal
+
+try:
+    # Adjust import relative to where run_all.py is (project root)
+    from segadb import Storage
+except ImportError:
+    # Fallback if run standalone - requires parent dir in PYTHONPATH or adjusted sys.path
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+    from segadb import Storage
+
+
+DB_PREFIX = "[DB Server]" # Define prefix for this script's messages
+db_instance = None # Global to hold instance for shutdown handler
 
 def main():
-    parser = argparse.ArgumentParser(description="Launch a server from a .segadb file.")
+    global db_instance # Allow modification of global instance
+
+    parser = argparse.ArgumentParser(description="Launch a SegaDB server.")
     parser.add_argument("file", help="Path to the .segadb file.")
     parser.add_argument("--user", help="Username for authentication.", default=None)
     parser.add_argument("--password", help="Password for authentication.", default=None)
@@ -33,8 +45,6 @@ def main():
 
     # Start the socket server
     db.start_socket_server(host=args.host, port=args.port)
-
-    print(f"Server started on {args.host}:{args.port}. Press Ctrl+C to stop.")
 
     # Keep the server running
     try:

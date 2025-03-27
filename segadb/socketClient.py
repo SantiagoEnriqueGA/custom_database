@@ -46,7 +46,7 @@ class SocketClient:
                 print(f"Raw response: {response.decode('utf-8')}")
                 return {"status": "error", "message": "Invalid JSON response"}
             except Exception as e:
-                print(f"Socket error: {e}")
+                # print(f"Socket error: {e}")
                 return {"status": "error", "message": str(e)}   
     
     # --- Server Control ---

@@ -363,9 +363,79 @@ def db_info():
 
 
 if __name__ == '__main__':
-    # Make sure the DB server (launch_server.py?) is running first
+    import argparse
+    import os
+    import sys
+    import logging
+
+    # Configure logging if running standalone
+    # If you have logging setup elsewhere at the top level, this might be redundant,
+    # but it ensures logging works when app.py is the entry point.
+    logging.basicConfig(level=logging.INFO)
+    log = logging.getLogger(__name__)
+
+    # Ensure the parent directory ('custom_database-1') is in the Python path
+    # so 'segadb' can be imported, if necessary for standalone runs.
+    # This is already done at the top, but double-checking doesn't hurt.
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+    # --- Argument Parsing ---
+    parser = argparse.ArgumentParser(description="Run the SegaDB Web App Flask Server.")
+
+    # Default host: Environment variable FLASK_RUN_HOST or '0.0.0.0'
+    default_host = os.environ.get('FLASK_RUN_HOST', '0.0.0.0')
+    parser.add_argument(
+        "--host",
+        default=default_host,
+        help=f"Host interface to bind to (default: {default_host} or FLASK_RUN_HOST env var)"
+    )
+
+    # Default port: Environment variable FLASK_RUN_PORT or 5000
+    default_port_str = os.environ.get('FLASK_RUN_PORT', '5000')
+    try:
+        default_port = int(default_port_str)
+    except ValueError:
+        log.warning(f"Invalid FLASK_RUN_PORT value '{default_port_str}', using 5000.")
+        default_port = 5000
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=default_port,
+        help=f"Port to listen on (default: {default_port} or FLASK_RUN_PORT env var)"
+    )
+
+    # Debug flag: Checks for --debug flag OR FLASK_DEBUG env var ('true' or '1')
+    default_debug = os.environ.get('FLASK_DEBUG', 'false').lower() in ('true', '1')
+    parser.add_argument(
+        "--debug",
+        action='store_true',
+        default=default_debug, # Default is set based on env var
+        help="Run Flask in debug mode (enables auto-reload). Overrides FLASK_DEBUG env var if specified."
+    )
+
+    args = parser.parse_args()
+
+    # Determine the final debug status. The CLI flag (--debug) takes precedence.
+    # If --debug is passed, args.debug becomes True. If not, it uses the default (from env var).
+    use_debug = args.debug
+
+    # --- Start Server ---
     log.info("Starting Flask API server for SegaDB.")
-    log.info("Ensure the SegaDB socket server (launch_server.py?) is running.")
+    # log.info("Ensure the SegaDB socket server (launch_server.py?) is running.") # run_all.py handles this
     log.info(f"React frontend expected in: {os.path.abspath(app.static_folder)}")
+    log.info(f"Flask server running on http://{args.host}:{args.port} (Debug: {use_debug})")
+
     # Use waitress or gunicorn for production instead of app.run
-    app.run(debug=True, port=5000, host='0.0.0.0') # Listen on all interfaces
+    # For development/testing via run_all.py:
+    try:
+        # Note: debug=True enables Werkzeug's reloader, which can sometimes
+        # complicate clean termination via signals from the parent process.
+        # If you have shutdown issues, you might need to run with use_reloader=False
+        # app.run(host=args.host, port=args.port, debug=use_debug, use_reloader=use_debug)
+        app.run(host=args.host, port=args.port, debug=use_debug)
+    except KeyboardInterrupt:
+        log.info("Flask server received KeyboardInterrupt. Shutting down.")
+    except Exception as e:
+        log.error(f"Flask server encountered an error: {e}", exc_info=True)
+    finally:
+        log.info("Flask server process finished.")
