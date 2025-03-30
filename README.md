@@ -7,28 +7,31 @@ In order to achieve this, the project is divided into several modules that handl
 
 The project also includes example scripts that demonstrate how to use the library for various tasks, such as creating tables, adding constraints, inserting data, performing queries, and managing views. The examples cover a wide range of functionalities, from basic operations to more advanced features like encryption, indexing, and partial database loading.
 
-The library is designed to be extensible and customizable, allowing users to define their own record types, constraints, and indexing strategies. 
+The library is designed to be extensible and customizable, allowing users to define their own record types, constraints, and indexing strategies.
 While the library is not intended to be a full-fledged database management system, it provides a solid foundation for understanding the core concepts of database systems and building more complex systems on top of it. While work has been done to optimize the library for performance, it is still a work in progress and may not be suitable for production use.
 
 Since the project is educational, learning and understanding how databases work, third-party libraries are used sparingly. However, the project does use the following third-party libraries:
 - `bcrypt`: Used for hashing and verifying passwords for user authentication.
 - `cryptography`: Used for encrypting and decrypting data with our custom Fernet implementation.
 - `tabulate`: Used for formatting tables in the console output. (Will be removed in the future)
-- `PIL`: Used for working with images in the ImageRecord class.
-- `tdqm`: Used for progress bars in the large data processing.
+- `PIL` (Pillow): Used for working with images in the ImageRecord class.
+- `tqdm`: Used for progress bars in large data processing.
 - `faker`: Used for generating fake data for testing purposes.
+- `Flask`: Used as the web framework for the React Web App's backend API.
+- `Flask-CORS`: Used to handle Cross-Origin Resource Sharing for the Flask API.
 
 The database library provides the following interfaces:
-1. **Python API**: Directly use the library's Python modules for database operations.  
-2. **Socket API**: Launch a database server from a `.segadb` file and interact with it using a socket client.
-3. **Curses Interface**: Navigate through the database in the console with the DB Navigator. (Read-only)
-4. **Web GUI**: A simple web interface for interacting with the database. **(Future)**
+1.  **Python API**: Directly use the library's Python modules (`segadb.*`) for database operations.
+2.  **Socket API**: Launch a database server from a `.segadb` file (`segadb/launch_server.py`) and interact with it using a socket client (`segadb/socketClient.py`).
+3.  **Curses Interface**: Navigate through the database in the console with the DB Navigator (`segadb/db_navigator.py`). (Read-only)
+4.  **Web GUI (React + Flask)**: A web interface built with React (frontend) and Flask (backend API) for interacting with the database via the Socket API. See [`web_app_react/`](web_app_react/).
 
 ## Table of Contents
 <!-- Add Links to Other Sections Here! -->
 - [Features](#features)
 - [Installation](#installation)
-- [Usage Example](#usage-examples)
+- [Usage Examples](#usage-examples)
+- [Web Application](#web-application)
 - [Scripts](#scripts)
 - [Documentation](#documentation)
 - [Tests](#tests)
@@ -41,88 +44,81 @@ The database library provides the following interfaces:
 - **Table Operations**: Insert, update, delete, and select records in a table. See [`Table`](segadb/table.py).
 - **Transaction Handling**: Support for transactions with commit and rollback functionality. See [`Transaction`](segadb/transaction.py).
 - **Indexing**: Create and manage indexes for efficient data retrieval. See [`Index`](segadb/index.py).
-- **Storage**: Save and load the database to and from a file. Create and restore from backups. See [`Storage`](segadb/storage.py).
+- **Storage**: Save and load the database to and from a file (`.segadb`). Create and restore from backups. See [`Storage`](segadb/storage.py).
 - **Record Management**: Manage individual records with unique IDs and data. See [`Record`](segadb/record.py).
-  - Support for vector records
-    - `magnitude()`: Calculates the magnitude of the vector.
-    - `normalize()`: Normalizes the vector.
-    - `dot_product(other_vector)`: Calculates the dot product with another vector.
-  - Time series records 
-    - `moving_average(window_size)`: Calculates the moving average of the time series.
-  - Image records
-    - `image_data`: Returns the image data.
-    - `image_path`: Returns the file path to the image.
-    - `image_size`: Returns the size of the image in bytes.
-    - `get_image()`: Converts the image data to a PIL Image object.
-  - Text records
-    - `word_count()`: Counts the number of words in the text.
-    - `to_uppercase()`: Converts the text to uppercase.
-    - `to_lowercase()`: Converts the text to lowercase.
-  - Encrypted records
-    - `decrypt()`: Decrypts the encrypted data using a custom Fernet implementation.
+    - Support for **Vector Records**: `magnitude()`, `normalize()`, `dot_product()`.
+    - Support for **Time Series Records**: `moving_average()`.
+    - Support for **Image Records**: `image_data`, `image_path`, `image_size`, `get_image()`, `resize()`, base64 handling.
+    - Support for **Text Records**: `word_count()`, `to_uppercase()`, `to_lowercase()`.
+    - Support for **Encrypted Records**: `decrypt()`.
 - **User Management and Authorization**: Manage users, their roles, and permissions. See [`User`, `UserManager`, and `Authorization`](segadb/users.py).
 - **View and Materialized View Management**: Create, retrieve, refresh, and delete views and materialized views. See [`View` and `MaterializedView`](segadb/views.py).
-- **Stored Procedures and Triggers**: Create and use stored procedures and triggers.
-- **Constraints**: Add and enforce constraints on table columns.
-- **Logging**: Logging for Database and Table level operations.
+- **Stored Procedures and Triggers**: Create and use stored procedures and triggers. See [`Database`](segadb/database.py) methods.
+- **Constraints**: Add and enforce constraints (UNIQUE, FOREIGN KEY, custom lambda) on table columns. See [`Table`](segadb/table.py) `add_constraint`.
+- **Logging**: Configurable logging for Database and Table level operations.
 - **Cryptographic Support**: Encrypt and decrypt data using a custom Fernet implementation. See [`CustomFernet`](segadb/crypto.py).
-- **Database Navigator**: View the contents of the database in the console with curses. See [`DB Navigator`](segadb/db_navigator.py).
-- **Server and Client Communication**: 
-  - Launch a database server from a `.segadb` file. See [`launch_server.py`](segadb/launch_server.py).
-  - Interact with the server using a socket client. See [`socketClient.py`](segadb/socketClient.py).
-
+- **Database Navigator (Curses)**: View the contents of the database in the console. See [`DB Navigator`](segadb/db_navigator.py).
+- **Server and Client Communication**:
+    - Launch a database server from a `.segadb` file. See [`launch_server.py`](segadb/launch_server.py).
+    - Interact with the server using a socket client. See [`socketClient.py`](segadb/socketClient.py).
+- **Web GUI (React + Flask)**: A modern web interface to interact with the database server. See [`web_app_react/`](web_app_react/).
 
 ## Installation
 
 To set up the project environment, you can use the provided `environment.yml` file to create a conda environment with all the necessary dependencies.
 
-1. Open a terminal or command prompt.
-2. Navigate to the directory where your repository is located.
-3. Run the following command to create the conda environment: `conda env create -f environment.yml`  
-4. Activate the newly created environment: `conda activate segadb_env`
-
+1.  Open a terminal or command prompt.
+2.  Navigate to the directory where your repository is located.
+3.  Run the following command to create the conda environment: `conda env create -f environment.yml`
+4.  Activate the newly created environment: `conda activate segadb_env`
+5.  **For the React Web App:** Navigate to the `web_app_react/` directory and run `npm install` to install Node.js dependencies.
 
 ## Usage Examples
 
 ### Sample Database and Navigation
-- [example_sampleDB.py](examples/example_sampleDB.py): Demonstrates how to create a sample database and navigate through it using the DB Navigator.
-- [example_dbNavigator.py](examples/example_dbNavigator.py): Demonstrates how to navigate through a database using the DB Navigator.
+- [`example_sampleDB.py`](examples/example_sampleDB.py): Demonstrates how to create a sample database and navigate through it using the DB Navigator.
+- [`example_dbNavigator.py`](examples/example_dbNavigator.py): Demonstrates how to navigate through a database using the DB Navigator.
 
 ### Backup and Recovery
-- [example_backupRecovery.py](examples/example_backupRecovery.py): Demonstrates how to create and restore backups.
+- [`example_backupRecovery.py`](examples/example_backupRecovery.py): Demonstrates how to create and restore backups.
 
 ### Record Management
-- [example_change_ids.py](examples/example_change_ids.py): Demonstrates how to change record IDs, difference between IDs and Index.
-- [example_recordTypes.py](examples/example_recordTypes.py): Demonstrates how to use different record types (VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord).
+- [`example_change_ids.py`](examples/example_change_ids.py): Demonstrates how to change record IDs, difference between IDs and Index.
+- [`example_recordTypes.py`](examples/example_recordTypes.py): Demonstrates how to use different record types (VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord, EncryptedRecord).
 
 ### Constraints and Keys
-- [example_constraints.py](examples/example_constraints.py): Demonstrates how to add and enforce constraints on table columns.
-- [example_foreignKeys.py](examples/example_foreignKeys.py): Demonstrates how to use foreign key constraints.
+- [`example_constraints.py`](examples/example_constraints.py): Demonstrates how to add and enforce constraints on table columns.
+- [`example_foreignKeys.py`](examples/example_foreignKeys.py): Demonstrates how to use foreign key constraints.
 
 ### Data Operations
-- [example_databaseDetails.py](examples/example_databaseDetails.py): Demonstrates how to create tables and manage records.
-- [example_dataExport.py](examples/example_dataExport.py): Demonstrates how to export data to different formats: CSV, JSON, SQLite.
-- [example_dataImports.py](examples/example_dataImports.py): Demonstrates how to import data from a CSV file.
-- [example_queries.py](examples/example_queries.py): Demonstrates how to create tables, add constraints, insert data, perform joins, aggregations, and filtering operations.
-- [example_stored_procs.py'](examples/example_stored_procs.py): Demonstrates how to create and use stored procedures and triggers.
+- [`example_databaseDetails.py`](examples/example_databaseDetails.py): Demonstrates how to create tables and manage records.
+- [`example_dataExport.py`](examples/example_dataExport.py): Demonstrates how to export data to different formats: CSV, JSON, SQLite.
+- [`example_dataImports.py`](examples/example_dataImports.py): Demonstrates how to import data from a CSV file.
+- [`example_queries.py`](examples/example_queries.py): Demonstrates how to create tables, add constraints, insert data, perform joins, aggregations, and filtering operations.
+- [`example_stored_procs.py`](examples/example_stored_procs.py): Demonstrates how to create and use stored procedures and triggers.
 
 ### Performance
-- [example_millionRowLoad.py](examples/example_millionRowLoad.py): Demonstrates how to load a table with a million rows using multiprocessing.
-- [example_partialDB.py](examples/example_partialDB.py): Demonstrates how to load only the necessary tables from a database file into memory.
+- [`example_millionRowLoad.py`](examples/example_millionRowLoad.py): Demonstrates how to load a table with a million rows using multiprocessing.
+- [`example_parallel_insert.py`](examples/example_parallel_insert.py): Demonstrates parallel record insertion into a table.
+- [`example_partialDB.py`](examples/example_partialDB.py): Demonstrates how to load only the necessary tables from a database file into memory.
 
 ### Storage
-- [example_storage.py](examples/example_storage.py): Demonstrates how to save and load the database, and check constraints.
-- [example_storageCompression.py](examples/example_storageCompression.py): Demonstrates how to save and load the database with compression.
-- [example_storageCompressionLarge.py](examples/example_storageCompressionLarge.py): Demonstrates how to save and load a large database with compression, using multiprocessing.
+- [`example_storage.py`](examples/example_storage.py): Demonstrates how to save and load the database, and check constraints.
+- [`example_storageCompression.py`](examples/example_storageCompression.py): Demonstrates how to save and load the database with compression.
+- [`example_storageCompressionLarge.py`](examples/example_storageCompressionLarge.py): Demonstrates how to save and load a large database with compression, using multiprocessing.
 
 ### Transactions
-- [example_transactions.py](examples/example_transactions.py): Demonstrates how to use transactions for commit and rollback operations.
+- [`example_transactions.py`](examples/example_transactions.py): Demonstrates how to use transactions for commit and rollback operations.
 
 ### User Management
-- [example_UsersAuth.py](examples/example_UsersAuth.py): Demonstrates user authentication and authorization.
+- [`example_UsersAuth.py`](examples/example_UsersAuth.py): Demonstrates user authentication and authorization.
 
 ### View Management
-- [example_views.py](examples/example_views.py): Demonstrates how to create, retrieve, refresh, and delete views and materialized views.
+- [`example_views.py`](examples/example_views.py): Demonstrates how to create, retrieve, refresh, and delete views and materialized views.
+
+### Server/Client
+- [`example_dbServer.py`](examples/example_dbServer.py): Example of starting the database server.
+- [`example_dbServerClient.py`](examples/example_dbServerClient.py): Example of interacting with the database server using the socket client.
 
 ---
 #### Here is a simple example of creating a segadb Database and a table with constraints.
@@ -185,35 +181,71 @@ Record ID: 2, Data: {'name': 'Jane Doe', 'email': 'jane@example.com'}
 Record ID: 3, Data: {'name': 'James Doe', 'email': 'james@example.com'}
 ```
 
+## Web Application
+
+This project includes a web-based graphical user interface (GUI) built with **React** for the frontend and **Flask** for the backend API. This allows users to interact with the SEGADB database through a web browser.
+
+-   **Location:** [`web_app_react/`](web_app_react/)
+-   **Backend:** The Flask application (`web_app_react/app.py`) serves the React frontend and provides API endpoints (`/api/*`) that communicate with the SEGADB database server using the `SocketClient`.
+-   **Frontend:** The React application (`web_app_react/src/`) provides the user interface components for logging in, viewing database objects (tables, views, materialized views), creating tables, inserting records, running queries, creating stored procedures (with caution!), and viewing database info.
+
+### Running the Web Application
+
+The easiest way to run both the database server and the web application is using the provided `start_servers.py` script:
+
+1.  Ensure you have activated the `segadb_env` conda environment.
+2.  Ensure you have installed Node.js dependencies (`npm install` in `web_app_react/`).
+3.  Build the React app: Navigate to `web_app_react/` and run `npm run build`.
+4.  Run the script from the project root:
+    ```bash
+    python start_servers.py <path_to_your_database.segadb>
+    ```
+    *(Replace `<path_to_your_database.segadb>` with the actual path to your database file, e.g., `example_storage/SampleDB.segadb`)*
+
+This script will launch:
+*   The SEGADB socket server using `segadb/launch_server.py`.
+*   The Flask API server using `web_app_react/app.py`.
+
+You can then access the web interface, typically at `http://localhost:5000` (check the output of `start_servers.py` for the exact URL).
+
 ## Scripts
 The following PowerShell scripts are included in the `scripts/` folder to help with various tasks:
 
-- **_run_all_scripts.ps1**: Runs all PowerShell scripts in the `scripts/` folder sequentially.
-- **todo_comments.ps1**: Finds and lists all TODO comments in Python files.
-- **count_lines.ps1**: Counts the number of lines in each Python file, sorts the files by line count in descending order, and calculates the total number of lines.
-- **comment_density.ps1**: Calculates the comment density (percentage of lines that are comments) in Python files.
-- **documentation_html.ps1**: Generates HTML documentation for Python files in the `segadb/` folder, and moves the generated HTML files to the `docs/` folder.
-- **documentation_md.ps1**: Generates markdown documentation for Python files in the `segadb/` folder.
-- **export_env.ps1**: Exports the conda environment to a YAML file. Remove the prefix from the environment name to make it compatible with other systems.
+- [`_run_all_scripts.ps1`](scripts/_run_all_scripts.ps1): Runs all PowerShell scripts in the `scripts/` folder sequentially.
+- [`todo_comments.ps1`](scripts/todo_comments.ps1): Finds and lists all TODO comments in Python files.
+- [`count_lines.ps1`](scripts/count_lines.ps1): Counts the number of lines in each Python file, sorts the files by line count in descending order, and calculates the total number of lines.
+- [`comment_density.ps1`](scripts/comment_density.ps1): Calculates the comment density (percentage of lines that are comments) in Python files.
+- [`documentation_html.ps1`](scripts/documentation_html.ps1): Generates HTML documentation for Python files in the `segadb/` folder, and moves the generated HTML files to the `docs/` folder.
+- [`documentation_md.ps1`](scripts/documentation_md.ps1): Generates markdown documentation for Python files in the `segadb/` folder.
+- [`export_env.ps1`](scripts/export_env.ps1): Exports the conda environment to a YAML file. Remove the prefix from the environment name to make it compatible with other systems.
+- [`segadb.ps1`](scripts/segadb.ps1): Helper script related to the `segadb` library (purpose might need clarification).
+- [`web_app.ps1`](scripts/web_app.ps1): Helper script likely related to the older Flask web app.
+- [`web_app_react.ps1`](scripts/web_app_react.ps1): Helper script likely related to the React web app.
 
 ## Documentation
 ### HTML Documentation
-Pydoc documentation is generated from the PowerShell script `documentation_html.ps1`.  
-To see live version: https://santiagoenriquega.github.io/custom_database/segadb  
+Pydoc documentation is generated from the PowerShell script `documentation_html.ps1`.
+To see live version: https://santiagoenriquega.github.io/custom_database/segadb
 
-Self host documentation, run the following command in the terminal: `python -m pydoc -p 8080`  
+Self host documentation, run the following command in the terminal: `python -m pydoc -p 8080`
 Then open a web browser and navigate to http://localhost:8080/segadb.html
 
 ### Markdown Documentation
-Pydoc Markdown is also availible and is generated from the PowerShell script `documentation_md.ps1`.  
+Pydoc Markdown is also available and is generated from the PowerShell script `documentation_md.ps1`.
 The output file is located in [`docs/documentation.md`](docs/documentation.md)
 
 ## Tests
-To run the tests, use the following command: `python -m unittest discover -s tests`  
-Or run the all tests file: `python run_all_tests.py`
+To run the tests, use the following command from the project root directory:
+```bash
+python -m unittest discover -s tests
+```
+Or run the combined tests script:
+```bash
+python tests/run_all_tests.py
+```
 ### Test Results
 The following are the results of running the tests:
-
+*(Test results output remains the same as you provided)*
 ```sh
 (segadb_env) PS ...\custom_database> python .\tests\run_all_tests.py
 .........Testing Database Class
@@ -271,7 +303,7 @@ The script generates performance comparison plots for each operation and saves t
 
 ### Example Plots
 
-To see all the plots, navigate to the `performance_comparisons/` folder.  
+To see all the plots, navigate to the `performance_comparisons/` folder.
 Here is the performance comparison plots for the insert, select, and delete operations:
 
 ![Insert Performance Comparison](performance_comparisons/perf_comp_insert.png)
@@ -281,75 +313,107 @@ Here is the performance comparison plots for the insert, select, and delete oper
 ## File Structure
 The project directory structure is as follows:
 
-- **setup.py**: Setup script for packaging the segadb library. ~TBD~
-- **segadb/**: Contains the main database library code.
-  - [`__init__.py`](segadb/__init__.py): Initializes the segadb package.
-  - [`database.py`](segadb/database.py): Implements the `Database` class for managing tables.
-  - [`databasePartial.py`](segadb/databasePartial.py): Implements the `DatabasePartial` class for partial database loading.
-  - [`index.py`](segadb/index.py): Implements the `Index` class for indexing records.
-  - [`main.py`](segadb/main.py): Main entry point for the database operations.
-  - [`record.py`](segadb/record.py): Implements the `Record` class for individual records.
-  - [`storage.py`](segadb/storage.py): Implements the `Storage` class for saving and loading the database.
-  - [`table.py`](segadb/table.py): Implements the `Table` class for table operations.
-  - [`transaction.py`](segadb/transaction.py): Implements the `Transaction` class for transaction handling.
-  - [`users.py`](segadb/users.py): Implements the `User`, `UserManager`, and `Authorization` classes for user management and authorization.
-  - [`views.py`](segadb/views.py): Implements the `View` and `MaterializedView` classes for view management.
-  - [`crypto.py`](segadb/crypto.py): Implements the `CustomFernet` class for encryption and decryption.
-  - [`db_navigator.py`](segadb/db_navigator.py): Implements the `DBNavigator` class for navigating the database in the console.
-  - [`launch_server.py`](segadb/launch_server.py): Launches a database server from a `.segadb` file.
-  - [`socketClient.py`](segadb/socketClient.py): Provides a client interface for interacting with the database server.
-- **tests/**: Contains unit and performance tests for the database library.
-  - [`run_all_tests.py`](tests/run_all_tests.py): Runs all available tests.
-  - [`test_utils.py`](tests/test_utils.py): Utility functions for tests.
-  - [`test_database.py`](tests/test_database.py): Unit tests for the `Database` class.
-  - [`test_databasePartial.py`](tests/test_databasePartial.py): Unit tests for the `DatabasePartial` class.
-  - [`test_table.py`](tests/test_table.py): Unit tests for the `Table` class.
-  - [`test_index.py`](tests/test_index.py): Unit tests for the `Index` class.
-  - [`test_record.py`](tests/test_record.py): Unit tests for the `Record` class.
-  - [`test_storage.py`](tests/test_storage.py): Unit tests for the `Storage` class.
-  - [`test_transaction.py`](tests/test_transaction.py): Unit tests for the `Transaction` class.
-  - [`test_users.py`](tests/test_users.py): Unit tests for the `User`, `UserManager`, and `Authorization` classes.
-  - [`test_views.py`](tests/test_views.py): Unit tests for the `View` and `MaterializedView` classes.
-  - [`test_crypto.py`](tests/test_crypto.py): Unit tests for the `CustomFernet` class.
-  - [`test_segadb_performance.py`](tests/test_segadb_performance.py): Performance tests for the segadb package.
-  - [`test_examples.py`](tests/test_examples.py): Contains tests for the example scripts.
-- **examples/**: Example usages of the segadb library.
-  - [example_backupRecovery.py](examples/example_backupRecovery.py): Demonstrates how to create and restore backups.
-  - [example_change_ids.py](examples/example_change_ids.py): Demonstrates how to change record IDs, difference between IDs and Index.
-  - [example_constraints.py](examples/example_constraints.py): Demonstrates how to add and enforce constraints on table columns.
-  - [example_databaseDetails.py](examples/example_databaseDetails.py): Demonstrates how to create tables and manage records.
-  - [example_dataExport.py](examples/example_dataExport.py): Demonstrates how to export data to different formats: CSV, JSON, SQLite.
-  - [example_dataImports.py](examples/example_dataImports.py): Demonstrates how to import data from a CSV file.
-  - [example_dbNavigator.py](examples/example_dbNavigator.py): Demonstrates how to navigate through a database using the DB Navigator.
-  - [example_foreignKeys.py](examples/example_foreignKeys.py): Demonstrates how to use foreign key constraints.
-  - [example_millionRowLoad.py](examples/example_millionRowLoad.py): Demonstrates how to load a table with a million rows using multiprocessing.
-  - [example_queries.py](examples/example_queries.py): Demonstrates how to create tables, add constraints, insert data, perform joins, aggregations, and filtering operations.
-  - [example_recordTypes.py](examples/example_recordTypes.py): Demonstrates how to use different record types (VectorRecord, TimeSeriesRecord, ImageRecord, TextRecord).
-  - [example_storage.py](examples/example_storage.py): Demonstrates how to save and load the database, and check constraints.
-  - [example_storageCompression.py](examples/example_storageCompression.py): Demonstrates how to save and load the database with compression.
-  - [example_storageCompressionLarge.py](examples/example_storageCompressionLarge.py): Demonstrates how to save and load a large database with compression, using multiprocessing.
-  - [example_transactions.py](examples/example_transactions.py): Demonstrates how to use transactions for commit and rollback operations.
-  - [example_UsersAuth.py](examples/example_UsersAuth.py): Demonstrates user authentication and authorization.
-  - [example_views.py](examples/example_views.py): Demonstrates how to create, retrieve, refresh, and delete views and materialized views.
-  - [example_stored_procs.py'](examples/example_stored_procs.py): Demonstrates how to create and use stored procedures and triggers.
-  - [example_partialDB.py](examples/example_partialDB.py): Demonstrates how to load only the necessary tables from a database file into memory.
-- **docs/**: Contains the generated documentation for the segadb library.
-  - [segadb.database.html](docs/segadb.database.html): Documentation for the `Database` class.
-  - [segadb.databasePartial.html](docs/segadb.databasePartial.html): Documentation for the `DatabasePartial` class.
-  - [segadb.index.html](docs/segadb.index.html): Documentation for the `Index` class.
-  - [segadb.record.html](docs/segadb.record.html): Documentation for the `Record` class.
-  - [segadb.storage.html](docs/segadb.storage.html): Documentation for the `Storage` class.
-  - [segadb.table.html](docs/segadb.table.html): Documentation for the `Table` class.
-  - [segadb.transaction.html](docs/segadb.transaction.html): Documentation for the `Transaction` class.
-  - [segadb.users.html](docs/segadb.users.html): Documentation for the `User`, `UserManager`, and `Authorization` classes.
-  - [segadb.views.html](docs/segadb.views.html): Documentation for the `View` and `MaterializedView` classes.
-  - [segadb.crypto.html](docs/segadb.crypto.html): Documentation for the `CustomFernet` class.
-  - [segadb.__init__.html](docs/segadb.__init__.html): Documentation for the `__init__.py` file.
-- **scripts/**: PowerShell scripts to help with various tasks.
-  - [_run_all_scripts.ps1](scripts/_run_all_scripts.ps1): Runs all PowerShell scripts in the `scripts/` folder sequentially.
-  - [todo_comments.ps1](scripts/todo_comments.ps1): Finds and lists all TODO comments in Python files.
-  - [count_lines.ps1](scripts/count_lines.ps1): Counts the number of lines in each Python file.
-  - [comment_density.ps1](scripts/comment_density.ps1): Calculates the comment density in Python files.
-  - [documentation_html.ps1](scripts/documentation_html.ps1): Generates HTML documentation.
-  - [documentation_md.ps1](scripts/documentation_md.ps1): Generates markdown documentation.
-  - [export_env.ps1](scripts/export_env.ps1): Exports the conda environment to a YAML file.
+```
+custom_database-1/
+├── .gitignore                  # Specifies intentionally untracked files that Git should ignore
+├── environment.yml             # Conda environment definition file
+├── pydoc-markdown.yml          # Configuration for pydoc-markdown
+├── README.md                   # This README file
+├── setup.py                    # Setup script for packaging the segadb library (TBD)
+├── start_servers.py            # Script to launch DB server and Web App backend together
+│
+├── segadb/                     # Contains the core database library code
+│   ├── __init__.py             # Initializes the segadb package, makes classes available
+│   ├── crypto.py               # Implements the CustomFernet class for encryption/decryption
+│   ├── database.py             # Implements the main Database class
+│   ├── databasePartial.py      # Implements the PartialDatabase class for partial loading
+│   ├── db_navigator.py         # Implements the Curses-based DB Navigator
+│   ├── index.py                # Implements the Index class
+│   ├── launch_server.py        # Script to launch the database socket server
+│   ├── record.py               # Implements the Record class and its specialized subclasses
+│   ├── socketClient.py         # Implements the client for the database socket server
+│   ├── storage.py              # Implements the Storage class for saving/loading/backups
+│   ├── table.py                # Implements the Table class
+│   ├── transaction.py          # Implements the Transaction class
+│   ├── users.py                # Implements User, UserManager, and Authorization classes
+│   └── views.py                # Implements View and MaterializedView classes
+│
+├── tests/                      # Contains unit, integration, and performance tests
+│   ├── run_all_tests.py        # Script to run all tests
+│   ├── run_selected_tests.py   # Script to run selected tests (if applicable)
+│   ├── test_crypto.py          # Tests for crypto.py
+│   ├── test_database.py        # Tests for database.py
+│   ├── test_databasePartial.py # Tests for databasePartial.py
+│   ├── test_examples.py        # Tests that run the example scripts
+│   ├── test_imports.py         # Tests basic package imports
+│   ├── test_index.py           # Tests for index.py
+│   ├── test_record.py          # Tests for record.py
+│   ├── test_safe_execution.py  # Tests for utility decorators (if applicable)
+│   ├── test_segadb_performance.py # Performance tests for the library
+│   ├── test_storage.py         # Tests for storage.py
+│   ├── test_table.py           # Tests for table.py
+│   ├── test_transaction.py     # Tests for transaction.py
+│   ├── test_users.py           # Tests for users.py
+│   ├── test_views.py           # Tests for views.py
+│   └── utils.py                # Utility functions for tests
+│
+├── examples/                   # Example scripts demonstrating library usage
+│   ├── example_*.py            # Various example scripts (listed above)
+│
+├── docs/                       # Contains generated documentation
+│   ├── documentation.md        # Markdown documentation generated by pydoc-markdown
+│   └── segadb*.html            # HTML documentation generated by pydoc
+│
+├── scripts/                    # Utility scripts (mostly PowerShell)
+│   ├── out/                    # Output directory for some scripts
+│   ├── _run_all_scripts.ps1    # Runs all other PowerShell scripts
+│   ├── comment_density.ps1     # Calculates comment density
+│   ├── count_lines.ps1         # Counts lines of code
+│   ├── documentation_html.ps1  # Generates HTML docs
+│   ├── documentation_md.ps1    # Generates Markdown docs
+│   ├── export_env.ps1          # Exports conda environment
+│   ├── segadb.ps1              # Helper script for segadb
+│   ├── todo_comments.ps1       # Finds TODO comments
+│   ├── web_app_react.ps1       # Helper script for React web app
+│   └── web_app.ps1             # Helper script for old web app
+│
+├── performance_comparisons/    # Scripts and results for performance comparisons
+│   ├── performance_comparison.py # Main comparison script against SQLite
+│   ├── performance_comparison_inserts.py # Specific insert comparison script
+│   ├── *.png                   # Generated performance plots
+│   └── testing_time.py         # Utility/test script for timing
+│
+├── web_app_react/              # React frontend and Flask backend for the Web GUI
+│   ├── public/                 # Static assets for React app (e.g., favicon)
+│   ├── src/                    # React source code
+│   │   ├── components/         # Reusable React components (DataTable, Navbar, etc.)
+│   │   ├── contexts/           # React Contexts (e.g., AuthContext)
+│   │   ├── hooks/              # Custom React Hooks (e.g., useAuth)
+│   │   ├── pages/              # Page components (LoginPage, HomePage, etc.)
+│   │   ├── services/           # API service layer (api.js using axios)
+│   │   ├── App.jsx             # Main React application component
+│   │   ├── main.jsx            # Entry point for React application
+│   │   └── *.css               # CSS stylesheets
+│   ├── .gitignore              # Git ignore specific to node development
+│   ├── app.py                  # Flask backend API server for the React app
+│   ├── eslint.config.js        # ESLint configuration
+│   ├── index.html              # HTML template for the React app
+│   ├── package.json            # Node.js project manifest (dependencies, scripts)
+│   ├── package-lock.json       # Lockfile for npm dependencies
+│   ├── README.md               # README specific to the React app setup
+│   └── vite.config.js          # Vite configuration file
+│
+├── web_app/                    # Older Flask web application (to be deprecated)
+│   ├── static/                 # Static files (CSS, JS) for the old app
+│   ├── templates/              # Jinja2 HTML templates for the old app
+│   └── app.py                  # Flask application file for the old app
+│
+├── example_datasets/           # Sample datasets used in examples or tests
+├── example_storage/            # Directory for storing saved database examples
+├── logs/                       # Directory for log files generated by the database
+├── tests_backups/              # Directory possibly used by backup/restore tests
+├── tests_backups_list/         # Directory possibly used by backup/restore tests
+├── tests_backups_restore/      # Directory possibly used by backup/restore tests
+│
+├── __archive/                  # Older/archived code files
+└── .vscode/                    # VS Code editor settings
