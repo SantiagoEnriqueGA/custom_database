@@ -27,3 +27,6 @@ tests_backups*/
 
 # Ignore log files
 *.log
+
+# Ignore node_modules
+node_modules/
