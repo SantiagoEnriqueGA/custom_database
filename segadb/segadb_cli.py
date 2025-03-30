@@ -1,3 +1,4 @@
+import base64
 import zlib
 import typer
 import json
@@ -530,7 +531,9 @@ def table_query(
 def table_insert(
     ctx: typer.Context,
     table_name: str = typer.Argument(..., help="Name of the table to insert into."),
-    data_json: str = typer.Argument(..., help="Record data as a JSON string (e.g., '{\"name\": \"Alice\", \"email\": \"a@b.com\"}')."),
+    # Modify the data_json argument description
+    data_json: Optional[str] = typer.Argument(None, help="Record data as a JSON string OR use --data-b64."),
+    data_b64: Optional[str] = typer.Option(None, "--data-b64", help="Record data as a Base64 encoded JSON string."), # New option
     record_type_name: Optional[str] = typer.Option(
         None, "--type", "-t",
         help="Specify record type (e.g., ImageRecord, TextRecord). Default is standard Record."
@@ -539,12 +542,36 @@ def table_insert(
     """Insert a new record into a table."""
     conn, conn_type = get_connection(ctx)
 
+    # # --- ADD THIS DEBUG LINE ---
+    # typer.echo(f"DEBUG: Received data_json argument: >>>{data_json}<<<")
+    # # --- END DEBUG LINE ---
+
+    # --- Logic to handle JSON or Base64 ---
+    actual_json_string = None
+    if data_b64:
+        typer.echo("DEBUG: Decoding Base64 data...")
+        try:
+            actual_json_string = base64.b64decode(data_b64).decode('utf-8')
+        except Exception as b64_error:
+            typer.secho(f"Error: Invalid Base64 data provided. Details: {b64_error}", fg=typer.colors.RED)
+            raise typer.Exit(code=1)
+    elif data_json:
+         actual_json_string = data_json
+    else:
+         typer.secho("Error: Must provide record data via JSON argument or --data-b64 option.", fg=typer.colors.RED)
+         raise typer.Exit(code=1)
+
+    # # --- Debug the final string ---
+    # typer.echo(f"DEBUG: Attempting to parse JSON: >>>{actual_json_string}<<<")
+    # # ---
+
     try:
-        record_data = json.loads(data_json)
+        # Use the decoded/passed string
+        record_data = json.loads(actual_json_string)
         if not isinstance(record_data, dict):
             raise ValueError("Input must be a JSON object (dictionary).")
-    except json.JSONDecodeError:
-        typer.secho("Error: Invalid JSON data provided.", fg=typer.colors.RED)
+    except json.JSONDecodeError as e:
+        typer.secho(f"Error: Invalid JSON data provided. Details: {e}", fg=typer.colors.RED)
         raise typer.Exit(code=1)
     except ValueError as ve:
         typer.secho(f"Error: {ve}", fg=typer.colors.RED)
@@ -772,6 +799,24 @@ def server_stop(
     # Message handled by helper unless it's a success message
     typer.secho(f"Stop command sent (Server message: {result.get('message', 'Success')}).", fg=typer.colors.GREEN if result.get("status") == "success" else typer.colors.YELLOW)
 
+
+@server_app.command("start")
+def server_start(
+    ctx: typer.Context,
+    force: bool = typer.Option(False, "--force", "-y", help="Skip confirmation prompt.")
+):
+    """Start the remote SegaDB server."""
+    client = _ensure_remote(ctx) # Ensures connection is remote
+
+    if not force:
+        typer.confirm(f"Are you sure you want to start the server at {state.host}:{state.port}?", abort=True)
+
+    typer.echo(f"Sending start command to server {state.host}:{state.port}...")
+    # Use helper, start might require privileges - handles errors
+    result = _send_authed_remote_command(client, "start")
+
+    # Message handled by helper unless it's a success message
+    typer.secho(f"Start command sent (Server message: {result.get('message', 'Success')}).", fg=typer.colors.GREEN if result.get("status") == "success" else typer.colors.YELLOW)
 
 # --- Main Execution ---
 if __name__ == "__main__":
