@@ -1,0 +1,142 @@
+/* src/pages/TablesPage.css */
+
+.tables-page {
+  padding: 20px;
+}
+
+.tables-page h1 { /* Optional: Center title if desired */
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.tables-layout {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.table-list-container {
+  flex: 1; /* Adjust flex basis as needed */
+  min-width: 280px; /* Ensure minimum width */
+  max-width: 400px; /* Limit width of the list */
+  border: 1px solid #444;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #2a2a2a;
+  /* Add max-height and overflow-y if lists can get very long */
+  /* max-height: 70vh; */
+  /* overflow-y: auto; */
+}
+
+.table-list-container h2 {
+  margin-top: 0;
+  border-bottom: 1px solid #555;
+  padding-bottom: 10px;
+  text-align: center; /* Center "Objects" title */
+}
+
+/* Style for section headings (Tables, Views, MVs) */
+.list-section h3 {
+    margin-top: 15px;
+    margin-bottom: 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px dashed #4a4a4a; /* Lighter border for section */
+    color: #ccc;
+    font-size: 1.1em;
+}
+.list-section:first-of-type h3 {
+     margin-top: 5px; /* Less top margin for the first heading */
+ }
+
+.table-list-container ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 15px 0; /* Add bottom margin to separate lists */
+}
+
+.table-list-container li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 5px;
+  border-bottom: 1px solid #3a3a3a;
+  cursor: default;
+  transition: background-color 0.2s ease; /* Smooth selection */
+}
+.table-list-container li:last-child {
+    border-bottom: none;
+}
+
+.table-list-container li:hover {
+    background-color: #383838; /* Subtle hover effect */
+}
+
+.table-list-container li.selected {
+    background-color: #3f3f46; /* Highlight selected item */
+    /* font-weight: bold; */ /* Optional bolding */
+}
+
+ .item-name {
+     margin-right: 10px; /* Space between name and buttons */
+     word-break: break-all; /* Prevent long names overflowing */
+ }
+
+.table-actions button {
+  margin-left: 5px; /* Slightly reduce margin */
+  padding: 4px 8px;
+  font-size: 0.9em;
+  white-space: nowrap; /* Prevent buttons wrapping */
+}
+
+ .table-actions button.danger {
+   background-color: #dc3545;
+   border-color: #dc3545;
+   color: white;
+ }
+  .table-actions button.danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+  }
+   /* Style for disabled drop button */
+  .table-actions button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+  }
+
+
+.table-data-container {
+  flex: 3; /* Take more space */
+  min-width: 400px; /* Ensure minimum width */
+  border: 1px solid #444;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #2a2a2a;
+  overflow-x: auto; /* Allow horizontal scrolling for wide tables */
+}
+
+.table-data-container h2 {
+    margin-top: 0;
+     border-bottom: 1px solid #555;
+    padding-bottom: 10px;
+    margin-bottom: 15px; /* Ensure space before data/spinner */
+}
+
+ /* Message for empty lists */
+ .no-items-message {
+     color: #888;
+     font-style: italic;
+     padding: 5px;
+     font-size: 0.9em;
+ }
+
+
+/* Reuse or ensure error message style is available */
+.error-message {
+    color: #f8d7da;
+    background-color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}

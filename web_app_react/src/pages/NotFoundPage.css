@@ -1,0 +1,30 @@
+/* src/pages/NotFoundPage.css */
+
+.not-found-page {
+    text-align: center;
+    padding: 50px 20px;
+  }
+  
+  .not-found-page h1 {
+    color: #dc3545; /* Reddish color for emphasis */
+    margin-bottom: 15px;
+  }
+  
+  .not-found-page p {
+    font-size: 1.2em;
+    color: #ccc;
+    margin-bottom: 25px;
+  }
+  
+  .not-found-page a {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+  }
+  
+  .not-found-page a:hover {
+    background-color: #0056b3;
+  }

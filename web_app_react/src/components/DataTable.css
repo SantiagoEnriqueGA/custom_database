@@ -1,0 +1,36 @@
+/* src/components/DataTable.css */
+.data-table-container {
+    width: 100%;
+    overflow-x: auto; /* Enable horizontal scroll */
+    margin-top: 15px;
+  }
+  
+  .data-table {
+    width: 100%;
+    border-collapse: collapse; /* Merge cell borders */
+    min-width: 600px; /* Ensure table has some minimum width */
+  }
+  
+  .data-table th,
+  .data-table td {
+    border: 1px solid #555;
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top; /* Align content top */
+  }
+  
+  .data-table th {
+    background-color: #3a3a3a;
+    font-weight: bold;
+    position: sticky; /* Make header sticky */
+    top: 0; /* Stick to the top of the container */
+    z-index: 1; /* Ensure header stays above scrolling content */
+  }
+  
+  .data-table tbody tr:nth-child(odd) {
+    background-color: #2f2f2f; /* Zebra striping */
+  }
+  
+  .data-table tbody tr:hover {
+    background-color: #4a4a4a; /* Highlight on hover */
+  }
