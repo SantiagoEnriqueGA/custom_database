@@ -1,0 +1,91 @@
+/* src/pages/Forms.css */
+.form-container {
+    max-width: 700px; /* Wider for forms */
+    margin: 20px auto;
+    padding: 25px;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background-color: #2a2a2a;
+  }
+  
+  .form-container h1 {
+    text-align: center;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #555;
+    padding-bottom: 15px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #ccc;
+  }
+  
+  .form-group input[type="text"],
+  .form-group input[type="password"],
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #555;
+    background-color: #333;
+    color: #eee;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding in width */
+    font-size: 1em;
+    line-height: 1.4;
+  }
+  
+  .form-group select {
+      /* Appearance for select dropdown */
+      appearance: none;
+      background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23BBB%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 12px auto;
+      padding-right: 35px; /* Space for arrow */
+  }
+  
+  .form-group textarea {
+      font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; /* Monospace for code */
+  }
+  
+  .form-group small {
+      display: block;
+      margin-top: 5px;
+      color: #aaa;
+  }
+  
+  
+  .form-container button[type="submit"] {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 1.1em;
+    margin-top: 10px;
+  }
+  
+  /* Reusable message styles */
+  .error-message { /* From LoginPage.css */
+      color: #f8d7da;
+      background-color: #721c24;
+      border: 1px solid #f5c6cb;
+      padding: 10px 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      text-align: left;
+  }
+  
+  .success-message {
+      color: #d4edda;
+      background-color: #155724;
+      border: 1px solid #c3e6cb;
+      padding: 10px 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      text-align: left;
+  }

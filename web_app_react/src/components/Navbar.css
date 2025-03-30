@@ -1,0 +1,58 @@
+/* src/components/Navbar.css */
+.navbar {
+    background-color: #333;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 0 0 8px 8px; /* Optional rounded bottom corners */
+    margin-bottom: 20px; /* Space below navbar */
+  }
+  
+  .navbar-brand {
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.4em;
+    text-decoration: none;
+  }
+   .navbar-brand:hover {
+      color: #ddd;
+   }
+  
+  .navbar-nav {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+  }
+  
+  .navbar-nav li {
+    margin-left: 15px;
+  }
+  
+  .navbar-nav a {
+    color: #ddd;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .navbar-nav a:hover {
+    color: #fff;
+    background-color: #555;
+  }
+  
+  .logout-button {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+    padding: 5px 10px; /* Match link padding */
+    font-size: 1em; /* Match link font size */
+    cursor: pointer;
+  }
+  .logout-button:hover {
+     background-color: #c82333;
+     border-color: #bd2130;
+  }

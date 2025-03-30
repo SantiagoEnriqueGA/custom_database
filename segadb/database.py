@@ -231,7 +231,7 @@ class Database:
         This method can be used to listen for commands or keep the database alive.
         """
         self.running = True
-        print(f"Database '{self.name}' is now running...")
+        print(f"\t...Database '{self.name}' is now running...")
         while self.running:
             # Simulate database activity or listen for commands
             time.sleep(1)  # Prevent high CPU usage
@@ -244,7 +244,7 @@ class Database:
         # Run the database in a separate thread, daemonized (will stop when the main thread stops)
         self.thread = threading.Thread(target=self.run, daemon=True)
         self.thread.start()
-        print(f"Database '{self.name}' started in a separate thread.")
+        print(f"\t...Database '{self.name}' started in a separate thread.")
 
     def start_socket_server(self, host='127.0.0.1', port=65432):
         """
@@ -253,7 +253,7 @@ class Database:
         self.server_running = True
         self.server_thread = threading.Thread(target=self._socket_server, args=(host, port), daemon=True)
         self.server_thread.start()
-        print(f"Database '{self.name}' socket server started on {host}:{port}")
+        print(f"\t...Database '{self.name}' socket server started on {host}:{port}")
     
     def _socket_server(self, host, port):
         """
@@ -262,7 +262,7 @@ class Database:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
             server_socket.bind((host, port))
             server_socket.listen()
-            print(f"Socket server listening on {host}:{port}")
+            print(f"\t...Socket server listening on {host}:{port}")
             while self.server_running:
                 try:
                     client_socket, addr = server_socket.accept()
