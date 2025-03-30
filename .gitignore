@@ -30,3 +30,8 @@ tests_backups*/
 
 # Ignore node_modules
 node_modules/
+
+# Package build files
+build/
+dist/
+*.egg-info/
