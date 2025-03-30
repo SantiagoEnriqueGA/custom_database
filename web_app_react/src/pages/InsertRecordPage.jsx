@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { listTables, insertRecord } from '../services/api';
-import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import './Forms.css'; // Create a shared CSS for forms
 
@@ -12,7 +11,6 @@ function InsertRecordPage() {
   const [loadingInsert, setLoadingInsert] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const navigate = useNavigate();
 
   const fetchTables = useCallback(async () => {
     setLoadingTables(true);

@@ -9,8 +9,8 @@ function DataTable({ columns = [], data = [] }) {
   }
 
   // Determine if the _record_id column should be displayed based on the data
-  // Check if *at least one* row has the _record_id property
-  const hasRecordIdColumn = data.length > 0 && data.some(row => row?.hasOwnProperty('_record_id'));
+  // Use safe check for hasOwnProperty to satisfy eslint:no-prototype-builtins
+  const hasRecordIdColumn = data.some(row => row != null && Object.prototype.hasOwnProperty.call(row, '_record_id'));
 
   // Calculate the total number of columns for colSpan
   const totalColumns = columns.length + (hasRecordIdColumn ? 1 : 0);

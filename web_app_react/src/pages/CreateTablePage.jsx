@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { createTable } from '../services/api';
-import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import './Forms.css'; // Import the shared form styles
 
@@ -10,7 +9,6 @@ function CreateTablePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
