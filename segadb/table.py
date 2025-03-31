@@ -641,7 +641,7 @@ class Table:
                        raise ValueError(f"Constraint violation in input data (record {record_data}): {e}")
 
         # If small list, use sequential insert (handles indexes correctly)
-        if len(record_list) <= 5000: # Keep threshold or adjust
+        if len(record_list) <= 1_000_000: # Keep threshold or adjust
             count = 0
             for record_data in record_list:
                 try:
