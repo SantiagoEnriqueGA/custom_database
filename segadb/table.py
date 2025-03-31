@@ -889,7 +889,7 @@ class Table:
     
     # Utility Methods
     # ---------------------------------------------------------------------------------------------
-    def print_table(self, limit=None, pretty=False, index=False):
+    def print_table(self, limit=None, pretty=False):
         """
         Prints the records in the table.
         Args:
@@ -897,7 +897,7 @@ class Table:
             pretty (bool, optional): If True, prints the table in a pretty format using the tabulate library. Defaults to False.
         """
         if pretty: 
-            self._print_table_pretty(limit, index)
+            self._print_table_pretty(limit)
             return
         
         count = 0
@@ -907,7 +907,7 @@ class Table:
             print(f"Record ID: {record.id}, Data: {record.data}")
             count += 1
             
-    def _print_table_pretty(self, limit=None, index=False, max_data_length=25):
+    def _print_table_pretty(self, limit=None, max_data_length=25):
         """
         Prints the records in the table in a pretty format using the tabulate library.
         Args:
@@ -916,29 +916,31 @@ class Table:
             max_data_length (int, optional): The maximum length of the data to be printed. If None, the full data is printed. Defaults to None.
         """
         from tabulate import tabulate
-        table = []
+        # Headers now only include ID and the actual columns
+        headers = ["ID"] + self.columns
+        table_data = []
         count = 0
+
         for record in self.records:
             if limit is not None and count >= limit:
                 break
-            
-            data = record.data    
-            if max_data_length is not None:
-                data = {k: (str(v)[:max_data_length] + '...' if len(str(v)) > max_data_length else v) for k, v in data.items()}
-            
-            # Format numerical values to 2 decimal places
-            data = {k: (f"{v:.2f}" if isinstance(v, (int, float)) else v) for k, v in data.items()}
-            
-            if index:
-                table.append([record.index.__str__(), record.id, data])
-            else:
-                table.append([record.id, data])
+
+            row_data = [record.id] # Start row with just the ID
+            for col in self.columns:
+                 value = record.data.get(col)
+                 # Truncate long strings
+                 str_value = str(value)
+                 if max_data_length is not None and len(str_value) > max_data_length:
+                      display_value = str_value[:max_data_length] + '...'
+                 else:
+                      display_value = str_value
+                 row_data.append(display_value)
+
+            table_data.append(row_data)
             count += 1
-        
-        if index:
-            print(tabulate(table, headers=["Index", "ID", "Data"]))
-        else:
-            print(tabulate(table, headers=["ID", "Data"]))
+
+        # Print using the updated headers
+        print(tabulate(table_data, headers=headers, tablefmt="grid"))
 
         if limit is not None and len(self.records) > limit:
             print(f"--Showing first {limit} of {len(self.records)} records.--")

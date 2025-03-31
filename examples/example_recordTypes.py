@@ -133,6 +133,6 @@ EncryptedRecords.print_table(pretty=True)
 
 # Example usage of EncryptedRecord methods
 encrypted1 = EncryptedRecords.records[0]
-print(f"\nExample usage of EncryptedRecord Methods on record: {encrypted1._encrypted_data}:")
+print(f"\nExample usage of EncryptedRecord Methods on record: {encrypted1.encrypted_data}:")
 print(f"EncryptedRecord Decrypted (Incorrect Key): {encrypted1.decrypt('incorrect_key')}")
 print(f"EncryptedRecord Decrypted: {encrypted1.decrypt(key)}")

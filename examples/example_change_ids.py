@@ -34,7 +34,7 @@ users_table.try_insert({"id": 100, "name": "John6 Doe", "email": "john@example.c
 users_table.try_insert({"id": 1, "name": "John7 Doe", "email": "john@example.com"})
 
 print("\nAfter Insert with ID 1:")
-users_table.print_table(pretty=True, index=True)
+users_table.print_table(pretty=True)
 
 # Note that the record with id 1 is inserted, as the id was changed
 # Note that IDs can be changed, but the index will not be updated
