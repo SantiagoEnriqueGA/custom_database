@@ -24,7 +24,8 @@ print("Before Insert:")
 users_table.print_table(pretty=True)
 
 # Modify the record id
-users_table.records[0].id = 100
+# users_table.records[0].id = 100
+users_table.update_id(old_id=1, new_id=100)
 
 print("\nAfter Changing ID 1:")
 users_table.print_table(pretty=True)
@@ -37,4 +38,3 @@ print("\nAfter Insert with ID 1:")
 users_table.print_table(pretty=True)
 
 # Note that the record with id 1 is inserted, as the id was changed
-# Note that IDs can be changed, but the index will not be updated

@@ -201,7 +201,6 @@ class Table:
                 raise ValueError("Foreign key constraints require a reference table and column.")
             # The FK check remains a lambda constraint as it involves another table
             def foreign_key_constraint(value):
-                 # TODO: Consider optimizing this check if the reference table has an index on reference_column
                  return any(record.data.get(reference_column) == value for record in reference_table.records)
             foreign_key_constraint.__name__ = "foreign_key_constraint"
             foreign_key_constraint.reference_table_name = reference_table.name # Store names for serialization
@@ -565,6 +564,50 @@ class Table:
                    print(f"CRITICAL: Index error during direct _update for ID {record_id}. Update aborted. Error: {e}")
                    # Do NOT update record.data if index update failed
                    raise e # Re-raise critical error
+    
+    @log_method_call
+    def update_id(self, old_id: int, new_id: int, transaction: Optional[Any] = None):
+        
+        """
+        Updates the ID of a record, ensuring no conflicts with existing IDs.
+
+        Args:
+            old_id (int): The current ID of the record.
+            new_id (int): The new ID to assign to the record.
+            transaction: Optional transaction object.
+
+        Raises:
+            ValueError: If old_id not found, or new_id already exists.
+        """
+        if old_id not in self.record_map:
+            raise ValueError(f"Record with ID {old_id} not found in table '{self.name}'.")
+
+        if new_id in self.record_map and new_id != old_id:
+            raise ValueError(f"New ID {new_id} already exists in table '{self.name}'.")
+
+        record = self.record_map[old_id]
+
+        # Perform the ID update
+        if transaction:
+            transaction.add_operation(lambda: self._perform_update_id(record, old_id, new_id))
+        else:
+            self._perform_update_id(record, old_id, new_id)
+            
+    def _perform_update_id(self, record: Record, old_id: int, new_id: int):
+        """Internal method to perform the ID update on a record."""
+        # Remove old ID from record_map
+        del self.record_map[old_id]
+
+        # Update indexes to reflect the new ID
+        for index in self.indexes.values():
+            if index.column in record.data:
+                key = record.data.get(index.column)
+                index.remove(key, old_id)
+                index.add(key, new_id)
+
+        # Update the record's ID and reinsert into record_map
+        record.id = new_id
+        self.record_map[new_id] = record
              
     # Bulk/Parallel CRUD Operations
     # --------------------------------------------------------------------------------------------
@@ -789,13 +832,12 @@ class Table:
             Table: A new table containing the filtered records.
         """
         # Currently index only used for direct match not range or complex conditions
-        # TODO: Implement range or complex conditions with indexes
         if index_name and value:
             index = self.indexes.get(index_name)
             if index:
                 # Use the index to find potential IDs
                 record_ids = index.find(value)
-                filtered_records = [self.record_map[record_id] for record_id in record_ids if record_id in self.record_map]
+                filtered_records = [self.record_map[record_id].data for record_id in record_ids if record_id in self.record_map]
             else:
                 filtered_records = [record for record in self.records if condition(record)]
         elif condition:
@@ -873,6 +915,8 @@ class Table:
         Returns:
             Table: A new table containing the result of the aggregation.
         """
+        agg_col_name = f"{agg_column}_{agg_func}"
+        
         grouped_data = {}
         for record in self.records:
             group_value = record.data.get(group_column)
@@ -898,9 +942,9 @@ class Table:
                 result = len(set(values))
             else:
                 raise ValueError(f"Unsupported aggregation function: {agg_func}")
-            result_data.append({group_column: group_value, agg_column: result})
+            result_data.append({group_column: group_value, agg_col_name: result})
 
-        agg_table = Table(f"{self.name}_agg_{group_column}_{agg_column}_{agg_func}", [group_column, agg_column])
+        agg_table = Table(f"{self.name}_agg_{group_column}_{agg_column}_{agg_func}", [group_column, agg_col_name])
         agg_table.bulk_insert(result_data)
 
         return agg_table
@@ -950,35 +994,31 @@ class Table:
         Prints the records in the table in a pretty format using the tabulate library.
         Args:
             limit (int, optional): The maximum number of records to print. If None, all records are printed. Defaults to None.
-            index (bool, optional): If True, includes the index in the printed table. Defaults to False.
             max_data_length (int, optional): The maximum length of the data to be printed. If None, the full data is printed. Defaults to None.
         """
         from tabulate import tabulate
-        # Headers now only include ID and the actual columns
-        headers = ["ID"] + self.columns
-        table_data = []
+        headers = ["ID"] + [self.columns]  # Include ID and all columns for headers
+        table = []
         count = 0
-
         for record in self.records:
             if limit is not None and count >= limit:
                 break
-
-            row_data = [record.id] # Start row with just the ID
-            for col in self.columns:
-                 value = record.data.get(col)
-                 # Truncate long strings
-                 str_value = str(value)
-                 if max_data_length is not None and len(str_value) > max_data_length:
-                      display_value = str_value[:max_data_length] + '...'
-                 else:
-                      display_value = str_value
-                 row_data.append(display_value)
-
-            table_data.append(row_data)
+            
+            data = record.data    
+            if max_data_length is not None:
+                data = {k: (str(v)[:max_data_length] + '...' if len(str(v)) > max_data_length else v) for k, v in data.items()}
+            
+            # Format numerical values to 2 decimal places
+            data = {k: (f"{v:.2f}" if isinstance(v, (int, float)) else v) for k, v in data.items()}
+            
+            table.append([record.id, data])
             count += 1
-
-        # Print using the updated headers
-        print(tabulate(table_data, headers=headers, tablefmt="grid"))
+        
+        try:
+            print(tabulate(table, headers=headers, tablefmt="rounded_outline"))
+        except:
+            # Some UnicodeEncodeError can occur on certain systems, fallback to default format
+            print(tabulate(table, headers=headers))
 
         if limit is not None and len(self.records) > limit:
             print(f"--Showing first {limit} of {len(self.records)} records.--")

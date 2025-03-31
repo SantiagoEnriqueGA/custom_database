@@ -3,7 +3,6 @@ import sys
 import os
 import random
 from faker import Faker
-from multiprocessing import freeze_support
 import time
 
 # Change the working directory to the parent directory to allow importing the segadb package.
@@ -64,6 +63,8 @@ print(f"--Filter query executed in {end - start:.2f} seconds, found {len(filtere
 
 
 # Add an index on the email column and test the select time again
+# Currently, the select and filter operations only support direct matching on the indexed column.
+# This means we can only use the index for exact matches, not for partial matches or complex conditions.
 # -----------------------------------------------------------------------------------------------
 table.create_index(index_name="email_index", column="email", unique=False)
 print(f"\nTesting select on email column (indexed):")
