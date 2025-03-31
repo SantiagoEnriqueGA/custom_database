@@ -64,6 +64,7 @@ class Transaction:
         """
         Previews the operations in the current transaction without committing or rolling back.
         """
+        # TODO: Compare with original DB to show differences
         for operation in self.operations:
             operation()
             

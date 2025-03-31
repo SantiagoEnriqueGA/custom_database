@@ -173,7 +173,7 @@ class PartialDatabase(Database):
                     
                 print(f"Constraints: {consts if consts else 'None'}")
                     
-                table.print_table(pretty=True, index=index, limit=limit)
+                table.print_table(pretty=True)
             
         if materialized_views and self.materialized_views:
             # Display materialized view details
@@ -186,7 +186,7 @@ class PartialDatabase(Database):
                 print(f"View: {view_name}")
                 print(f"Records: {len(view.data.records)}")
                 print(f"Columns: {view.data.columns}")
-                view.data.print_table(pretty=True, index=index, limit=limit)
+                view.data.print_table(pretty=True)
                 
                 first_view = False
         
@@ -203,7 +203,7 @@ class PartialDatabase(Database):
                 print(f"View: {view_name}")
                 print(f"Records: {len(view.records)}")
                 print(f"Columns: {view.columns}")
-                view.print_table(pretty=True, index=index, limit=limit)
+                view.print_table(pretty=True)
                 
                 first_view = False
                 

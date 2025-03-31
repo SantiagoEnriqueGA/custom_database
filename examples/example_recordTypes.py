@@ -133,6 +133,12 @@ EncryptedRecords.print_table(pretty=True)
 
 # Example usage of EncryptedRecord methods
 encrypted1 = EncryptedRecords.records[0]
-print(f"\nExample usage of EncryptedRecord Methods on record: {encrypted1._encrypted_data}:")
-print(f"EncryptedRecord Decrypted (Incorrect Key): {encrypted1.decrypt('incorrect_key')}")
+print(f"\nExample usage of EncryptedRecord Methods on record: {encrypted1.encrypted_data}:")
 print(f"EncryptedRecord Decrypted: {encrypted1.decrypt(key)}")
+
+# Wrong key raises an exception
+try:
+    wrong_key = CustomFernet.generate_key()  # Generate a different key to simulate an incorrect key
+    print(f"EncryptedRecord Decrypted (Incorrect Key): {encrypted1.decrypt(wrong_key)}")
+except Exception as e:
+    print(f"Error: {e}")

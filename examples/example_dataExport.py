@@ -36,7 +36,7 @@ db.get_table("users").insert({"user_id": user_ids[13], "name": "Nina", "email": 
 
 # Print the data in the users table
 print("\nPrinting users table")
-db.get_table("users").print_table(pretty=True, index=True)
+db.get_table("users").print_table(pretty=True)
 
 # Save the table to a csv
 print("\nSaving users table to CSV")

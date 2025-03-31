@@ -186,28 +186,28 @@ class TestDatabase(unittest.TestCase):
         db.get_table("Orders").insert({"order_id": 3, "user_id": 2, "product": "Tablet"})
         
         count_table = db.aggregate_table("Orders", "user_id", "order_id", "COUNT")
-        self.assertEqual(count_table.records[0].data["order_id"], 1)
-        self.assertEqual(count_table.records[1].data["order_id"], 2)
+        self.assertEqual(count_table.records[0].data["order_id_COUNT"], 1)
+        self.assertEqual(count_table.records[1].data["order_id_COUNT"], 2)
         
         count_distinct_table = db.aggregate_table("Orders", "user_id", "order_id", "COUNT_DISTINCT")
-        self.assertEqual(count_distinct_table.records[0].data["order_id"], 1)
-        self.assertEqual(count_distinct_table.records[1].data["order_id"], 2)
+        self.assertEqual(count_distinct_table.records[0].data["order_id_COUNT_DISTINCT"], 1)
+        self.assertEqual(count_distinct_table.records[1].data["order_id_COUNT_DISTINCT"], 2)
         
         min_table = db.aggregate_table("Orders", "user_id", "order_id", "MIN")
-        self.assertEqual(min_table.records[0].data["order_id"], 1)
-        self.assertEqual(min_table.records[1].data["order_id"], 2)
+        self.assertEqual(min_table.records[0].data["order_id_MIN"], 1)
+        self.assertEqual(min_table.records[1].data["order_id_MIN"], 2)
         
         max_table = db.aggregate_table("Orders", "user_id", "order_id", "MAX")
-        self.assertEqual(max_table.records[0].data["order_id"], 1)
-        self.assertEqual(max_table.records[1].data["order_id"], 3)
+        self.assertEqual(max_table.records[0].data["order_id_MAX"], 1)
+        self.assertEqual(max_table.records[1].data["order_id_MAX"], 3)
         
         sum_table = db.aggregate_table("Orders", "user_id", "order_id", "SUM")
-        self.assertEqual(sum_table.records[0].data["order_id"], 1)
-        self.assertEqual(sum_table.records[1].data["order_id"], 5)
+        self.assertEqual(sum_table.records[0].data["order_id_SUM"], 1)
+        self.assertEqual(sum_table.records[1].data["order_id_SUM"], 5)
         
         avg_table = db.aggregate_table("Orders", "user_id", "order_id", "AVG")
-        self.assertEqual(avg_table.records[0].data["order_id"], 1.0)
-        self.assertEqual(avg_table.records[1].data["order_id"], 2.5)
+        self.assertEqual(avg_table.records[0].data["order_id_AVG"], 1.0)
+        self.assertEqual(avg_table.records[1].data["order_id_AVG"], 2.5)
 
     def test_filter_table(self):
         db = Database("TestDB")

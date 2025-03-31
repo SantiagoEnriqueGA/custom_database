@@ -143,8 +143,9 @@ class TestTable(unittest.TestCase):
         self.assertEqual(self.table.records[0].data["name"], "John Doe")
     
     def test_insert_fail(self):
-        with self.assertRaises(ValueError):
-            # Should fail due typo in column name
+        """Test inserting data with incorrect column names.""" # Updated docstring
+        with self.assertRaisesRegex(ValueError, "Data columns mismatch table schema"): # Expect specific error
+            # Should fail due typo in column name ("emails")
             self.table.insert({"name": "John Doe", "emails": "john@example.com"})
 
     def test_try_insert(self):
@@ -186,10 +187,16 @@ class TestTable(unittest.TestCase):
         self.assertEqual(self.table.records[0].data["name"], "Jane Doe")
         
     def test_update_miss(self):
+        """Test updating a record that does not exist.""" # Updated docstring
         self.table.insert({"name": "John Doe", "email": "john@example.com"})
-        self.table.update(10, {"name": "Jane Doe", "email": "john@example.com"})
-        # ensure no changes
-        self.assertEqual(self.table.records[0].data["name"], "John Doe")
+        # Expect ValueError when updating a non-existent ID
+        with self.assertRaisesRegex(ValueError, "Record with ID 10 not found"):
+            self.table.update(10, {"name": "Jane Doe", "email": "john@example.com"})
+        # ensure no changes to existing record
+        record = self.table.get_record_by_id(1) # Use getter for clarity
+        self.assertIsNotNone(record)
+        if record: # Check added for type hinting
+            self.assertEqual(record.data["name"], "John Doe")
 
     def test_select(self):
         self.table.insert({"name": "John Doe", "email": "john@example.com"})
@@ -209,26 +216,23 @@ class TestTable(unittest.TestCase):
         self.table.truncate()
         self.assertEqual(len(self.table.records), 0)
         self.assertEqual(self.table.next_id, 1)
-        self.assertEqual(self.table.index_cnt, 0)
+        self.assertEqual(len(self.table.record_map), 0) # Check map length instead of index_cnt
 
     def test_truncate_with_records(self):
         """Test truncating a table with existing records"""
-        # Insert some records first
         records = [
             {"name": "John", "email": "john@example.com"},
             {"name": "Jane", "email": "jane@example.com"},
             {"name": "Bob", "email": "bob@example.com"}
         ]
         self.table.bulk_insert(records)
-        
-        # Verify records were inserted
         self.assertGreater(len(self.table.records), 0)
-        
-        # Truncate and verify
+        self.assertGreater(len(self.table.record_map), 0)
+
         self.table.truncate()
         self.assertEqual(len(self.table.records), 0)
         self.assertEqual(self.table.next_id, 1)
-        self.assertEqual(self.table.index_cnt, 0)
+        self.assertEqual(len(self.table.record_map), 0) # Check map length
 
     def test_truncate_and_reinsert(self):
         """Test inserting records after truncating"""
@@ -273,39 +277,29 @@ class TestTable(unittest.TestCase):
 
     def test_truncate_multiple_times(self):
         """Test truncating table multiple times in succession"""
-        # Initial insert
         self.table.insert({"name": "John", "email": "john@example.com"})
-        
-        # Multiple truncates
         self.table.truncate()
         self.table.truncate()
         self.table.truncate()
-        
-        # Verify state
         self.assertEqual(len(self.table.records), 0)
         self.assertEqual(self.table.next_id, 1)
-        self.assertEqual(self.table.index_cnt, 0)
+        self.assertEqual(len(self.table.record_map), 0) # Check map length
 
     def test_truncate_and_parallel_insert(self):
         """Test parallel insert after truncate"""
-        # Initial insert
-        initial_records = [{"name": f"Initial{i}", "email": f"initial{i}@example.com"} 
+        initial_records = [{"name": f"Initial{i}", "email": f"initial{i}@example.com"}
                         for i in range(100)]
         self.table.bulk_insert(initial_records)
-        
-        # Truncate
         self.table.truncate()
-        
-        # Parallel insert
-        parallel_records = [{"name": f"Parallel{i}", "email": f"parallel{i}@example.com"} 
+
+        parallel_records = [{"name": f"Parallel{i}", "email": f"parallel{i}@example.com"}
                         for i in range(100)]
         self.table.parallel_insert(parallel_records)
-        
-        # Verify
+
         self.assertEqual(len(self.table.records), 100)
-        self.assertEqual(self.table.records[0].id, 1)
+        self.assertEqual(self.table.record_map[1].id, 1) # Check map access
         self.assertEqual(self.table.next_id, 101)
-        self.assertEqual(self.table.index_cnt, 100)
+        self.assertEqual(len(self.table.record_map), 100) # Check map length
             
     # CRUD Operations - Parallel
     # ---------------------------------------------------------------------------------------------

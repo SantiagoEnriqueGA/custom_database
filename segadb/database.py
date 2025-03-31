@@ -12,6 +12,7 @@ import socket
 import threading
 import json
 import time
+from typing import Optional
 
 # Imports: Third Party
 import bcrypt
@@ -1381,7 +1382,56 @@ def {procedure_name}(db, *args, **kwargs):
         """
         if view_name not in self.materialized_views:
             raise ValueError(f"Materialized view {view_name} does not exist.")
-        del self.materialized_views[view_name]    
+        del self.materialized_views[view_name]
+
+    # Index Operations
+    # ---------------------------------------------------------------------------------------------
+    @log_method_call
+    def create_table_index(self, table_name: str, index_name: str, column: str, unique: bool = False, session_token: Optional[str] = None):
+        """
+        Creates an index on the specified table and column.
+
+        Args:
+            table_name (str): The name of the table.
+            index_name (str): A unique name for the index.
+            column (str): The column to index.
+            unique (bool): Whether the index should enforce uniqueness.
+            session_token (str, optional): Session token for permission checks.
+
+        Raises:
+            PermissionError: If the user lacks permission.
+            ValueError: If table/column doesn't exist or index creation fails.
+        """
+        self._check_permission(session_token, "update_table") # Or a new 'manage_index' permission
+        table = self.get_table(table_name) # get_table already checks read permission
+        if not table:
+            raise ValueError(f"Table '{table_name}' not found.")
+        # The create_index method on Table handles the rest of the logic/errors
+        table.create_index(index_name, column, unique)
+        if self.log: self.logger.info(f"Database Log: Index '{index_name}' created on table '{table_name}', column '{column}'.")
+
+
+    @log_method_call
+    def drop_table_index(self, table_name: str, index_name: str, session_token: Optional[str] = None):
+        """
+        Drops an index from the specified table.
+
+        Args:
+            table_name (str): The name of the table.
+            index_name (str): The name of the index to drop.
+            session_token (str, optional): Session token for permission checks.
+
+        Raises:
+            PermissionError: If the user lacks permission.
+            ValueError: If table or index doesn't exist.
+        """
+        self._check_permission(session_token, "update_table") # Or a new 'manage_index' permission
+        table = self.get_table(table_name) # get_table already checks read permission
+        if not table:
+            raise ValueError(f"Table '{table_name}' not found.")
+        # The drop_index method on Table handles the rest of the logic/errors
+        table.drop_index(index_name)
+        if self.log: self.logger.info(f"Database Log: Index '{index_name}' dropped from table '{table_name}'.")
         
     # Utility Methods
     # ---------------------------------------------------------------------------------------------
@@ -1462,14 +1512,26 @@ def {procedure_name}(db, *args, **kwargs):
                     print(f"Record Types: {table.records[0]._type()}")
                     print(f"Columns: {table.columns}")
                 
-                consts = []
-                for constraint in table.constraints:
-                    if len(table.constraints[constraint]) == 1:
-                        consts.append(f"{constraint}: {table.constraints[constraint][0].__name__}")
-                    
-                print(f"Constraints: {consts if consts else 'None'}")
-                    
-                table.print_table(pretty=True, index=index, limit=limit)
+                # Print Constraints (excluding UNIQUE handled by index)
+                consts_display = []
+                for col, constraints_list in table.constraints.items():
+                    for constraint_func in constraints_list:
+                         # Only show non-index constraints
+                         if getattr(constraint_func, '_constraint_type', 'CUSTOM') != "UNIQUE":
+                              name = constraint_func.__name__
+                              details = ""
+                              if getattr(constraint_func, '_constraint_type', 'CUSTOM') == "FOREIGN_KEY":
+                                   ref_t = getattr(constraint_func, "reference_table_name", "?")
+                                   ref_c = getattr(constraint_func, "reference_column", "?")
+                                   details = f" -> {ref_t}({ref_c})"
+                              consts_display.append(f"{col}: {name}{details}")
+                print(f"Constraints: {', '.join(consts_display) if consts_display else 'None'}")
+
+                # Print Indexes
+                indexes_display = [str(idx) for idx in table.indexes.values()]
+                print(f"Indexes: {', '.join(indexes_display) if indexes_display else 'None'}")
+
+                table.print_table(pretty=True, limit=limit) # Remove index=index argument
             
         if materialized_views and self.materialized_views:
             # Display materialized view details
@@ -1482,7 +1544,7 @@ def {procedure_name}(db, *args, **kwargs):
                 print(f"View: {view_name}")
                 print(f"Records: {len(view.data.records)}")
                 print(f"Columns: {view.data.columns}")
-                view.data.print_table(pretty=True, index=index, limit=limit)
+                view.data.print_table(pretty=True)
                 
                 first_view = False
         
@@ -1499,7 +1561,7 @@ def {procedure_name}(db, *args, **kwargs):
                 print(f"View: {view_name}")
                 print(f"Records: {len(view.records)}")
                 print(f"Columns: {view.columns}")
-                view.print_table(pretty=True, index=index, limit=limit)
+                view.print_table(pretty=True)
                 
                 first_view = False
                 
