@@ -27,6 +27,14 @@ A command-line tool built with [Typer](https://typer.tiangolo.com/) for interact
 
 ## Usage
 
+If the `segadb` package is installed, you can run the CLI directly using the `segadb_cli` executable:
+
+```bash
+segadb_cli <OPTIONS> <COMMAND> [ARGS]...
+```
+
+Alternatively, you can invoke it using `python segadb_cli.py` if running from the source directory.
+
 The CLI is invoked using `python segadb_cli.py`. You must specify a connection method:
 
 *   **Local File:** Use `--db-file` (or `-f`) followed by the path to your `.segadb` file.
