@@ -353,6 +353,7 @@ class TextRecord(Record):
 
 
 class EncryptedRecord(Record):
+    # TODO: add max try count and timeout options for decryption attempts
     def __init__(self, record_id, data):
         """
         Initializes a new instance of the EncryptedRecord class.
