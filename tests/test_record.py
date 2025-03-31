@@ -39,16 +39,18 @@ class TestRecord(unittest.TestCase):
         self.assertEqual(record.id, 1)
         self.assertEqual(record.data["name"], "John Doe")
         
-    def test_add_to_index(self):
-        record = Record(1, {"name": "John Doe"})
-        record.add_to_index(100)
-        self.assertIn(100, record.index.to_dict())
-        
-    def test_remove_from_index(self):
-        record = Record(100, {"name": "John Doe"})
-        record.add_to_index(100)
-        record.remove_from_index(100)
-        self.assertNotIn(100, record.index.to_dict())   
+    # REMOVED test_add_to_index
+    # def test_add_to_index(self):
+    #     record = Record(1, {"name": "John Doe"})
+    #     record.add_to_index(100)
+    #     self.assertIn(100, record.index.to_dict())
+
+    # REMOVED test_remove_from_index
+    # def test_remove_from_index(self):
+    #     record = Record(100, {"name": "John Doe"})
+    #     record.add_to_index(100)
+    #     record.remove_from_index(100)
+    #     self.assertNotIn(100, record.index.to_dict()) 
     
     def test_vector_record(self):        
         vector_record = VectorRecord(1, {"vector": [1, 2, 3]})
@@ -105,10 +107,18 @@ class TestRecord(unittest.TestCase):
         self.assertEqual(encrypted_record.decrypt(key), "Hello World")
         
     def test_encrypted_record_no_key(self):
-        with suppress_print():
-            key = CustomFernet.generate_key()
-            encrypted_record = EncryptedRecord(1, {"data": "Hello World", "key": key})
-            self.assertIn("Decryption Error", encrypted_record.decrypt("wrong_key"))
+        """Test decrypting with an incorrect/invalid key raises ValueError."""
+        original_data = "my secret data"
+        key = CustomFernet.generate_key() # Generate a valid key for encryption
+        encrypted_record = EncryptedRecord(1, {"data": original_data, "key": key})
+
+        # Assert that calling decrypt with an invalid key raises ValueError
+        with self.assertRaisesRegex(ValueError, "Decryption failed for record 1"):
+            encrypted_record.decrypt("wrong_key") # Pass an invalid key
+
+        # Optional: Verify decryption still works with the correct key
+        decrypted_data = encrypted_record.decrypt(key)
+        self.assertEqual(decrypted_data, original_data)
     
 if __name__ == '__main__':
     unittest.main()

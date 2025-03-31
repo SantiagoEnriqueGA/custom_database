@@ -577,142 +577,281 @@ class Storage:
         conn.close()
         
     @staticmethod
-    def _load_table_from_db_file(filename, table_name, db, key=None, user=None, password=None, compression=False):
+    def _load_table_from_db_file(filename: str, table_name: str, db: 'Database', key: Optional[str]=None, compression: bool=False) -> 'Table':
         """
-        Load a table from a segadb database file. Only the table data is loaded, not the entire database.
+        Loads only a specific table's data and definition from a db file.
+        Intended for use with PartialDatabase. Rebuilds indexes for the loaded table.
+
         Args:
-            filename (str): The path to the JSON file containing the database data.
-            table_name (str): The name of the table to load.
-            db (Database): The database object to which the table will be added.
-            key (bytes, optional): The encryption key. If provided, the data will be decrypted after loading.
-            compression (bool, optional): If True, the data will be decompressed using zlib after loading.
+            filename (str): Path to the .segadb file.
+            table_name (str): Name of the table to load.
+            db (Database): The main Database context (needed for FK lookups).
+            key (str, optional): Encryption key.
+            compression (bool, optional): Whether the file is compressed.
+
         Returns:
-            Table: The loaded table object.
+            Table: A fully loaded Table object (not yet added to db.tables).
+
+        Raises:
+            ValueError: If the table is not found in the file.
+            FileNotFoundError: If the file cannot be found.
+            Exception: For various file reading, decryption, or parsing errors.
         """
         try:
-             # ... (similar file reading logic as Storage.load) ...
-             mode = 'rb'
-             with open(filename, mode) as f:
-                  payload = f.read()
-                  if key: payload = Storage.decrypt(payload.decode('utf-8'), key).encode('utf-8')
-                  if compression: payload = zlib.decompress(payload)
-                  json_data_str = payload.decode('utf-8')
-                  data = json.loads(json_data_str)
-        except Exception as e:
-             print(f"Error reading/decoding db file {filename} to load table {table_name}: {e}")
+            mode = 'rb' # Always read binary
+            with open(filename, mode) as f:
+                payload = f.read()
+                if key:
+                    # Decrypt needs string, assumes payload is utf-8 encoded encrypted string
+                    payload = Storage.decrypt(payload.decode('utf-8'), key).encode('utf-8')
+                if compression:
+                    payload = zlib.decompress(payload)
+                # Decode final payload to string for json.loads
+                json_data_str = payload.decode('utf-8')
+                data = json.loads(json_data_str)
+        except FileNotFoundError:
+            print(f"Error: Database file not found: {filename}")
+            raise
+        except (json.JSONDecodeError, zlib.error, TypeError, ValueError) as e:
+             print(f"Error loading/decoding database file {filename} to load table '{table_name}': {e}")
              raise
+        except Exception as e:
+            print(f"Unexpected error reading database file {filename}: {e}")
+            raise
 
+        # Find the specific table data within the loaded file data
         table_data = data.get("tables", {}).get(table_name)
         if table_data is None:
             raise ValueError(f"Table '{table_name}' not found in database file '{filename}'")
 
-        # Create the table instance (without adding to db.tables yet if used standalone)
-        table = Table(table_name, table_data["columns"])
-        table.next_id = table_data.get("next_id", 1)
+        # --- Create and Populate the Standalone Table Object ---
 
-        # Load records directly into the new table instance
-        record_type_map = { # Simplified map
-                 "Record": Record, "ImageRecord": ImageRecord, # Add others as needed
-            }
+        # 1. Initialize the Table instance
+        try:
+             table = Table(table_name, table_data["columns"])
+             table.next_id = table_data.get("next_id", 1)
+        except KeyError as e:
+             raise ValueError(f"Missing essential table data ('columns') for table '{table_name}' in file '{filename}'. Error: {e}")
+        except Exception as e:
+             raise ValueError(f"Error initializing table '{table_name}' from file data: {e}")
+
+
+        # 2. Load Records into the table instance's structures
+        record_type_map = { # Map type names to actual classes
+             "Record": Record,
+             "VectorRecord": VectorRecord,
+             "TimeSeriesRecord": TimeSeriesRecord,
+             "ImageRecord": ImageRecord,
+             "TextRecord": TextRecord,
+             "EncryptedRecord": EncryptedRecord,
+        }
         for record_info in table_data.get("records", []):
-             record_id = record_info["id"]
-             record_class = record_type_map.get(record_info.get("type", "Record"), Record)
-             record_data = record_info["data"]
-             # Process data (e.g., bytes encoding)
-             processed_data = {k: (v.encode('utf-8') if isinstance(v, str) and k == "password_hash" else v) for k, v in record_data.items()}
-             if record_class == EncryptedRecord: processed_data["key"] = None
+            try:
+                record_id = record_info["id"]
+                record_type_name = record_info.get("type", "Record")
+                record_class = record_type_map.get(record_type_name, Record)
+                record_data = record_info["data"]
 
-             try:
-                  record_obj = record_class(record_id, processed_data)
-                  # Add directly to the standalone table's structures
-                  if record_obj.id not in table.record_map:
-                       table.records.append(record_obj)
-                       table.record_map[record_obj.id] = record_obj
-             except Exception as e:
-                  print(f"Warning: Error creating record ID {record_id} while loading table '{table_name}'. Skipping. Error: {e}")
+                # Handle potential byte encoding (e.g., password_hash)
+                processed_data = {
+                    k: (v.encode('utf-8') if isinstance(v, str) and k == "password_hash" else v)
+                    for k, v in record_data.items()
+                }
+                # Special handling for loading EncryptedRecord (key not saved)
+                if record_class == EncryptedRecord:
+                     processed_data["key"] = None # Indicate data is already encrypted
 
+                # Create the record object
+                record_obj = record_class(record_id, processed_data)
 
-        # Load constraints FOR THIS TABLE ONLY (requires db context for FKs)
+                # Add directly to the standalone table's structures
+                if record_obj.id not in table.record_map:
+                     table.records.append(record_obj)
+                     table.record_map[record_obj.id] = record_obj
+                # else: # Optional warning about duplicate IDs in the file data itself
+                #      print(f"Warning: Duplicate record ID {record_obj.id} in source data for table '{table_name}'.")
+
+            except Exception as e:
+                # Log/print warning and skip the problematic record
+                record_id_str = record_info.get('id', 'UNKNOWN')
+                print(f"Warning: Error processing record ID {record_id_str} while loading table '{table_name}'. Skipping. Error: {e}")
+                continue # Skip to the next record
+
+        # 3. Load Reloadable Constraints (like Foreign Keys)
         loaded_constraints = table_data.get("constraints", {})
         for column, constraints_list in loaded_constraints.items():
-            if column not in table.columns: continue
+            if column not in table.columns:
+                # print(f"Warning: Constraint column '{column}' not found in table '{table_name}' schema during load. Skipping.")
+                continue
             for constraint_info in constraints_list:
+                 # Only load FK constraints here. Unique handled by index, custom not reloadable.
                 if constraint_info.get("type") == "FOREIGN_KEY":
                     ref_table_name = constraint_info.get("reference_table")
                     ref_column = constraint_info.get("reference_column")
-                    ref_table = db.get_table(ref_table_name) # Use passed db context
+                    # Use the provided 'db' object (main DB context) to find the reference table
+                    # This is essential for PartialDatabase where FK targets might not be loaded yet *in the partial DB*,
+                    # but they *must* exist in the main DB structure represented by 'db'.
+                    ref_table = db.get_table(ref_table_name) # Use the main DB instance
                     if ref_table and ref_column:
-                         try: table.add_constraint(column, "FOREIGN_KEY", ref_table, ref_column)
-                         except ValueError as e: print(f"Warning: Error adding FK constraint on {table_name}.{column}: {e}")
-                # Add other constraint types if needed
+                        try:
+                             # Add the constraint to the *standalone* table object being built
+                             table.add_constraint(column, "FOREIGN_KEY", ref_table, ref_column)
+                        except ValueError as e:
+                             print(f"Warning: Error adding FK constraint on {table_name}.{column} during partial load: {e}")
+                    # else: # Optional warning if reference table/column is missing *in the main DB context*
+                    #      print(f"Warning: Reference table '{ref_table_name}' or column '{ref_column}' not found in main DB context for FK constraint on {table_name}.{column}.")
 
-        # Rebuild indexes FOR THIS TABLE ONLY
+
+        # 4. Rebuild Indexes on the standalone table using loaded records
         index_definitions = table_data.get("indexes", [])
         for index_def in index_definitions:
             try:
+                # Call create_index on the *standalone* table object we are building
                 table.create_index(
                     index_name=index_def["name"],
                     column=index_def["column"],
                     unique=index_def["unique"]
                 )
+                # print(f"Successfully rebuilt index '{index_def['name']}' for table '{table_name}'.") # Optional success log
             except ValueError as e:
-                print(f"Warning: Failed to rebuild index '{index_def['name']}' on table '{table_name}' during partial load: {e}")
+                # This usually means a unique constraint was violated during rebuild
+                print(f"Warning: Failed to rebuild index '{index_def['name']}' on table '{table_name}' during partial load: {e}. Data might violate constraints.")
+            except Exception as e:
+                 print(f"Unexpected error rebuilding index '{index_def['name']}' on table '{table_name}': {e}")
 
-        return table
-    
+
+        return table # Return the fully populated, standalone Table object
+
     @staticmethod
-    def _save_table_to_db_file(filename, table, key=None, compression=False):
+    def _save_table_to_db_file(filename: str, table: 'Table', key: Optional[str]=None, compression: bool=False):
         """
-        Save a table to a segadb database file. Only the table data is updated, not the entire database.
-        Args:
-            filename (str): The path to the JSON file where the table will be saved.
-            table (Table): The table object to be saved.
-            key (bytes, optional): The encryption key. If provided, the data will be encrypted before saving.
-            compression (bool, optional): If True, the data will be compressed using zlib before saving.
-        """
-        # Read the existing JSON file
-        with open(filename, 'rb' if compression or key else 'r') as f:
-            json_data = f.read()
-            if key:
-                json_data = Storage.decrypt(json_data, key)
-            if compression:
-                json_data = zlib.decompress(json_data).decode()
-            data = json.loads(json_data)
-        
-        def serialize_table(table):
-            return {
-                "name": table.name,
-                "columns": table.columns,
-                "records": [{
-                    "id": record.id,
-                    "data": record.to_dict() if isinstance(record, ImageRecord) else {k: (v.decode() if isinstance(v, bytes) else v) for k, v in record.data.items()},
-                    "index": record.index.to_dict(),
-                } for record in table.records],
-                "next_id": table.next_id,
-                "constraints": {
-                    column: [
-                        {
-                            "name": constraint.__name__,
-                            "reference_table": getattr(constraint, "reference_table", None),
-                            "reference_column": getattr(constraint, "reference_column", None)
-                        } for constraint in constraints
-                    ] for column, constraints in table.constraints.items()
-                },
-            }
-            
-        # Update the table data
-        data["tables"][table.name] = serialize_table(table)
-        
-        # Convert the data back to JSON
-        json_data = json.dumps(data)
-        if compression:
-            json_data = zlib.compress(json_data.encode())
-        if key:
-            json_data = Storage.encrypt(json_data, key)
+        Saves a given table's current data and definition back into a db file,
+        overwriting the data for that specific table within the file structure.
 
-        # Write the updated JSON back to the file
-        with open(filename, 'wb' if compression or key else 'w') as f:
-            f.write(json_data)
+        Args:
+            filename (str): Path to the .segadb file to update.
+            table (Table): The Table object (presumably modified) to save back.
+            key (str, optional): Encryption key.
+            compression (bool, optional): Whether the file is compressed.
+
+        Raises:
+            FileNotFoundError: If the target db file doesn't exist.
+            ValueError: If the table name doesn't exist in the loaded file data.
+            Exception: For various file reading/writing, encryption, or parsing errors.
+        """
+        # 1. Read the *entire* existing database file
+        try:
+            mode = 'rb' # Always read binary
+            with open(filename, mode) as f:
+                payload = f.read()
+                if key:
+                    payload = Storage.decrypt(payload.decode('utf-8'), key).encode('utf-8')
+                if compression:
+                    payload = zlib.decompress(payload)
+                json_data_str = payload.decode('utf-8')
+                data = json.loads(json_data_str)
+        except FileNotFoundError:
+             print(f"Error: Database file not found: {filename}")
+             raise
+        except (json.JSONDecodeError, zlib.error, TypeError, ValueError) as e:
+             print(f"Error reading/decoding existing db file {filename} to save table '{table.name}': {e}")
+             raise
+        except Exception as e:
+            print(f"Unexpected error reading existing database file {filename}: {e}")
+            raise
+
+        # 2. Define the serialization logic for a single table (consistent with Storage.save)
+        def serialize_table_for_update(target_table: 'Table') -> Dict[str, Any]:
+            # Serialize constraints (FK needs special handling for table name)
+            serializable_constraints = {}
+            for column, constraints_list in target_table.constraints.items():
+                 serializable_constraints[column] = []
+                 for constraint_func in constraints_list:
+                      constraint_info = {"name": constraint_func.__name__}
+                      constraint_type = getattr(constraint_func, "_constraint_type", "CUSTOM")
+                      # Only save reloadable constraint definitions
+                      if constraint_type == "FOREIGN_KEY":
+                           constraint_info["reference_table"] = getattr(constraint_func, "reference_table_name", None)
+                           constraint_info["reference_column"] = getattr(constraint_func, "reference_column", None)
+                           constraint_info["type"] = "FOREIGN_KEY" # Explicitly add type
+                           serializable_constraints[column].append(constraint_info)
+                      # Skip UNIQUE (handled by index) and CUSTOM (not reloadable)
+                      else:
+                           continue
+
+            # Serialize records
+            serialized_records = []
+            for record in target_table.records:
+                 record_data_dict = {}
+                 # Use to_dict() if available (e.g., ImageRecord), else process normally
+                 if hasattr(record, 'to_dict') and callable(record.to_dict):
+                      # Assume to_dict handles necessary encoding (like base64 for images)
+                      record_data_dict = record.to_dict()
+                 else:
+                      # Default processing: decode bytes (like password hash) for JSON
+                      record_data_dict = {
+                           k: (v.decode('utf-8') if isinstance(v, bytes) else v)
+                           for k, v in record.data.items()
+                      }
+
+                 serialized_records.append({
+                     "id": record.id,
+                     "type": record._type(),
+                     "data": record_data_dict,
+                     # No longer saving record._index
+                 })
+
+            return {
+                "name": target_table.name,
+                "columns": target_table.columns,
+                "records": serialized_records,
+                "next_id": target_table.next_id,
+                "constraints": serializable_constraints, # Save processed constraints
+                "indexes": [index.to_dict_definition() for index in target_table.indexes.values()], # Save index definitions
+            }
+
+        # 3. Serialize the input 'table' object
+        try:
+             serialized_table_data = serialize_table_for_update(table)
+        except Exception as e:
+             print(f"Error serializing table '{table.name}' for saving: {e}")
+             raise
+
+        # 4. Update the table data within the loaded dictionary structure
+        if "tables" not in data:
+            data["tables"] = {} # Ensure 'tables' key exists
+
+        # Check if the table actually exists in the loaded structure before replacing
+        if table.name not in data["tables"]:
+             # This could happen if the file was modified externally or table name changed
+             print(f"Warning: Table '{table.name}' was not found in the loaded file structure of '{filename}'. Adding it.")
+             # If adding, ensure other parts of 'data' (views, etc.) remain consistent.
+
+        data["tables"][table.name] = serialized_table_data
+
+        # 5. Convert the *entire modified* data structure back to JSON
+        try:
+            json_data_str_updated = json.dumps(data, indent=4)
+            payload_updated = json_data_str_updated.encode('utf-8') # Start with bytes
+
+            # 6. Compress/Encrypt if necessary
+            if compression:
+                payload_updated = zlib.compress(payload_updated)
+            if key:
+                # Encrypt expects string, payload should be bytes if compressed, decode first
+                payload_updated = Storage.encrypt(payload_updated.decode('utf-8'), key).encode('utf-8')
+
+            # 7. Write the entire structure back to the file, overwriting it
+            mode_write = 'wb' # Always write binary
+            with open(filename, mode_write) as f:
+                f.write(payload_updated)
+
+        except TypeError as e:
+             print(f"Error serializing updated database data for file '{filename}': {e}")
+             raise
+        except Exception as e:
+             print(f"Error writing updated database to {filename}: {e}")
+             raise
     
     @staticmethod
     def _load_viewsProcs_from_db_file(filename, db, key=None, user=None, password=None, compression=False, views=True, materialized_views=True, stored_procedures=True, triggers=True):

@@ -84,6 +84,7 @@ class Index:
     def update(self, old_key: Any, new_key: Any, record_id: int):
         """
         Updates a record's position in the index when its indexed value changes.
+        Checks for unique violations before modifying the index.
 
         Args:
             old_key: The previous value in the indexed column.
@@ -93,9 +94,38 @@ class Index:
         Raises:
             ValueError: If adding the new_key violates a unique constraint.
         """
-        if old_key != new_key:
-            self.remove(old_key, record_id)
-            self.add(new_key, record_id) # `add` handles uniqueness check
+        if old_key == new_key:
+            return # No change needed
+
+        # --- Check for potential unique violation BEFORE modifying ---
+        if self.unique and new_key in self.index_data:
+            # Check if the new key belongs to a *different* record ID
+            existing_ids = self.index_data[new_key]
+            # Important: Ensure existing_ids is not empty before accessing [0]
+            if existing_ids and existing_ids[0] != record_id:
+                 # Violation: new_key exists and belongs to another record
+                 raise ValueError(f"Unique constraint violation in index '{self.name}' on column '{self.column}' for value: {new_key}")
+            # If new_key exists but only contains the *current* record_id (e.g., inconsistent state),
+            # allow the update to proceed, effectively consolidating.
+
+        # --- If check passes OR it's not a unique index, perform remove and add ---
+        self.remove(old_key, record_id)
+        try:
+            # Add the new key. The self.add method itself might contain redundant
+            # unique check depending on its implementation, but it's safer here.
+            self.add(new_key, record_id)
+        except ValueError as e_add:
+            # If add fails unexpectedly *after* the pre-check (e.g., race condition in theory,
+            # or flaw in pre-check logic), we MUST try to revert the remove.
+            print(f"CRITICAL WARNING: Index.update consistency issue? Attempting to revert remove for {old_key}/{record_id}. Error on add({new_key}): {e_add}")
+            # Re-add the old key/id pair. This assumes add won't fail for the old key.
+            # Use internal dict directly to bypass potential unique checks in add for the revert.
+            if old_key not in self.index_data:
+                 self.index_data[old_key] = []
+            if record_id not in self.index_data[old_key]:
+                 self.index_data[old_key].append(record_id)
+            # Re-raise the exception that caused the failure during add
+            raise e_add
 
     def get_all_keys(self) -> List[Any]:
         """Returns a list of all keys currently in the index."""

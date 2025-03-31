@@ -270,16 +270,25 @@ class TestStorage(unittest.TestCase):
         self.assertEqual(len(loaded_db.get_table("EncryptedRecords").records), len(self.db.get_table("EncryptedRecords").records))
         
     def test_store_encrypted_record_wrong_key(self):
-        self.db.create_table("EncryptedRecords", ["encrypted_data"])
+        self.db.create_table("EncryptedRecords", ["data"]) # Column name matches record structure
         key = CustomFernet.generate_key()
+        # Generate a DIFFERENT but valid key for testing failure
+        wrong_key = CustomFernet.generate_key()
+        while wrong_key == key: # Ensure keys are different
+             wrong_key = CustomFernet.generate_key()
+
         EncryptedRecords = self.db.get_table("EncryptedRecords")
         EncryptedRecords.insert({"data": "secret message", "key": key}, record_type=EncryptedRecord)
-        
+
         Storage.save(self.db, self.filename)
         loaded_db = Storage.load(self.filename)
         loaded_table = loaded_db.get_table("EncryptedRecords")
         loaded_record = loaded_table.records[0]
-        self.assertIn("Decryption Error", loaded_record.decrypt("wrong_key"))
+
+        # Assert that calling decrypt with the wrong (but valid format) key raises ValueError
+        # Use assertRaisesRegex for more specific error message checking if needed
+        with self.assertRaisesRegex(ValueError, r"Decryption failed for record 1:.*"):
+             loaded_record.decrypt(wrong_key)
     
 if __name__ == '__main__':
     unittest.main()
