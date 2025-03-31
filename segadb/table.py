@@ -738,45 +738,81 @@ class Table:
              return None
 
     @log_method_call
-    def select(self, condition: Callable[[Record], bool]) -> List[Record]:
+    def select(self, condition: Callable[[Record], bool] = None, index_name = None, value = None) -> List[Record]:
         """
         Selects records from the table that satisfy the given condition.
         (Currently performs a full table scan).
 
         Args:
             condition (function): A function taking a Record object, returning True/False.
+            index_name (str): The name of the index to use for selection, if available.
+            value (Any): The value to search for in the indexed column.
 
         Returns:
             List[Record]: A list of records satisfying the condition.
-        """
-        # Basic implementation - full scan
-        # TODO: Query Planning - Add logic to detect if condition uses an index.
-        # Example: If condition is `lambda r: r.data['email'] == 'test@example.com'`
-        # and an index exists on 'email', use the index first.
-        return [record for record in self.records if condition(record)]
-    
+        """       
+        if index_name and value:
+            index = self.indexes.get(index_name)
+            if index:
+                # Use the index to find potential IDs
+                record_ids = index.find(value)
+                if record_ids:
+                    # Retrieve records by IDs found in the index
+                    return [self.record_map[record_id] for record_id in record_ids if record_id in self.record_map]
+                else:
+                    return []
+            else:
+                return [record for record in self.records if condition(record)]
+        elif condition:
+            return [record for record in self.records if condition(record)]
+        else:
+            # No condition provided, warn and return all records
+            warning_msg = "No condition provided for selection. Returning all records."
+            if self.logger: self.logger.warning(f"Table Log: {self.name} | {warning_msg}")
+            # Optionally, raise an exception or return an empty list
+            # raise ValueError(warning_msg)
+            # For now, just return all records
+            return self.records
+        
     @log_method_call
-    def filter(self, condition: Callable[[Record], bool]) -> 'Table':
+    def filter(self, condition: Callable[[Record], bool] = None, index_name = None, value = None) -> 'Table':
         """
         Filter records based on a condition. Returns a *new* Table.
         (Currently performs a full table scan).
 
         Args:
             condition (function): A function taking a Record object, returning True/False.
+            index_name (str): The name of the index to use for filtering, if available.
+            value (Any): The value to search for in the indexed column.
 
         Returns:
             Table: A new table containing the filtered records.
         """
-        # TODO: Query Planning - Use index if condition allows.
-        # Example: If condition is `lambda r: r.data['email'] == 'test@example.com'`
-        # and an index exists on 'email', use the index first.
-        filtered_records_data = [record.data for record in self.records if condition(record)]
-
+        # Currently index only used for direct match not range or complex conditions
+        # TODO: Implement range or complex conditions with indexes
+        if index_name and value:
+            index = self.indexes.get(index_name)
+            if index:
+                # Use the index to find potential IDs
+                record_ids = index.find(value)
+                filtered_records = [self.record_map[record_id] for record_id in record_ids if record_id in self.record_map]
+            else:
+                filtered_records = [record for record in self.records if condition(record)]
+        elif condition:
+            filtered_records = [record.data for record in self.records if condition(record)]
+        else:
+            # No condition provided, warn and return all records
+            warning_msg = "No condition provided for filtering. Returning all records."
+            if self.logger: self.logger.warning(f"Table Log: {self.name} | {warning_msg}")
+            # Optionally, raise an exception or return an empty list
+            # raise ValueError(warning_msg)
+            filtered_records = self.records
+            
         # Create a new table (without constraints or indexes from the original)
         filtered_table = Table(f"{self.name}_filtered", self.columns)
-        if filtered_records_data:
+        if filtered_records:
             # Use bulk insert for efficiency, assuming no transactions needed here
-            filtered_table.bulk_insert(filtered_records_data)
+            filtered_table.bulk_insert(filtered_records)
 
         return filtered_table
 

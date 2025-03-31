@@ -49,16 +49,31 @@ print(f"Inserted {NUM_RECORDS:,} records in {end - start:.2f} seconds")
 
 
 # Test select time on email column (which is not indexed)
+# -----------------------------------------------------------------------------------------------
 print(f"\nTesting select on email column (not indexed):")
+
+start = time.time()
+selected = table.select(lambda record: "james07@example.net" in record.data["email"])
+end = time.time()
+print(f"--Select query executed in {end - start:.2f} seconds, found {len(selected)} out of {NUM_RECORDS:,} records")
+
 start = time.time()
 filtered = table.filter(lambda record: "john" in record.data["email"]) 
 end = time.time()
-print(f"--Select query executed in {end - start:.2f} seconds, found {len(filtered.records)} out of {NUM_RECORDS:,} records")
+print(f"--Filter query executed in {end - start:.2f} seconds, found {len(filtered.records)} out of {NUM_RECORDS:,} records")
+
 
 # Add an index on the email column and test the select time again
+# -----------------------------------------------------------------------------------------------
 table.create_index(index_name="email_index", column="email", unique=False)
 print(f"\nTesting select on email column (indexed):")
+
+start = time.time()
+selected = table.select(index_name="email_index", value="james07@example.net")
+end = time.time()
+print(f"--Select query executed in {end - start:.2f} seconds, found {len(selected)} out of {NUM_RECORDS:,} records")
+
 start = time.time()
 filtered = table.filter(lambda record: "john" in record.data["email"]) 
 end = time.time()
-print(f"--Select query executed in {end - start:.2f} seconds, found {len(filtered.records)} out of {NUM_RECORDS:,} records")
+print(f"--Filter query executed in {end - start:.2f} seconds, found {len(filtered.records)} out of {NUM_RECORDS:,} records")
