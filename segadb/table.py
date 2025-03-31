@@ -768,6 +768,8 @@ class Table:
             Table: A new table containing the filtered records.
         """
         # TODO: Query Planning - Use index if condition allows.
+        # Example: If condition is `lambda r: r.data['email'] == 'test@example.com'`
+        # and an index exists on 'email', use the index first.
         filtered_records_data = [record.data for record in self.records if condition(record)]
 
         # Create a new table (without constraints or indexes from the original)

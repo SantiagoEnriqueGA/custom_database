@@ -18,6 +18,7 @@ env/
 
 # Ignore files over 100MB
 reviews.csv
+records.json
 
 # Ignore example storage
 example_storage/
