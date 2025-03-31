@@ -617,7 +617,7 @@ class Table:
         chunks = [record_list[i:i + chunk_size] for i in range(0, len(record_list), chunk_size)]
 
         # Calculate starting IDs
-        start_ids = [self.next_id + i * chunk_size for i in range(len(chunks))]
+        start_ids = [i * chunk_size for i in range(len(chunks))]
         # Parallel processing doesn't need start_indices anymore
 
         # Prepare arguments
