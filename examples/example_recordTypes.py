@@ -131,6 +131,7 @@ print("\n" + "-" * 80)
 print("EncryptedRecords Table:")
 EncryptedRecords.print_table(pretty=True)
 
+# TODO: FIX THIS - ENCRYPTED RECORDS DON'T WORK
 # Example usage of EncryptedRecord methods
 encrypted1 = EncryptedRecords.records[0]
 print(f"\nExample usage of EncryptedRecord Methods on record: {encrypted1.encrypted_data}:")
