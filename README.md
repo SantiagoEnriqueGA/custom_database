@@ -32,6 +32,7 @@ The database library provides the following interfaces:
 - [Installation](#installation)
 - [Usage Examples](#usage-examples)
 - [Web Application](#web-application)
+- [CLI Tool](#cli-tool)
 - [Scripts](#scripts)
 - [Documentation](#documentation)
 - [Tests](#tests)
@@ -207,6 +208,22 @@ This script will launch:
 *   The Flask API server using `web_app_react/app.py`.
 
 You can then access the web interface, typically at `http://localhost:5000` (check the output of `start_servers.py` for the exact URL).
+
+## CLI Tool
+A command-line tool for interacting with SegaDB databases.  
+This CLI allows you to manage database instances either by interacting directly with local `.segadb` files or by connecting to a running SegaDB server via its socket interface.
+
+### Features
+
+*   Connect to local `.segadb` files or a remote SegaDB server.
+*   Get database information (`info`).
+*   Manage tables: `list`, `create`, `drop`, `query`, `insert`.
+*   Manage users (remote server only): `create`.
+*   Handle remote server authentication: `auth login`, `auth logout`.
+*   Manage backups (local files only): `backup create`, `backup list`.
+*   Control remote server: `server ping`, `server stop`.
+*   Uses existing `segadb` package logic (`Storage`, `SocketClient`, etc.).
+*   Handles basic error reporting and confirmation prompts.
 
 ## Scripts
 The following PowerShell scripts are included in the `scripts/` folder to help with various tasks:
