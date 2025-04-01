@@ -1,3 +1,6 @@
+import tempfile
+import json
+from .storage import Storage
 class Transaction:
     def __init__(self, database):
         """
@@ -64,15 +67,54 @@ class Transaction:
         """
         Previews the operations in the current transaction without committing or rolling back.
         """
-        # TODO: Compare with original DB to show differences
+        original = self.database.copy()
         for operation in self.operations:
             operation()
-            
-        # Add preview to DB name
-        self.database.name = self.database.name + "_preview"
-            
-        self.database.print_db()
+        new = self.database
         
-        # Reset DB name
-        self.database.name = self.database.name[:-8]
+        # Save original DB to a temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".segadb") as temp_orig:
+            Storage.save(original, temp_orig.name)
+            orig_path = temp_orig.name
+
+        # Save modified DB to another temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".segadb") as temp_mod:
+            Storage.save(new, temp_mod.name)
+            mod_path = temp_mod.name
         
+        print(f"Original DB saved to: {orig_path}")
+        print(f"Modified DB saved to: {mod_path}")
+
+        # Load the JSON content from the files for comparison
+        with open(orig_path, 'rb') as f:
+            orig_data = json.loads(f.read().decode('utf-8'))
+
+        with open(mod_path, 'rb') as f:
+            mod_data = json.loads(f.read().decode('utf-8'))
+        
+        # Compare the two JSONs
+        try:
+            from deepdiff import DeepDiff
+            diff = DeepDiff(orig_data, mod_data, ignore_order=True)
+            diff_formated = json.dumps(diff, indent=4)
+            print("Differences:", diff_formated)
+        except:
+            print("DeepDiff not available. Performing manual diff:")
+            differences = {}
+            # Compare keys present in original data
+            for key in orig_data:
+                if key not in mod_data:
+                    differences[key] = {"only_in_original": orig_data[key]}
+                elif orig_data[key] != mod_data[key]:
+                    differences[key] = {
+                        "original": orig_data[key],
+                        "modified": mod_data[key]
+                    }
+            # Check for keys only present in modified data
+            for key in mod_data:
+                if key not in orig_data:
+                    differences[key] = {"only_in_modified": mod_data[key]}
+            if differences:
+                print("Manual Differences:", json.dumps(differences, indent=4))
+            else:
+                print("No differences found (manual comparison).")
