@@ -86,34 +86,34 @@ The CLI is invoked using `python segadb_cli.py`. You must specify a connection m
 
 ```bash
 # Get info (assuming no auth needed or providing credentials)
-python segadb_cli.py -f ./example_storage/database.segadb info
+segadb_cli -f ./example_storage/database.segadb info
 # OR if auth is required:
-# export SEGADB_USER='admin'
-# export SEGADB_PASSWORD='your_password'
-# python segadb_cli.py -f ./example_storage/database.segadb -u admin info
+$Env:SEGADB_USER = "admin"
+$Env:SEGADB_PASSWORD = "password123"
+segadb_cli -f ./example_storage/database.segadb info
 
 # List tables
-python segadb_cli.py -f ./example_storage/database.segadb table list
+segadb_cli -f ./example_storage/database.segadb table list
 
 # Create a table (saves changes to the file!)
-python segadb_cli.py -f ./example_storage/database.segadb table create products "product_id,name,price"
+segadb_cli -f ./example_storage/database.segadb table create products "product_id,name,price"
 
 # Query the first 5 orders
-python segadb_cli.py -f ./example_storage/database.segadb table query orders --limit 5
+segadb_cli -f ./example_storage/database.segadb table query orders --limit 5
 
 # Insert a record (saves changes!)
-python segadb_cli.py -f ./example_storage/database.segadb table insert products '{"product_id": 101, "name": "Gadget", "price": 99.99}'
+segadb_cli -f ./example_storage/database.segadb table insert products '{"product_id": 101, "name": "Gadget", "price": 99.99}'
 
 # Insert an ImageRecord locally (saves changes!)
-python segadb_cli.py -f ./my_image_db.segadb table insert images '{"image_data":"/path/to/image.jpg"}' --type ImageRecord
+segadb_cli -f ./my_image_db.segadb table insert images '{"image_data":"/path/to/image.jpg"}' --type ImageRecord
 
 # Create a compressed backup with timestamp
-python segadb_cli.py -f ./example_storage/database.segadb backup create --compress --date
+segadb_cli -f ./example_storage/database.segadb backup create --compress --date
 
 # List backups in the default directory (./backups_SampleDB)
-python segadb_cli.py -f ./example_storage/database.segadb backup list
+segadb_cli -f ./example_storage/database.segadb backup list
 # Or specify directory
-python segadb_cli.py backup list --dir ./my_backups
+segadb_cli backup list --dir ./my_backups
 
 ```
 
@@ -127,41 +127,51 @@ python segadb_cli.py backup list --dir ./my_backups
 # --- Terminal 2: Use the CLI ---
 
 # Ping the server
-python segadb_cli.py -H 127.0.0.1 -P 65432 server ping
+segadb_cli -H 127.0.0.1 -P 65432 server ping
 
 # Get server info (might require login depending on server config)
 # Attempt without login first
-python segadb_cli.py -H 127.0.0.1 -P 65432 info
+segadb_cli -H 127.0.0.1 -P 65432 info
 
 # Login (use correct credentials for the *remote* server)
-# export SEGADB_LOGIN_PASSWORD='password123' # Set env var for password
-python segadb_cli.py -H 127.0.0.1 -P 65432 auth login admin
+$Env:SEGADB_PASSWORD = "password123"
+segadb_cli -H 127.0.0.1 -P 65432 auth login admin
 
 # Now run commands requiring authentication
-python segadb_cli.py -H 127.0.0.1 -P 65432 info # Should show active user now
-python segadb_cli.py -H 127.0.0.1 -P 65432 table list
+segadb_cli -H 127.0.0.1 -P 65432 info # Should show active CLI Session
+segadb_cli -H 127.0.0.1 -P 65432 table list
 
 # Create a table remotely
-python segadb_cli.py -H 127.0.0.1 -P 65432 table create remote_log "timestamp,message"
+segadb_cli -H 127.0.0.1 -P 65432 table create remote_log "timestamp,message"
 
 # Insert remotely
-python segadb_cli.py -H 127.0.0.1 -P 65432 table insert remote_log '{"timestamp": "2023-10-27T10:00:00Z", "message": "System started"}'
+segadb_cli -H 127.0.0.1 -P 65432 table insert remote_log '{"timestamp": "2023-10-27T10:00:00Z", "message": "System started"}'
+
+# Alternatively, convert JSON data to Base64 for remote insertion
+# Useful for larger JSON payloads or when special characters are present in the JSON string.
+$json = '{"timestamp": "2023-10-27T10:00:00Z", "message": "System started"}'
+$b64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json))
+python segadb\segadb_cli.py -H 127.0.0.1 -P 65432 table insert remote_log --data-b64 $b64
 
 # Query with filter (Use filter syntax expected by your server's _handle_command)
-python segadb_cli.py -H 127.0.0.1 -P 65432 table query orders --filter "lambda r: r.data['user_id'] == 5" -l 10
+segadb_cli -H 127.0.0.1 -P 65432 table query orders --filter "lambda r: r.data['user_id'] == 5" -l 10
 
 # Create a new user remotely (likely requires admin privileges from login)
-# export SEGADB_CREATE_PASSWORD='new_user_pass'
-python segadb_cli.py -H 127.0.0.1 -P 65432 user create editor_user --roles "editor"
+segadb_cli -H 127.0.0.1 -P 65432 user create editor_user pass123 --roles "editor"
 
 # Logout
-python segadb_cli.py -H 127.0.0.1 -P 65432 auth logout
+segadb_cli -H 127.0.0.1 -P 65432 auth logout
 
-# Stop the server (likely requires admin privileges from login)
-# (Re-login as admin if necessary first)
-# python segadb_cli.py -H 127.0.0.1 -P 65432 auth login admin
-python segadb_cli.py -H 127.0.0.1 -P 65432 server stop --force
+# Stop the database server thread (if you have the permissions to do so)
+segadb_cli -H 127.0.0.1 -P 65432 server stop --force
+
+# Can restart the server thread
+segadb_cli -H 127.0.0.1 -P 65432 server start --force
+
+# Shutdown the server gracefully (stops server and socket)
+segadb_cli -H 127.0.0.1 -P 65432 server shutdown --force
 ```
+
 
 ## Authentication Notes
 - **Local (--db-file):** Authentication (if required by the DB file) happens during the loading of the database file. You must provide --user and --password (or SEGADB_PASSWORD) alongside --db-file for every command if the database has users configured.
@@ -170,8 +180,8 @@ python segadb_cli.py -H 127.0.0.1 -P 65432 server stop --force
 ## Environment Variables
 - **SEGADB_USER:** Can be used instead of providing --user for local file authentication.
 - **SEGADB_PASSWORD:** Can be used instead of providing --password for local file authentication.
-- **SEGADB_LOGIN_PASSWORD:** Can be used instead of providing the password argument for auth login.
-- **SEGADB_CREATE_PASSWORD:** Can be used instead of providing the password argument for user create.
+- **SEGADB_USER:** Can be used instead of providing the password argument for auth login.
+- **SEGADB_PASSWORD:** Can be used instead of providing the password argument for user create.
 
 ## Important Caveats
 - **Local File Saving:** When using --db-file, commands that modify the database (e.g., table create, table drop, table insert, backup create) will overwrite the entire database file on successful execution. This can be slow for large files and potentially risky. Use backups!
