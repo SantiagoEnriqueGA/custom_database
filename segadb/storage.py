@@ -1,4 +1,5 @@
 # Imports: Standard Library
+import textwrap
 import re
 import os
 import types
@@ -220,8 +221,8 @@ class Storage:
              query = db._stored_procedure_to_string(sp)
              data["stored_procedures"][sp_name] = {"name": sp_name, "query": query}
         for trigger_type in db.triggers:
-            for proc_name, triggers_list in db.triggers[trigger_type].items():
-                data["triggers"][trigger_type][proc_name] = [db._stored_procedure_to_string(trigger) for trigger in triggers_list]
+            for proc_name, triggers_source in db.triggers_source[trigger_type].items():
+                data["triggers"][trigger_type][proc_name] = [triggers_source]
 
         # Convert to JSON, compress/encrypt, and write
         try:
@@ -397,18 +398,29 @@ class Storage:
             exec_context = {"db": db}
             # Helper to safely execute code strings
             def safe_exec(code, name, item_type):
-                 try:
-                      exec(code, globals(), exec_context) # Execute in controlled context
-                      return exec_context.get(name)
-                 except Exception as e:
-                      print(f"Warning: Error executing {item_type} '{name}' code during load: {e}")
-                      return None
+                try:
+                    dedented_code = textwrap.dedent(code)
+                    # Merge globals and exec_context into one context dictionary
+                    combined_context = dict(globals())
+                    combined_context.update(exec_context)
+                    exec(dedented_code, combined_context)
+                    # Update exec_context with any new globals from combined_context
+                    exec_context.update(combined_context)
+                    return combined_context.get(name)
+                except Exception as e:
+                    print(f"Warning: Error executing {item_type} '{name}' code during load: {e}")
+                    print(f"Code: {code}") # Show the code for debugging purposes
+                    return None
 
             # Load Views
             for view_name, view_data in data.get("views", {}).items():
                 query_func = safe_exec(view_data["query"], view_name, "view")
                 if query_func and callable(query_func):
-                     try: db.create_view(view_name, query_func)
+                     try: 
+                         db.create_view(view_name, query_func)
+                         view = db.get_view(view_name) 
+                         view.query_string = view_data["query"] 
+                         
                      except ValueError as e: print(f"Warning: Error creating view '{view_name}': {e}")
                 else: print(f"Warning: Failed to load or invalid query function for view '{view_name}'.")
 
@@ -416,7 +428,10 @@ class Storage:
             for mv_name, mv_data in data.get("materialized_views", {}).items():
                  query_func = safe_exec(mv_data["query"], mv_name, "materialized view")
                  if query_func and callable(query_func):
-                      try: db.create_materialized_view(mv_name, query_func)
+                      try: 
+                          db.create_materialized_view(mv_name, query_func)
+                          mv = db.get_materialized_view(mv_name)
+                          mv.query_string = mv_data["query"] # Store the original query string for refresh purposes
                       except ValueError as e: print(f"Warning: Error creating materialized view '{mv_name}': {e}")
                  else: print(f"Warning: Failed to load or invalid query function for materialized view '{mv_name}'.")
 
@@ -425,7 +440,10 @@ class Storage:
             for sp_name, sp_data in data.get("stored_procedures", {}).items():
                 proc_func = safe_exec(sp_data["query"], sp_name, "stored procedure")
                 if proc_func and callable(proc_func):
-                     try: db.add_stored_procedure(sp_name, proc_func)
+                     try: 
+                         db.add_stored_procedure(sp_name, proc_func)
+                         sp = db.get_stored_procedure(sp_name)
+                         db.stored_procedure_source[sp_name] = sp_data["query"]
                      except ValueError as e: print(f"Warning: Error adding stored procedure '{sp_name}': {e}")
                 else: print(f"Warning: Failed to load or invalid function for stored procedure '{sp_name}'.")
 
@@ -856,7 +874,8 @@ class Storage:
     @staticmethod
     def _load_viewsProcs_from_db_file(filename, db, key=None, user=None, password=None, compression=False, views=True, materialized_views=True, stored_procedures=True, triggers=True):
         """
-        Load views from a segadb database file. Only the view data is loaded, not the entire database.
+        Load views/procedures/triggers from a segadb database file.
+        
         Args:
             filename (str): The path to the JSON file containing the database data.
             db (Database): The database object to which the views will be added.
@@ -867,52 +886,88 @@ class Storage:
             stored_procedures (bool, optional): If True, load stored procedures. Default is True.
             triggers (bool, optional): If True, load triggers. Default is True.
         """
+        import textwrap
         with open(filename, 'rb' if compression or key else 'r') as f:
             json_data = f.read()
             if key:
                 json_data = Storage.decrypt(json_data, key)
             if compression:
                 json_data = zlib.decompress(json_data).decode()
-
+    
             data = json.loads(json_data)
+            
+        def safe_exec(code, name, item_type):
+            try:
+                dedented_code = textwrap.dedent(code)
+                combined_context = dict(globals())
+                combined_context.update({"db": db})
+                exec(dedented_code, combined_context)
+                return combined_context.get(name)
+            except Exception as e:
+                print(f"Warning: Error executing {item_type} '{name}' code during load: {e}")
+                print(f"Code: {code}")
+                return None
         
         # Load views
-        # Executes the query function in the global namespace, typecasts the result to a function, and creates a view
         if views:
-            for view_name, view_data in data["views"].items():
-                exec(view_data["query"].strip(), globals())
-                globals()[view_name] = eval(view_name)
-                db.create_view(view_name, types.FunctionType(globals()[view_name].__code__, {"db": db}))
-            
+            for view_name, view_data in data.get("views", {}).items():
+                query_func = safe_exec(view_data["query"], view_name, "view")
+                if query_func and callable(query_func):
+                    try:
+                        db.create_view(view_name, query_func)
+                        view = db.get_view(view_name)
+                        view.query_string = view_data["query"]
+                    except ValueError as e:
+                        print(f"Warning: Error creating view '{view_name}': {e}")
+                else:
+                    print(f"Warning: Failed to load or invalid query function for view '{view_name}'.")
+        
         # Load materialized views
-        # Executes the query function in the global namespace, typecasts the result to a function, and creates a materialized view
         if materialized_views:
-            for mv_name, mv_data in data["materialized_views"].items():
-                exec(mv_data["query"].strip(), globals())
-                globals()[mv_name] = eval(mv_name)
-                db.create_materialized_view(mv_name, types.FunctionType(globals()[mv_name].__code__, {"db": db}))
-            
+            for mv_name, mv_data in data.get("materialized_views", {}).items():
+                query_func = safe_exec(mv_data["query"], mv_name, "materialized view")
+                if query_func and callable(query_func):
+                    try:
+                        db.create_materialized_view(mv_name, query_func)
+                        mv = db.get_materialized_view(mv_name)
+                        mv.query_string = mv_data["query"]
+                    except ValueError as e:
+                        print(f"Warning: Error creating materialized view '{mv_name}': {e}")
+                else:
+                    print(f"Warning: Failed to load or invalid query function for materialized view '{mv_name}'.")
+        
         # Load stored procedures
-        # Executes the query function in the global namespace, typecasts the result to a function, and creates a stored procedure
-        if stored_procedures:
-            if data.get("stored_procedures"):    
-                for sp_name, sp_data in data["stored_procedures"].items():
-                    exec(sp_data["query"].strip(), globals())
-                    globals()[sp_name] = eval(sp_name)
-                    db.add_stored_procedure(sp_name, types.FunctionType(globals()[sp_name].__code__, {"db": db}))
+        if stored_procedures and data.get("stored_procedures"):
+            for sp_name, sp_data in data.get("stored_procedures", {}).items():
+                proc_func = safe_exec(sp_data["query"], sp_name, "stored procedure")
+                if proc_func and callable(proc_func):
+                    try:
+                        db.add_stored_procedure(sp_name, proc_func)
+                        sp = db.get_stored_procedure(sp_name)
+                        db.stored_procedure_source[sp_name] = sp_data["query"]
+                    except ValueError as e:
+                        print(f"Warning: Error adding stored procedure '{sp_name}': {e}")
+                else:
+                    print(f"Warning: Failed to load or invalid function for stored procedure '{sp_name}'.")
         
         # Load triggers
-        if triggers:
-            if data.get("triggers"):
-                for trigger_type in data["triggers"]:
-                    for proc_name, triggers in data["triggers"][trigger_type].items():
-                        for trigger_data in triggers:
-                            exec(trigger_data.strip(), globals())
-                            trigger_name_match = re.search(r'def (\w+)', trigger_data)
-                            if trigger_name_match:
-                                trigger_name = trigger_name_match.group(1)
-                                trigger_function = eval(trigger_name)
-                                db.add_trigger(proc_name, trigger_type, types.FunctionType(trigger_function.__code__, {"db": db}))
+        if triggers and data.get("triggers"):
+            for trigger_type, triggers_dict in data.get("triggers", {}).items():
+                for proc_name, triggers_list in triggers_dict.items():
+                    for trigger_code in triggers_list:
+                        match = re.search(r"def\s+(\w+)\s*\(", trigger_code)
+                        if match:
+                            trigger_func_name = match.group(1)
+                            trigger_func = safe_exec(trigger_code, trigger_func_name, f"trigger function {trigger_func_name}")
+                            if trigger_func and callable(trigger_func):
+                                try:
+                                    db.add_trigger(proc_name, trigger_type, trigger_func)
+                                except ValueError as e:
+                                    print(f"Warning: Error adding trigger to '{proc_name}': {e}")
+                            else:
+                                print(f"Warning: Failed to load or invalid function for trigger '{trigger_func_name}'.")
+                        else:
+                            print(f"Warning: Could not determine function name from trigger code for procedure '{proc_name}'.")
 
     # Utility Functions
     # ---------------------------------------------------------------------------------------------

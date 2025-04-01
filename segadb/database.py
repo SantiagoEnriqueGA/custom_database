@@ -154,7 +154,9 @@ class Database:
         self.sessions = {}
         self.active_session = None
         self.stored_procedures = {}
+        self.stored_procedure_source = {}
         self.triggers = {"before": {}, "after": {}}
+        self.triggers_source = {"before": {}, "after": {}}
         self.running = False
         self.server_running = False
         self.thread = None
@@ -1186,6 +1188,12 @@ def {procedure_name}(db, *args, **kwargs):
         if name in self.stored_procedures:
             raise ValueError(f"Stored procedure {name} already exists.")
         self.stored_procedures[name] = procedure
+        
+        # Try to store the source
+        try:
+            self.stored_procedure_source[name] = inspect.getsource(procedure)
+        except OSError:
+            self.stored_procedure_source[name] = "Source code not available"       
     
     @log_method_call
     def execute_stored_procedure(self, procedure_name, *args, **kwargs):
@@ -1243,7 +1251,12 @@ def {procedure_name}(db, *args, **kwargs):
         Returns:
             str: The source code of the stored procedure function.
         """
-        return inspect.getsource(procedure)
+        # Find the matching name
+        for name, stored_procedure in self.stored_procedures.items():
+            if stored_procedure == procedure:
+                return self.stored_procedure_source.get(name, "Source code not available")
+        # Fallback if not found
+        return "Source code not available"
     
     # Trigger Management
     # ---------------------------------------------------------------------------------------------
@@ -1263,6 +1276,13 @@ def {procedure_name}(db, *args, **kwargs):
         if procedure_name not in self.triggers[trigger_type]:
             self.triggers[trigger_type][procedure_name] = []
         self.triggers[trigger_type][procedure_name].append(trigger_function)
+        
+        # Try to store the source
+        try:
+            self.triggers_source[trigger_type][procedure_name] = inspect.getsource(trigger_function)
+        except OSError:
+            self.triggers_source[trigger_type][procedure_name] = "Source code not available"
+        
 
     @log_method_call
     def execute_triggers(self, procedure_name, trigger_type, *args, **kwargs):
@@ -1546,6 +1566,7 @@ def {procedure_name}(db, *args, **kwargs):
             first_view = True
             for view_name, view in self.materialized_views.items():
                 if not first_view: print("")
+                print(f"Source Code:\n{view._query_to_string()}") 
                 
                 print(f"View: {view_name}")
                 print(f"Records: {len(view.data.records)}")
@@ -1561,7 +1582,7 @@ def {procedure_name}(db, *args, **kwargs):
             first_view = True
             for view_name, view in self.views.items():
                 if not first_view: print("")
-                
+                print(f"Source Code:\n{view._query_to_string()}") 
                 view = view.get_data()
                 
                 print(f"View: {view_name}")

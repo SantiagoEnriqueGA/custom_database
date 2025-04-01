@@ -30,8 +30,8 @@ class TestDatabasePartial(unittest.TestCase):
 
     def setUp(self):
         db = Database.load_sample_database(n_users=100, n_orders=200)
-        Storage.save(db, "example_storage/database_partial.db")
-        self.db = PartialDatabase("Partial Database", "example_storage/database_partial.db")
+        Storage.save(db, "example_storage/database_partial.segadb")
+        self.db = PartialDatabase("Partial Database", "example_storage/database_partial.segadb")
         self.db._load_table_from_storage = MagicMock()
         self.db._check_permission = MagicMock()
 
@@ -49,7 +49,7 @@ class TestDatabasePartial(unittest.TestCase):
 
     def test_dormant_tables(self):
         self.db.loaded_tables = {"table1": Mock()}
-        with open("example_storage/database_partial.db", 'w') as f:
+        with open("example_storage/database_partial.segadb", 'w') as f:
             f.write('{"tables": ["table1", "table2", "table3"]}')
         dormant_tables = self.db.dormant_tables()
         self.assertEqual(dormant_tables, ["table2", "table3"])

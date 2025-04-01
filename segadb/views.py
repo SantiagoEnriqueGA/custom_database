@@ -10,6 +10,7 @@ class View:
         """
         self.name = name
         self.query = query
+        self.query_string = None
 
     def get_data(self):
         """
@@ -25,7 +26,13 @@ class View:
         Returns:
             str: The source code of the query function.
         """
-        return inspect.getsource(self.query)
+        try:
+            return inspect.getsource(self.query)
+        except OSError:
+            if self.query_string:
+                return self.query_string  # Fallback to the previously stored string if source retrieval fails (e.g., in some environments)
+            else:
+                return "<unable to retrieve source code>"
     
 class MaterializedView:
     def __init__(self, name, query):
@@ -38,6 +45,7 @@ class MaterializedView:
         self.name = name
         self.query = query
         self.data = self.query()
+        self.query_string = None
 
     def refresh(self):
         """
@@ -59,4 +67,10 @@ class MaterializedView:
         Returns:
             str: The source code of the query function.
         """
-        return inspect.getsource(self.query)
+        try:
+            return inspect.getsource(self.query)
+        except OSError:
+            if self.query_string:
+                return self.query_string  # Fallback to the previously stored string if source retrieval fails (e.g., in some environments)
+            else:
+                return "<unable to retrieve source code>"
