@@ -399,17 +399,16 @@ def table_list(ctx: typer.Context):
                 typer.echo(f"- {table_name} ({record_count} record{'s' if record_count != 1 else ''})")
     elif conn_type == 'remote':
         client = _ensure_remote(ctx)
-        result = _send_authed_remote_command(client, "list_tables") # Handles errors
+        result = _send_authed_remote_command(client, "list_tables")  # Handles errors
         tables = result.get("data", [])
         if not tables:
             typer.echo("No tables found.")
         else:
-             # Could add record count via separate queries if really needed, but often slow
-             # Sorting remote list for consistency
-            for table_name in sorted(tables):
-                typer.echo(f"- {table_name}")
+            # Transform table names into dict format for printing via SocketUtilities
+            data = [{"Table": table} for table in sorted(tables)]
+            columns = ["Table"]
+            SocketUtilities.print_results(data, columns, limit=len(data), offset=0)
     typer.echo("--------------")
-
 
 @table_app.command("create")
 def table_create(
@@ -505,7 +504,6 @@ def table_query(
     if filter_condition:
          typer.secho("Applying remote filter (ensure query is safe!)...", fg=typer.colors.YELLOW)
 
-
     try:
         if conn_type == 'local':
             db = _ensure_local(ctx)
@@ -522,6 +520,8 @@ def table_query(
             typer.echo("------------------------------------------")
 
         elif conn_type == 'remote':
+            print(f"DEBUG: Remote query on table '{table_name}' with filter: {filter_condition}") # Debug line to show filter being used
+            
             client = _ensure_remote(ctx)
             params = {"table": table_name, "filter": filter_condition}
             result = _send_authed_remote_command(client, "query", params) # Handles errors
@@ -549,7 +549,6 @@ def table_query(
                              break
                          typer.echo(json.dumps(record)) # Print as JSON string
                          count += 1
-            typer.echo("-------------------------------------------")
     except typer.Exit:
         raise
     except Exception as e:

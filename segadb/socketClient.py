@@ -1,6 +1,7 @@
 import socket
 import json
 import time
+from tkinter import E
 
 class SocketClient:
     """
@@ -365,28 +366,45 @@ class SocketUtilities:
         if not data or not columns:
             print("No data to display.")
             return
-
-        # Calculate column widths
-        col_widths = {col: max(len(col), max(len(str(record.get(col, ""))) for record in data)) for col in columns}
-
-        # Create offset
-        offset = " " * offset
-
-        # Print the column headers
-        header = "|" + " | ".join(col.ljust(col_widths[col]) for col in columns) + "|"
-        print(offset + "|" + "-" * (len(header)-2) + "|")
-        print(offset + header)
-        print(offset + "|" + "-" * (len(header)-2) + "|")
-
-        # Print the data rows
-        for i, record in enumerate(data):
-            if i >= limit:
-                print(offset + "|" + "-" * (len(header)-2) + "|")
-                res = f"--Displaying {limit} of {len(data)} records--"
-                print(offset + ((len(header)-2)//2 - len(res)//2) * " " + res)
-                return 
+        
+        try:
+            from tabulate import tabulate
             
-            row =  offset + "|" + " | ".join(str(record.get(col, "")).ljust(col_widths[col]) for col in columns) + "|"
-            print(row)
+            # Convert list of dicts to list of lists based on column order
+            rows = [[record.get(col, "") for col in columns] for record in data]
             
-        print(offset + "|" + "-" * (len(header)-2) + "|")
+            # Apply limit to the number of rows to display
+            if len(rows) > limit: rows = rows[:limit]  # Limit the number of rows to display
+            
+            print(tabulate(rows, headers=columns, tablefmt="rounded_outline"))
+            
+            if len(rows) > limit: print(f"  --Displaying {limit} of {len(data)} records--")
+            return
+        
+        except Exception as e:
+            print(f"Failed to use tabulate for formatting: {e}. Falling back to manual formatting.")
+            
+            # Calculate column widths
+            col_widths = {col: max(len(col), max(len(str(record.get(col, ""))) for record in data)) for col in columns}
+
+            # Create offset
+            offset = " " * offset
+
+            # Print the column headers
+            header = "|" + " | ".join(col.ljust(col_widths[col]) for col in columns) + "|"
+            print(offset + "|" + "-" * (len(header)-2) + "|")
+            print(offset + header)
+            print(offset + "|" + "-" * (len(header)-2) + "|")
+
+            # Print the data rows
+            for i, record in enumerate(data):
+                if i >= limit:
+                    print(offset + "|" + "-" * (len(header)-2) + "|")
+                    res = f"--Displaying {limit} of {len(data)} records--"
+                    print(offset + ((len(header)-2)//2 - len(res)//2) * " " + res)
+                    return 
+                
+                row =  offset + "|" + " | ".join(str(record.get(col, "")).ljust(col_widths[col]) for col in columns) + "|"
+                print(row)
+                
+            print(offset + "|" + "-" * (len(header)-2) + "|")
