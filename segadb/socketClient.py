@@ -72,6 +72,15 @@ class SocketClient:
         }
         return self.send_command(command)
     
+    def shutdown(self):
+        """
+        Stops the server and socket connections gracefully.
+        """
+        command = {
+            "action": "shutdown"
+        }
+        return self.send_command(command)
+    
     def start(self):
         """
         Start the database server.

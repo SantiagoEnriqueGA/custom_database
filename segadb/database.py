@@ -299,7 +299,8 @@ class Database:
         Parses JSON command, validates parameters, checks permissions, executes action, and returns JSON response.
         List of supported actions:
             Server Control:
-                - stop: Stops the database.
+                - stop: Stops the database thread. (This will only work if the database is running in a separate thread)
+                - shutdown: Stops the socket server and closes the connection.
                 - start: Starts the database in a separate thread.
                 - ping: Checks if the server is alive.
             Authentication:
@@ -364,6 +365,11 @@ class Database:
             if action == "stop":
                 self.stop()
                 return json.dumps({"status": "success", "message": "Database stopped."})
+            
+            elif action == "shutdown":
+                self.stop()
+                self.stop_socket_server()
+                return json.dumps({"status": "success", "message": "Database and socket server stopped."})
             
             elif action == "start":
                 self.start_db_in_thread()

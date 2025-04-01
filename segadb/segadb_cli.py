@@ -85,6 +85,27 @@ def _save_local_db(db: Database):
         typer.secho("Database state in memory might be inconsistent with the file.", fg=typer.colors.YELLOW)
         raise typer.Exit(code=1)
 
+def _get_session_file() -> Path:
+    """Returns the path to the persistent session token file."""
+    return Path.home() / ".segadb_cli_session"
+
+def _save_session_token(token: str):
+    """Persist the session token to disk."""
+    session_file = _get_session_file()
+    session_file.write_text(token)
+
+def _load_session_token() -> Optional[str]:
+    """Load session token from persistent storage if available."""
+    session_file = _get_session_file()
+    if session_file.exists():
+        return session_file.read_text().strip()
+    return None
+
+def _delete_session_token():
+    """Remove the persistent session token file if it exists."""
+    session_file = _get_session_file()
+    if session_file.exists():
+        session_file.unlink()
 
 def _send_authed_remote_command(client: SocketClient, action: str, params: Optional[Dict[str, Any]] = None) -> dict:
     """
@@ -250,6 +271,9 @@ def main_callback(
     state.port = port
     state.user = user
     state.password = password
+    
+    # Inside main_callback, after setting state.db_file, state.host, etc.
+    state.session_token = _load_session_token() or state.session_token
 
     # Basic validation
     if db_file and host:
@@ -303,8 +327,8 @@ app.add_typer(auth_app, name="auth")
 @auth_app.command("login")
 def auth_login(
     ctx: typer.Context,
-    username: str = typer.Argument(..., help="Username for remote login."),
-    password: str = typer.Argument(..., help="Password for remote login. Uses SEGADB_LOGIN_PASSWORD env var if set.", envvar="SEGADB_LOGIN_PASSWORD"),#, hide_input=True),
+    username: Optional[str] = typer.Option(None, help="Username for remote login. Uses SEGADB_USER env var if set.", envvar="SEGADB_USER"), # Allow env var override
+    password: Optional[str] = typer.Option(None, help="Password for remote login. Uses SEGADB_PASSWORD env var if set.", envvar="SEGADB_PASSWORD"),#, hide_input=True),
 ):
     """Login to the remote SegaDB server to get a session token."""
     client = _ensure_remote(ctx) # Ensures connection is remote
@@ -321,13 +345,14 @@ def auth_login(
          typer.secho(f"Failed to send login command: {e}", fg=typer.colors.RED)
          raise typer.Exit(code=1)
 
-
     if result.get("status") == "success":
         state.session_token = result.get("session_token")
         if not state.session_token:
              typer.secho("Login succeeded but no session token received from server.", fg=typer.colors.RED)
              raise typer.Exit(code=1)
         typer.secho(f"Login successful. Session token obtained: {state.session_token[:8]}...", fg=typer.colors.GREEN)
+        # Save token persistently
+        _save_session_token(state.session_token)
     else:
         typer.secho(f"Login failed: {result.get('message')}", fg=typer.colors.RED)
         state.session_token = None # Ensure no stale token
@@ -349,6 +374,8 @@ def auth_logout(ctx: typer.Context):
     # result message handled by helper unless it's a success message
     typer.secho(f"Logout command sent (Server message: {result.get('message', 'Success')}).", fg=typer.colors.GREEN if result.get("status") == "success" else typer.colors.YELLOW)
 
+     # Remove the persistent session token file
+    _delete_session_token()
     state.session_token = None # Clear token regardless of server response
 
 
@@ -544,9 +571,9 @@ def table_insert(
     """Insert a new record into a table."""
     conn, conn_type = get_connection(ctx)
 
-    # # --- ADD THIS DEBUG LINE ---
-    # typer.echo(f"DEBUG: Received data_json argument: >>>{data_json}<<<")
-    # # --- END DEBUG LINE ---
+    # --- ADD THIS DEBUG LINE ---
+    typer.echo(f"DEBUG: Received data_json argument: >>>{data_json}<<<")
+    # --- END DEBUG LINE ---
 
     # --- Logic to handle JSON or Base64 ---
     actual_json_string = None
@@ -563,9 +590,9 @@ def table_insert(
          typer.secho("Error: Must provide record data via JSON argument or --data-b64 option.", fg=typer.colors.RED)
          raise typer.Exit(code=1)
 
-    # # --- Debug the final string ---
-    # typer.echo(f"DEBUG: Attempting to parse JSON: >>>{actual_json_string}<<<")
-    # # ---
+    # --- Debug the final string ---
+    typer.echo(f"DEBUG: Attempting to parse JSON: >>>{actual_json_string}<<<")
+    # ---
 
     try:
         # Use the decoded/passed string
@@ -657,7 +684,7 @@ app.add_typer(user_app, name="user")
 def user_create(
     ctx: typer.Context,
     username: str = typer.Argument(..., help="Username for the new user."),
-    password: str = typer.Argument(..., help="Password for the new user. Uses SEGADB_CREATE_PASSWORD env var if set.", envvar="SEGADB_CREATE_PASSWORD"),#), hide_input=True),
+    password: Optional[str] = typer.Argument(None, help="Password for the new user. Uses SEGADB_CREATE_PASSWORD env var if set.", envvar="SEGADB_CREATE_PASSWORD"),#), hide_input=True),
     roles: str = typer.Option("read_only", "--roles", "-r", help="Comma-separated list of roles (e.g., 'admin,editor').")
 ):
     """Register a new user on the remote server."""
@@ -673,7 +700,6 @@ def user_create(
 
 
 # TODO: Add user list, delete commands following the pattern (remote only)
-
 
 # --- Backup Commands (Local Only) ---
 backup_app = typer.Typer(help="Manage database backups (Only available for local files).")
@@ -755,7 +781,6 @@ def backup_list(
 
 # TODO: Add backup restore command
 
-
 # --- Server Commands (Remote Only) ---
 server_app = typer.Typer(help="Control the remote SegaDB server.")
 app.add_typer(server_app, name="server")
@@ -801,6 +826,23 @@ def server_stop(
     # Message handled by helper unless it's a success message
     typer.secho(f"Stop command sent (Server message: {result.get('message', 'Success')}).", fg=typer.colors.GREEN if result.get("status") == "success" else typer.colors.YELLOW)
 
+
+@server_app.command("shutdown")
+def server_shutdown(
+    ctx: typer.Context,
+    force: bool = typer.Option(False, "--force", "-y", help="Skip confirmation prompt.")
+):
+    """Shutdown the remote SegaDB server."""
+    client = _ensure_remote(ctx)
+
+    if not force:
+        typer.confirm(f"Are you sure you want to shutdown the server at {state.host}:{state.port}?", abort=True)
+
+    typer.echo(f"Sending shutdown command to server {state.host}:{state.port}...")
+    result = _send_authed_remote_command(client, "shutdown")
+
+    # Handle the result of the shutdown command
+    typer.secho(f"Shutdown command sent (Server message: {result.get('message', 'Success')}).", fg=typer.colors.GREEN if result.get("status") == "success" else typer.colors.YELLOW)
 
 @server_app.command("start")
 def server_start(
