@@ -1,8 +1,6 @@
 import socket
 import json
 import time
-from tkinter import E
-
 class SocketClient:
     """
     A helper class to manage socket connections and communication.

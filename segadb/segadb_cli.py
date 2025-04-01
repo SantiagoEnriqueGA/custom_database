@@ -72,7 +72,6 @@ def _ensure_local(ctx: typer.Context) -> Database:
          raise typer.Exit(code=1)
     return conn
 
-
 def _save_local_db(db: Database):
     """Helper to save the local database file, handling potential errors."""
     if not state.db_file:
@@ -445,6 +444,39 @@ def table_create(
     except Exception as e: # Catch other unexpected errors
         typer.secho(f"An unexpected error occurred during table creation: {e}", fg=typer.colors.RED)
         raise typer.Exit(code=1)
+    
+@table_app.command("delete-record")
+def table_delete_record(
+    ctx: typer.Context,
+    table_name: str = typer.Argument(..., help="Name of the table from which to delete a record."),
+    record_id: str = typer.Argument(..., help="ID of the record to delete.")
+):
+    """Delete a record from a table by ID."""
+    conn, conn_type = get_connection(ctx)
+
+    typer.echo(f"Attempting to delete record '{record_id}' from table '{table_name}'...")
+
+    try:
+        if conn_type == 'local':
+            db = _ensure_local(ctx)
+            if table_name not in db.tables:
+                typer.secho(f"Error: Table '{table_name}' does not exist.", fg=typer.colors.RED)
+                raise typer.Exit(code=1)
+            target_table = db.tables[table_name]
+            target_table.delete(record_id)
+            _save_local_db(db) # Save changes
+            typer.secho(f"Record '{record_id}' deleted from '{table_name}'.", fg=typer.colors.GREEN)
+        elif conn_type == 'remote':
+            client = _ensure_remote(ctx)
+            params = {"table": table_name, "record_id": record_id}
+            result = _send_authed_remote_command(client, "delete", params)
+            typer.secho(f"Record '{record_id}' deleted successfully from '{table_name}' on server.", fg=typer.colors.GREEN)
+
+    except typer.Exit:
+         raise
+    except Exception as e:
+        typer.secho(f"An unexpected error occurred during record deletion: {e}", fg=typer.colors.RED)
+        raise typer.Exit(code=1)
 
 @table_app.command("drop")
 def table_drop(
@@ -520,8 +552,6 @@ def table_query(
             typer.echo("------------------------------------------")
 
         elif conn_type == 'remote':
-            print(f"DEBUG: Remote query on table '{table_name}' with filter: {filter_condition}") # Debug line to show filter being used
-            
             client = _ensure_remote(ctx)
             params = {"table": table_name, "filter": filter_condition}
             result = _send_authed_remote_command(client, "query", params) # Handles errors
@@ -570,10 +600,6 @@ def table_insert(
     """Insert a new record into a table."""
     conn, conn_type = get_connection(ctx)
 
-    # --- ADD THIS DEBUG LINE ---
-    typer.echo(f"DEBUG: Received data_json argument: >>>{data_json}<<<")
-    # --- END DEBUG LINE ---
-
     # --- Logic to handle JSON or Base64 ---
     actual_json_string = None
     if data_b64:
@@ -588,10 +614,6 @@ def table_insert(
     else:
          typer.secho("Error: Must provide record data via JSON argument or --data-b64 option.", fg=typer.colors.RED)
          raise typer.Exit(code=1)
-
-    # --- Debug the final string ---
-    typer.echo(f"DEBUG: Attempting to parse JSON: >>>{actual_json_string}<<<")
-    # ---
 
     try:
         # Use the decoded/passed string
@@ -697,9 +719,98 @@ def user_create(
     result = _send_authed_remote_command(client, "register_user", params) # Handles errors
     typer.secho(f"User '{username}' registered successfully.", fg=typer.colors.GREEN)
 
+@user_app.command("delete")
+def user_delete(
+    ctx: typer.Context,
+    username: str = typer.Argument(..., help="Username of the user to delete."),
+    force: bool = typer.Option(False, "--force", "-y", help="Skip confirmation prompt.")
+):
+    """Delete a user from the remote server."""
+    try:
+        client = _ensure_remote(ctx)
+        
+        # Get record ID of the user
+        params = {"table": "_users"}
+        result = _send_authed_remote_command(client, "query", params)
+        # Extract records to find the user by username
+        user_record = next((record for record in result.get("data", []) if record.get("username") == username), None)
+        user_id = user_record.get("_record_id") if user_record else None
+        
+        if user_id:
+            # If the user exists, proceed with deletion
+            if not force:
+                typer.confirm(f"Are you sure you want to delete user '{username}'? This cannot be undone.", abort=True)
+            typer.echo(f"Deleting user '{username}' with record ID '{user_id}'...")        
+            params = {"table": "_users", "record_id": user_id}
+            result = _send_authed_remote_command(client, "delete", params)
+            typer.secho(f"Record '{user_id}' deleted successfully from '_users' on server.", fg=typer.colors.GREEN)
 
-# TODO: Add user list, delete commands following the pattern (remote only)
+    except typer.Exit:
+         raise
+    except Exception as e:
+        typer.secho(f"An unexpected error occurred during record deletion: {e}", fg=typer.colors.RED)
+        raise typer.Exit(code=1)
 
+@user_app.command("list")
+def user_list(
+    ctx: typer.Context,
+):
+    """List all users on the remote server."""
+    client = _ensure_remote(ctx)
+    conn, conn_type = get_connection(ctx)
+    
+    # To get all users we query table _users with no filter
+    params = {"table": "_users"}
+    result = _send_authed_remote_command(client, "query", params)
+    users = result.get("data", [])
+        
+    try:
+        if conn_type == 'local':
+            db = _ensure_local(ctx)
+            if "_users" not in db.tables:
+                typer.secho(f"Error: Table '_users' not found locally.", fg=typer.colors.RED)
+                raise typer.Exit(code=1)
+            table = db.tables["_users"]
+            typer.echo(f"\n--- Users from '_users' Table (Local) ---")
+            if not table.records:
+                 typer.echo("Table is empty.")
+            else:
+                 # Use the table's pretty print method
+                 table.print_table(pretty=True) # Assuming print_table exists and works
+            typer.echo("------------------------------------------")
+
+        elif conn_type == 'remote':
+            client = _ensure_remote(ctx)
+            params = {"table": "_users"}
+            result = _send_authed_remote_command(client, "query", params) # Handles errors
+            typer.echo(f"\n--- Users from '_users' Table (Remote) ---")
+            records = result.get("data", [])
+            # Attempt to get columns, might not be present in older server versions or filter results
+            columns = result.get("columns")
+            if not records:
+                 typer.echo("No records found")
+            else:
+                 # Try to determine columns from first record if not provided by server
+                 if not columns and records and isinstance(records[0], dict):
+                     columns = list(records[0].keys())
+                     # Try to remove internal ID if present for cleaner display
+                     if '_record_id' in columns: columns.remove('_record_id')
+
+                 if columns:
+                     SocketUtilities.print_results(records, columns, limit=len(records), offset=0)
+                 else: # Fallback basic print if columns cannot be determined
+                     typer.secho("Warning: Could not determine columns for formatted output. Printing raw records.", fg=typer.colors.YELLOW)
+                     count = 0
+                     for record in records:
+                         typer.echo(json.dumps(record)) # Print as JSON string
+                         count += 1
+    except typer.Exit:
+        raise
+    except Exception as e:
+        typer.secho(f"An unexpected error occurred during query: {e}", fg=typer.colors.RED)
+        raise typer.Exit(code=1)
+    
+    
 # --- Backup Commands (Local Only) ---
 backup_app = typer.Typer(help="Manage database backups (Only available for local files).")
 app.add_typer(backup_app, name="backup")

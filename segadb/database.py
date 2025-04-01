@@ -471,7 +471,7 @@ class Database:
                     try:
                         table = self.get_table(table_name)
                         if table:
-                            table.delete(record_id)
+                            table.delete(int(record_id))
                             return json.dumps({"status": "success", "message": f"Record {record_id} deleted from {table_name}."})
                         else:
                             return json.dumps({"status": "error", "message": f"Table {table_name} not found."})
