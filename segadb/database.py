@@ -1550,7 +1550,7 @@ def {procedure_name}(db, *args, **kwargs):
                 print(f"View: {view_name}")
                 print(f"Records: {len(view.data.records)}")
                 print(f"Columns: {view.data.columns}")
-                view.data.print_table(pretty=True)
+                view.data.print_table(pretty=True, limit=limit)  
                 
                 first_view = False
         
@@ -1567,7 +1567,7 @@ def {procedure_name}(db, *args, **kwargs):
                 print(f"View: {view_name}")
                 print(f"Records: {len(view.records)}")
                 print(f"Columns: {view.columns}")
-                view.print_table(pretty=True)
+                view.print_table(pretty=True, limit=limit) 
                 
                 first_view = False
                 
