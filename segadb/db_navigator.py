@@ -199,6 +199,7 @@ def db_navigator(stdscr, db):
     stdscr.clear()
     
     info_offset = 7
+    navigation_offset = 8
     
     # Define menu options and corresponding display functions
     menu_options = {
@@ -246,7 +247,7 @@ def db_navigator(stdscr, db):
             elif is_key(key, 'DOWN') and current_row < len(menu_list) - 1:
                 current_row += 1
             elif is_key(key, 'ENTER') or is_key(key, 'RIGHT'):
-                menu_options[menu_list[current_row]](stdscr, db, info_offset)
+                menu_options[menu_list[current_row]](stdscr, db, info_offset + navigation_offset)
                 
         except curses.error as e:
             logging.error(f"Curses error: {e}")
@@ -255,71 +256,96 @@ def db_navigator(stdscr, db):
 @safe_execution
 def display_info(stdscr, db):
     """
-    Displays the database navigator information on the provided screen.
-
+    Displays the database navigator information on the provided screen with a pretty box style.
     Args:
         stdscr: The curses window object where the information will be displayed.
         db: The database object containing the name attribute to be displayed.
     """
-    safe_addstr(stdscr, 0, 0, "Database Navigator: " + db.name)
-    safe_addstr(stdscr, 1, 0, "-" * 60)
-    safe_addstr(stdscr, 2, 0, "Navigation: Arrow keys or W/A/S/D keys")
-    safe_addstr(stdscr, 3, 0, "Select: Enter or L key | Back/Quit: Q key or H key")
-    safe_addstr(stdscr, 4, 0, "Help: ? | Search: / | Refresh: R")
-    safe_addstr(stdscr, 5, 0, "-" * 60)
+    # Box-drawing border
+    width = 60
+    title = f" Database Navigator: {db.name} "
+    border_top = "╭" + "─" * (width - 2) + "╮"
+    border_bottom = "╰" + "─" * (width - 2) + "╯"
+    stdscr.addstr(0, 0, border_top)
+    stdscr.addstr(1, 0, "│" + title.center(width - 2) + "│")
+    stdscr.addstr(2, 0, "├" + "─" * (width - 2) + "┤")
+    stdscr.addstr(3, 0, "│ Navigation: ↑/↓/←/→ or W/A/S/D keys".ljust(width - 1) + "│")
+    stdscr.addstr(4, 0, "│ Select: Enter or L | Back/Quit: Q or H".ljust(width - 1) + "│")
+    stdscr.addstr(5, 0, "│ Help: ? | Search: / | Refresh: R".ljust(width - 1) + "│")
+    stdscr.addstr(6, 0, border_bottom)
 
 @safe_execution
 def display_main_screen(stdscr, menu_list, selected_row_idx, info_offset):
     """
-    Displays the main screen layout with the menu options and highlights the selected row.
-    
+    Displays the main screen layout with the menu options and highlights the selected row, using a pretty box style.
     Args:
         stdscr: The curses window object where the main screen layout will be displayed.
         menu_list: A list of menu options to display.
         selected_row_idx: The index of the selected row in the menu list.
         info_offset: The vertical offset to display the menu options.
     """
+    # Calculate box width
+    width = max(len(option) for option in menu_list) + 8
+    height = len(menu_list) + 1
+    x = 0
+    y = info_offset
+    # Draw top border
+    stdscr.addstr(y, x, '╭' + '─' * (width - 2) + '╮')
+    # Draw menu options
     for idx, row in enumerate(menu_list):
-        x = 0
-        y = idx + info_offset
+        menu_line = '│  ' + row.ljust(width - 6) + '  │'
         if idx == selected_row_idx:
             stdscr.attron(curses.color_pair(1))
-            safe_addstr(stdscr, y, x, row)
+            safe_addstr(stdscr, y + idx + 1, x, menu_line)
             stdscr.attroff(curses.color_pair(1))
         else:
-            safe_addstr(stdscr, y, x, row)
+            safe_addstr(stdscr, y + idx + 1, x, menu_line)
+    # Draw bottom border
+    stdscr.addstr(y + height, x, '╰' + '─' * (width - 2) + '╯')
     stdscr.refresh()
 
 @safe_execution    
 def display_db_info(stdscr, db, info_offset):
     """
-    Displays the database information on the provided screen.
-    
+    Displays the database information on the provided screen in a visually appealing box layout.
     Args:
         stdscr: The curses window object where the information will be displayed.
         db: The database object containing the information to be displayed.
         info_offset: The vertical offset to display the database information.
     """
-    # While loop to keep the screen open until the user exits
+    width = 60
+    box_left = 0
+    # Main info box borders
+    border_top = "╭" + "─" * (width - 2) + "╮"
+    border_sep = "├" + "─" * (width - 2) + "┤"
+    border_bottom = "╰" + "─" * (width - 2) + "╯"
     while True:
-        stdscr.clear()
+        stdscr.clrtobot()
         display_info(stdscr, db)
-        safe_addstr(stdscr, info_offset + 1, 0, "Database Info:")
-        safe_addstr(stdscr, info_offset + 2, 0, "-" * 80)
-        safe_addstr(stdscr, info_offset + 3, 0, "Name:                   " + db.name)
-        safe_addstr(stdscr, info_offset + 4, 0, "Database Size (MB):     {:.4f}".format(db.get_db_size() / (1024 * 1024)))
-        safe_addstr(stdscr, info_offset + 5, 0, "Authorization Required: " + str(db._is_auth_required()))
-        safe_addstr(stdscr, info_offset + 6, 0, "DB Users:               " + str(len(db.tables.get('_users').records)))
-        safe_addstr(stdscr, info_offset + 7, 0, "Active User:            " + str(db.get_username_by_session(db.active_session)))
-        safe_addstr(stdscr, info_offset + 8, 0, "Session ID:             " + str(db.active_session))
-        safe_addstr(stdscr, info_offset + 9, 0, "-" * 80)
-        safe_addstr(stdscr, info_offset + 10, 0, "    Tables:             " + str(len(db.tables)))
-        safe_addstr(stdscr, info_offset + 11, 0, "    Views:              " + str(len(db.views)))
-        safe_addstr(stdscr, info_offset + 12, 0, "    Materialized Views: " + str(len(db.materialized_views)))
-        safe_addstr(stdscr, info_offset + 13, 0, "    Stored Procedures:  " + str(len(db.stored_procedures)))
-        safe_addstr(stdscr, info_offset + 14, 0, "    Trigger Functions:  " + str(len(db.triggers)))
+        # Draw main info box
+        stdscr.addstr(info_offset, box_left, border_top)
+        stdscr.addstr(info_offset + 1, box_left, "│" + " DATABASE INFO ".center(width - 2) + "│")
+        stdscr.addstr(info_offset + 2, box_left, border_sep)
+        # Info rows
+        stdscr.addstr(info_offset + 3, box_left, f"│  Name:          │ {db.name.ljust(width-21)}│")
+        stdscr.addstr(info_offset + 4, box_left, f"│  Size (MB):     │ {str('{:.4f}'.format(db.get_db_size() / (1024 * 1024))).ljust(width-21)}│")
+        stdscr.addstr(info_offset + 5, box_left, f"│  Auth Required: │ {str(db._is_auth_required()).ljust(width-21)}│")
+        stdscr.addstr(info_offset + 6, box_left, f"│  DB Users:      │ {str(len(db.tables.get('_users').records)).ljust(width-21)}│")
+        stdscr.addstr(info_offset + 7, box_left, f"│  Active User:   │ {str(db.get_username_by_session(db.active_session)).ljust(width-21)}│")
+        stdscr.addstr(info_offset + 8, box_left, f"│  Session ID:    │ {str(db.active_session).ljust(width-21)}│")
+        stdscr.addstr(info_offset + 9, box_left, border_sep)
+        # Section: Object counts
+        stdscr.addstr(info_offset + 10, box_left,  "│  Objects: ".ljust(width - 1) + "│")
+        stdscr.addstr(info_offset + 11, box_left, f"│    Tables:       {str(len(db.tables)).ljust(5)}" +
+                                                       f"│ Views: {str(len(db.views)).ljust(5)}" +
+                                                       f"│ MVs: {str(len(db.materialized_views)).ljust(5)} │".rjust(width - 38))
+        stdscr.addstr(info_offset + 12, box_left, f"│    Stored Procs: {str(len(db.stored_procedures)).ljust(5)}" +
+                                                  f"│ Triggers: {str(len(db.triggers)).ljust(5)}" +
+                                                    " " * (width - 42) + "│")
+        stdscr.addstr(info_offset + 13, box_left, border_bottom)
+        # Footer
+        stdscr.addstr(info_offset + 15, box_left, "Press ← or Q to return...".ljust(width))
         stdscr.refresh()
-        
         # Get user input, if 'q' is pressed, break
         key = stdscr.getch()        
         if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
@@ -328,98 +354,107 @@ def display_db_info(stdscr, db, info_offset):
 @safe_execution    
 def display_tables(stdscr, db, info_offset):
     """
-    Displays the list of tables in the database on the provided screen.
-    
+    Displays the list of tables in the database on the provided screen with a pretty box style.
     Args:
         stdscr: The curses window object where the information will be displayed.
         db: The database object containing the information to be displayed.
         info_offset: The vertical offset to display the database information.
     """
-    # While loop to keep the screen open until the user exits
     current_row = 0
+    width = 48
+    box_left = 0
     while True:
-        # Display header and table information
-        stdscr.clear()
+        stdscr.clrtobot()
         display_info(stdscr, db)
-        safe_addstr(stdscr, info_offset + 1, 0, "Tables:")
-        safe_addstr(stdscr, info_offset + 2, 0, "ID | Table Name")
-        safe_addstr(stdscr, info_offset + 3, 0, "-" * 40)
-        
-        # For each table, display the table name with the selected row highlighted
-        for i, table_name in enumerate(db.tables.keys()):
-            x = 0
-            y = i + info_offset + 4
+        table_names = list(db.tables.keys())
+        count = len(table_names)
+        # Draw box borders
+        border_top = "╭" + "─" * (width - 2) + "╮"
+        border_sep = "├" + "─" * (width - 2) + "┤"
+        border_bottom = "╰" + "─" * (width - 2) + "╯"
+        stdscr.addstr(info_offset, box_left, border_top)
+        stdscr.addstr(info_offset + 1, box_left, "│" + f" Tables ({count}) ".center(width - 2) + "│")
+        stdscr.addstr(info_offset + 2, box_left, border_sep)
+        stdscr.addstr(info_offset + 3, box_left, "│ ID  │ Table Name".ljust(width - 1) + "│")
+        stdscr.addstr(info_offset + 4, box_left, border_sep)
+        # Table rows
+        for i, table_name in enumerate(table_names):
+            y = info_offset + 5 + i
+            row_str = f"│ {str(i).rjust(2)}  │ {table_name.ljust(width - 9)}│"
             if i == current_row:
                 stdscr.attron(curses.color_pair(1))
-                safe_addstr(stdscr, y, x, str(i) + "  | " + table_name)
+                safe_addstr(stdscr, y, box_left, row_str)
                 stdscr.attroff(curses.color_pair(1))
             else:
-                safe_addstr(stdscr, y, x, str(i) + "  | " + table_name)
+                safe_addstr(stdscr, y, box_left, row_str)
+        stdscr.addstr(info_offset + 5 + count, box_left, border_bottom)
+        # Footer
+        stdscr.addstr(info_offset + 6 + count, box_left, "Press Enter/→ to view, Q/← to return".ljust(width))
         stdscr.refresh()
-        
-        # Get user input, if 'q' is pressed, break
+        # Get user input
         key = stdscr.getch()
         if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
             break
         elif is_key(key, 'UP') and current_row > 0:
             current_row -= 1
-        elif is_key(key, 'DOWN') and current_row < len(db.tables) - 1:
+        elif is_key(key, 'DOWN') and current_row < count - 1:
             current_row += 1
-        # If the user presses Enter or Right arrow key, display the table information
         elif is_key(key, 'ENTER') or is_key(key, 'RIGHT'):
-            table_name = list(db.tables.keys())[current_row]
-            offset = info_offset + len(db.tables) + 6
+            table_name = table_names[current_row]
+            offset = info_offset + count + 8
             table = db.get_table(table_name)
             display_table(stdscr, table, table_name, offset)
         
 @safe_execution
 def display_table(stdscr, table, table_name, tables_offset):
     """
-    Displays the table information and records on the provided screen.
-    
+    Displays the table information and records on the provided screen in a pretty box style.
     Args:
         stdscr: The curses window object where the information will be displayed.
         table: The table object containing the records to be displayed.
         table_name: The name of the table.
         tables_offset: The vertical offset to display the table information.
     """
-    # Display table information
-    safe_addstr(stdscr, tables_offset, 0, "Table: " + table_name)
-    safe_addstr(stdscr, tables_offset + 1, 0, "-" * 40)
-    safe_addstr(stdscr, tables_offset + 2, 0, "Row Count:    " + str(len(table.records)))
-    if table.records: safe_addstr(stdscr, tables_offset + 3, 0, "Record Types: " + str(table.records[0]._type()))
-    else: safe_addstr(stdscr, tables_offset + 3, 0, "Record Types: None")
-    
-    # Get and display the table constraints
+    width = 60
+    box_left = 0
+    border_top = "╭" + "─" * (width - 2) + "╮"
+    border_sep = "├" + "─" * (width - 2) + "┤"
+    border_bottom = "╰" + "─" * (width - 2) + "╯"
+    # Info box
+    stdscr.addstr(tables_offset, box_left, border_top)
+    stdscr.addstr(tables_offset + 1, box_left, "│" + f" Table: {table_name} ".center(width - 2) + "│")
+    stdscr.addstr(tables_offset + 2, box_left, border_sep)
+    stdscr.addstr(tables_offset + 3, box_left, f"│  Row Count:    │ {str(len(table.records)).ljust(width-20)}│")
+    if table.records:
+        stdscr.addstr(tables_offset + 4, box_left, f"│  Record Types: │ {str(table.records[0]._type()).ljust(width-20)}│")
+    else:
+        stdscr.addstr(tables_offset + 4, box_left, f"│  Record Types: │ {'None'.ljust(width-21)}│")
+    # Constraints
     consts = []
     for constraint in table.constraints:
         if len(table.constraints[constraint]) == 1:
             consts.append(f"{constraint}: {table.constraints[constraint][0].__name__}")
-    if consts: safe_addstr(stdscr, tables_offset + 4, 0, "Constraints:  " + ", ".join(consts))
-    else: safe_addstr(stdscr, tables_offset + 4, 0, "Constraints:  None")
-    
-    safe_addstr(stdscr, tables_offset + 5, 0, "-" * 40)
-    tables_offset += 4
-    
+    stdscr.addstr(tables_offset + 5, box_left, border_sep)
+    if consts:
+        stdscr.addstr(tables_offset + 6, box_left, f"│  Constraints:  {', '.join(consts)[:width-17]}".ljust(width - 1) + "│")
+    else:
+        stdscr.addstr(tables_offset + 6, box_left, f"│  Constraints:  None".ljust(width - 1) + "│")
+    stdscr.addstr(tables_offset + 7, box_left, border_bottom)
+    # Footer
+    stdscr.addstr(tables_offset + 8, box_left, "Press Q/← to return, ↑/↓ to scroll records".ljust(width))
+    tables_offset += 8
+    # Records section
     if not table.records:
-        safe_addstr(stdscr, tables_offset + 2, 0, "--No records to display.--")
+        safe_addstr(stdscr, tables_offset, 0, "--No records to display.--")
         stdscr.refresh()
         key = stdscr.getch()
         if key == curses.KEY_LEFT or key == ord('q'):
             return
     else:
-        # Get max column width
         col_names = [col for col in table.columns]
-        # For each row with col_names get the max width of the data
         col_widths = {col: max(len(str(record.data[col])) for record in table.records) for col in col_names}
-        
-        # Display the table records
-        record_count = len(table.records)
-        
-        # Get max record limit (screen height - offset - header - footer)
         record_limit = 100
         record_limit = min(record_limit, stdscr.getmaxyx()[0] - tables_offset - 8)
-        
         display_table_records(stdscr, table, col_names, col_widths, tables_offset, record_limit)
 
 def _get_record_page(table, page_num, page_size):
@@ -528,7 +563,7 @@ def display_views(stdscr, db, info_offset):
     current_row = 0
     while True:
         # Display header and view information
-        stdscr.clear()
+        stdscr.clrtobot()
         display_info(stdscr, db)
         safe_addstr(stdscr, info_offset + 1, 0, "Views:")
         safe_addstr(stdscr, info_offset + 2, 0, "ID | View Name")
@@ -624,7 +659,7 @@ def display_mv_views(stdscr, db, info_offset):
     """
     current_row = 0
     while True:
-        stdscr.clear()
+        stdscr.clrtobot()
         display_info(stdscr, db)
         safe_addstr(stdscr, info_offset + 1, 0, "Materialized Views:")
         safe_addstr(stdscr, info_offset + 2, 0, "ID | MV View Name")
@@ -707,7 +742,7 @@ def display_stored_procedures(stdscr, db, info_offset):
     """
     current_row = 0
     while True:
-        stdscr.clear()
+        stdscr.clrtobot()
         display_info(stdscr, db)
         safe_addstr(stdscr, info_offset + 1, 0, "Stored Procedures:")
         safe_addstr(stdscr, info_offset + 2, 0, "ID | Procedure Name")
@@ -780,7 +815,7 @@ def display_trigger_functions(stdscr, db, info_offset):
     """
     current_row = 0
     while True:
-        stdscr.clear()
+        stdscr.clrtobot()
         display_info(stdscr, db)
         safe_addstr(stdscr, info_offset + 1, 0, "Trigger Functions:")
         safe_addstr(stdscr, info_offset + 2, 0, "ID | Trigger Type | Parent Function Name")
