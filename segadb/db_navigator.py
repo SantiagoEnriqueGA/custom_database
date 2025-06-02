@@ -407,7 +407,6 @@ def display_table(stdscr, table, table_name, tables_offset):
         key = stdscr.getch()
         if key == curses.KEY_LEFT or key == ord('q'):
             return
-    
     else:
         # Get max column width
         col_names = [col for col in table.columns]
@@ -421,79 +420,99 @@ def display_table(stdscr, table, table_name, tables_offset):
         record_limit = 100
         record_limit = min(record_limit, stdscr.getmaxyx()[0] - tables_offset - 8)
         
-        current_page = 0
-        last_page = (record_count + record_limit - 1) // record_limit - 1
-        
-        # While loop to keep the screen open until the user exits
-        while True:
-            safe_addstr(stdscr, tables_offset + 2, 0, str(record_limit) + " records displayed per page. Page: " + str(current_page + 1) + " of " + str(last_page + 1))
-            safe_addstr(stdscr, tables_offset + 3, 0, "-" * 80)
-            
-            # Display the column names
-            x = 0
-            y = tables_offset + 5
-            for col in col_names:
-                width = max(col_widths[col], len(col))
-                safe_addstr(stdscr, y, x, col.ljust(width) + " | ")
-                x += width + 3
-                
-            # Add a line separator with the column widths
-            x = 0
-            y = tables_offset + 6
-            for col in col_names:
-                width = max(col_widths[col], len(col))
-                safe_addstr(stdscr, y, x, "-" * width + " | ")
-                x += width + 3
-            
-                
-            # Get the records for the current page and display them
-            records = _get_record_page(table, current_page, record_limit)
-            for i, record in enumerate(records):
-                x = 0
-                y = i + tables_offset + 7
-                for col in col_names:
-                    width = max(col_widths[col], len(col))
-                    safe_addstr(stdscr, y, x, str(record.data[col]).ljust(width) + " | ")
-                    x += width + 3
-            
-            stdscr.refresh()
+        display_table_records(stdscr, table, col_names, col_widths, tables_offset, record_limit)
 
-            # Get user input, if 'q' is pressed, break
-            key = stdscr.getch()
-            if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
-                break
-            # If the user presses Up arrow key, move to the previous page
-            elif is_key(key, 'UP') and current_page > 0:
-                current_page -= 1
-            # If the user presses Down arrow key, move to the next page
-            elif is_key(key, 'DOWN') and current_page < (record_count + record_limit - 1) // record_limit - 1:
-                current_page += 1
-            elif is_key(key, 'PAGE_DOWN') and current_page < (record_count + record_limit - 1) // record_limit - 1:
-                current_page = (record_count + record_limit - 1) // record_limit - 1
-            elif is_key(key, 'PAGE_UP') and current_page > 0:
-                current_page = 0
-                
-            # Clear only the table display area before refreshing
-            stdscr.move(tables_offset + 2, 0)
-            stdscr.clrtobot()
-
-@safe_execution
 def _get_record_page(table, page_num, page_size):
     """
     Get a page of records based on the page number and page size.
-    
     Args:
         table: The table object containing the records.
         page_num: The page number to retrieve.
         page_size: The number of records per page.
-    
     Returns:
         A list of records for the specified page.
     """
-    # Calculate the start and end index for the page
     start_idx = page_num * page_size
     end_idx = min((page_num + 1) * page_size, len(table.records))
     return table.records[start_idx:end_idx]
+
+def display_table_records(stdscr, table, col_names, col_widths, offset, record_limit):
+    """
+    Helper to display paginated table records with navigation.
+    Args:
+        stdscr: The curses window object.
+        table: The table-like object with .records and .columns.
+        col_names: List of column names.
+        col_widths: Dict of column widths.
+        offset: Vertical offset to start rendering.
+        record_limit: Max records per page.
+    """
+    record_count = len(table.records)
+    current_page = 0
+    last_page = (record_count + record_limit - 1) // record_limit - 1
+    # Precompute column widths (add padding for aesthetics)
+    col_pads = {col: max(col_widths[col], len(col)) for col in col_names}
+    total_width = sum(col_pads[col] + 2 for col in col_names) + len(col_names) + 1
+    while True:
+        safe_addstr(stdscr, offset + 2, 0, f"{record_limit} records displayed per page. Page: {current_page + 1} of {last_page + 1}")
+        # Draw top border
+        x = 0
+        y = offset + 3
+        border = '╭'
+        for idx, col in enumerate(col_names):
+            border += '─' * (col_pads[col] + 2)
+            if idx < len(col_names) - 1:
+                border += '┬'
+        border += '╮'
+        safe_addstr(stdscr, y, x, border)
+        # Draw header row
+        y += 1
+        row = '│'
+        for col in col_names:
+            row += ' ' + col.ljust(col_pads[col]) + ' │'
+        safe_addstr(stdscr, y, x, row)
+        # Draw header separator
+        y += 1
+        sep = '├'
+        for idx, col in enumerate(col_names):
+            sep += '─' * (col_pads[col] + 2)
+            if idx < len(col_names) - 1:
+                sep += '┼'
+        sep += '┤'
+        safe_addstr(stdscr, y, x, sep)
+        # Draw records
+        records = _get_record_page(table, current_page, record_limit)
+        for i, record in enumerate(records):
+            y += 1
+            row = '│'
+            for col in col_names:
+                val = str(record.data[col])
+                row += ' ' + val.ljust(col_pads[col]) + ' │'
+            safe_addstr(stdscr, y, x, row)
+        # Draw bottom border
+        y += 1
+        border = '╰'
+        for idx, col in enumerate(col_names):
+            border += '─' * (col_pads[col] + 2)
+            if idx < len(col_names) - 1:
+                border += '┴'
+        border += '╯'
+        safe_addstr(stdscr, y, x, border)
+        stdscr.refresh()
+        key = stdscr.getch()
+        if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
+            break
+        elif is_key(key, 'UP') and current_page > 0:
+            current_page -= 1
+        elif is_key(key, 'DOWN') and current_page < last_page:
+            current_page += 1
+        elif is_key(key, 'PAGE_DOWN') and current_page < last_page:
+            current_page = last_page
+        elif is_key(key, 'PAGE_UP') and current_page > 0:
+            current_page = 0
+        # Clear only the table display area before refreshing
+        stdscr.move(offset + 2, 0)
+        stdscr.clrtobot()
 
 @safe_execution
 def display_views(stdscr, db, info_offset):
@@ -587,73 +606,11 @@ def display_view(stdscr, table, view_name, query, view_offset):
             return
     
     else:
-        # Get max column width
         col_names = [col for col in table.columns]
-        # For each row with col_names get the max width of the data
         col_widths = {col: max(len(str(record.data[col])) for record in table.records) for col in col_names}
-        
-        # Display the view records
-        record_count = len(table.records)
-        
-        # Get max record limit (screen height - offset - header - footer)
         record_limit = 100
         record_limit = min(record_limit, stdscr.getmaxyx()[0] - view_offset - 8)
-        
-        current_page = 0
-        last_page = (record_count + record_limit - 1) // record_limit - 1
-        
-        # While loop to keep the screen open until the user exits
-        while True:
-            safe_addstr(stdscr, view_offset + 2, 0, str(record_limit) + " records displayed per page. Page: " + str(current_page + 1) + " of " + str((last_page) + 1))
-            safe_addstr(stdscr, view_offset + 3, 0, "-" * 80)
-            
-            # Display the column names
-            x = 0
-            y = view_offset + 5
-            for col in col_names:
-                width = max(col_widths[col], len(col))
-                safe_addstr(stdscr, y, x, col.ljust(width) + " | ")
-                x += width + 3
-                
-            # Add a line separator with the column widths
-            x = 0
-            y = view_offset + 6
-            for col in col_names:
-                width = max(col_widths[col], len(col))
-                safe_addstr(stdscr, y, x, "-" * width + " | ")
-                x += width + 3
-            
-                
-            # Get the records for the current page and display them
-            records = _get_record_page(table, current_page, record_limit)
-            for i, record in enumerate(records):
-                x = 0
-                y = i + view_offset + 7
-                for col in col_names:
-                    width = max(col_widths[col], len(col))
-                    safe_addstr(stdscr, y, x, str(record.data[col]).ljust(width) + " | ")
-                    x += width + 3
-            
-            stdscr.refresh()
-            
-            # Get user input, if 'q' is pressed, break
-            key = stdscr.getch()
-            if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
-                break
-            # If the user presses Up arrow key, move to the previous page
-            elif is_key(key, 'UP') and current_page > 0:
-                current_page -= 1
-            # If the user presses Down arrow key, move to the next page
-            elif is_key(key, 'DOWN') and current_page < (record_count + record_limit - 1) // record_limit - 1:
-                current_page += 1
-            elif is_key(key, 'PAGE_DOWN') and current_page < (record_count + record_limit - 1) // record_limit - 1:
-                current_page = (record_count + record_limit - 1) // record_limit - 1
-            elif is_key(key, 'PAGE_UP') and current_page > 0:
-                current_page = 0
-            
-            # Clear only the table display area before refreshing
-            stdscr.move(view_offset + 2, 0)
-            stdscr.clrtobot()
+        display_table_records(stdscr, table, col_names, col_widths, view_offset, record_limit)
 
 @safe_execution
 def display_mv_views(stdscr, db, info_offset):
@@ -734,64 +691,9 @@ def display_mv_view(stdscr, table, view_name, query, view_offset):
     else:
         col_names = [col for col in table.columns]
         col_widths = {col: max(len(str(record.data[col])) for record in table.records) for col in col_names}
-
-        record_count = len(table.records)
-        
-        # Get max record limit (screen height - offset - header - footer)
         record_limit = 100
         record_limit = min(record_limit, stdscr.getmaxyx()[0] - view_offset - 8)
-        
-        current_page = 0
-        last_page = (record_count + record_limit - 1) // record_limit - 1
-        
-        while True:
-            safe_addstr(stdscr, view_offset + 2, 0, str(record_limit) + " records displayed per page. Page: " + str(current_page + 1) + " of " + str(last_page + 1))
-            safe_addstr(stdscr, view_offset + 3, 0, "-" * 80)
-            
-            # Display the column names
-            x = 0
-            y = view_offset + 5
-            for col in col_names:
-                width = max(col_widths[col], len(col))
-                safe_addstr(stdscr, y, x, col.ljust(width) + " | ")
-                x += width + 3
-                
-            # Add a line separator with the column widths
-            x = 0
-            y = view_offset + 6
-            for col in col_names:
-                width = max(col_widths[col], len(col))
-                safe_addstr(stdscr, y, x, "-" * width + " | ")
-                x += width + 3
-            
-                
-            # Get the records for the current page and display them
-            records = _get_record_page(table, current_page, record_limit)
-            for i, record in enumerate(records):
-                x = 0
-                y = i + view_offset + 7
-                for col in col_names:
-                    width = max(col_widths[col], len(col))
-                    safe_addstr(stdscr, y, x, str(record.data[col]).ljust(width) + " | ")
-                    x += width + 3
-            
-            stdscr.refresh()
-            key = stdscr.getch()
-            
-            if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
-                break
-            elif is_key(key, 'UP') and current_page > 0:
-                current_page -= 1
-            elif is_key(key, 'DOWN') and current_page < (record_count + record_limit - 1) // record_limit - 1:
-                current_page += 1
-            elif is_key(key, 'PAGE_DOWN') and current_page < (record_count + record_limit - 1) // record_limit - 1:
-                current_page = (record_count + record_limit - 1) // record_limit - 1
-            elif is_key(key, 'PAGE_UP') and current_page > 0:
-                current_page = 0
-            
-            # Clear only the table display area before refreshing
-            stdscr.move(view_offset + 2, 0)
-            stdscr.clrtobot()
+        display_table_records(stdscr, table, col_names, col_widths, view_offset, record_limit)
 
 @safe_execution
 def display_stored_procedures(stdscr, db, info_offset):
