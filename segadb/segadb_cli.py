@@ -1,5 +1,3 @@
-#!usr/bin/env python
-
 import base64
 import zlib
 import typer
@@ -971,6 +969,26 @@ def server_start(
 
     # Message handled by helper unless it's a success message
     typer.secho(f"Start command sent (Server message: {result.get('message', 'Success')}).", fg=typer.colors.GREEN if result.get("status") == "success" else typer.colors.YELLOW)
+
+# --- Navigator Command (Curses UI) ---
+import curses
+from segadb.db_navigator import db_navigator
+
+@app.command("navigator")
+def launch_navigator(
+    ctx: typer.Context,
+):
+    """Open the interactive database navigator (curses UI, local files only)."""
+    conn, conn_type = get_connection(ctx)
+    if conn_type != 'local':
+        typer.secho("Navigator is only available for local database files.", fg=typer.colors.RED)
+        raise typer.Exit(code=1)
+    db = conn
+    try:
+        curses.wrapper(db_navigator, db)
+    except Exception as e:
+        typer.secho(f"Error launching navigator: {e}", fg=typer.colors.RED)
+        raise typer.Exit(code=1)
 
 # --- Main Execution ---
 if __name__ == "__main__":
