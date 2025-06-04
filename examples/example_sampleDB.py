@@ -23,3 +23,5 @@ print(f"Table length: {len_before}")
 
 print("\nUsers AFTER dropping users with no orders:")
 print(f"Table length: {len(db.get_table('users').records)}")
+
+Storage.save(db, "example_storage/example_database.segadb")

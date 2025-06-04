@@ -12,6 +12,8 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from segadb.db_navigator import *
 
+# TODO: Stop error logging in tests
+
 def reset_logging():
     """Resets logging handlers to release the log file."""
     for handler in logging.root.handlers[:]:
