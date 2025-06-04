@@ -3,6 +3,9 @@ import functools
 import logging
 from typing import Dict, List, Any, Optional
 from contextlib import contextmanager
+import pygments
+from pygments.lexers import PythonLexer
+from pygments.token import Token
 
 # Set up logging
 logging.basicConfig(
@@ -443,7 +446,7 @@ def display_db_info(stdscr, db, base_offset):
     # Clear area for this display component
     screen_height, screen_width = stdscr.getmaxyx()
     for y_line in range(base_offset, screen_height):
-        safe_addstr(stdscr, y_line, 0, " " * (screen_width -1))
+        safe_addstr(stdscr, y_line, 0, " " * (screen_width-1))
 
     # Main info box borders
     border_top = "╭" + "─" * (width - 2) + "╮"
@@ -877,11 +880,8 @@ def display_view(stdscr, table, view_name, query, view_offset):
     safe_addstr(stdscr, current_y, box_left, "│ Query:".ljust(width - 1) + "│"); current_y += 1
     safe_addstr(stdscr, current_y, box_left, border_sep); current_y += 1
     
-    # Display query lines within the box
-    for line in query_lines:
-        # Only truncate if longer than available width
-        display_line = line[:width - 4] if len(line) > width - 4 else line
-        safe_addstr(stdscr, current_y, box_left, "│ " + display_line.ljust(width - 4) + " │"); current_y += 1
+    # Use helper to display code lines
+    current_y = display_code_lines_in_box(stdscr, query_lines, width, current_y, box_left)
     
     safe_addstr(stdscr, current_y, box_left, border_bottom); current_y += 1
     current_y += 1  # Add some spacing
@@ -1043,11 +1043,8 @@ def display_mv_view(stdscr, table, view_name, query, view_offset):
     safe_addstr(stdscr, current_y, box_left, "│ Query:".ljust(width - 1) + "│"); current_y += 1
     safe_addstr(stdscr, current_y, box_left, border_sep); current_y += 1
     
-    # Display query lines within the box
-    for line in query_lines:
-        # Only truncate if longer than available width
-        display_line = line[:width - 4] if len(line) > width - 4 else line
-        safe_addstr(stdscr, current_y, box_left, "│ " + display_line.ljust(width - 4) + " │"); current_y += 1
+    # Use helper to display code lines
+    current_y = display_code_lines_in_box(stdscr, query_lines, width, current_y, box_left)
     
     safe_addstr(stdscr, current_y, box_left, border_bottom); current_y += 1
     current_y += 1  # Add some spacing
@@ -1193,11 +1190,8 @@ def display_procedure(stdscr, procedure, procedure_name, proc_offset):
     safe_addstr(stdscr, current_y, box_left, "│ Code:".ljust(width - 1) + "│"); current_y += 1
     safe_addstr(stdscr, current_y, box_left, border_sep); current_y += 1
     
-    # Display code lines within the box
-    for line in code_lines:
-        # Only truncate if longer than available width
-        display_line = line[:width - 4] if len(line) > width - 4 else line
-        safe_addstr(stdscr, current_y, box_left, "│ " + display_line.ljust(width - 4) + " │"); current_y += 1
+    # Use helper to display code lines
+    current_y = display_code_lines_in_box(stdscr, code_lines, width, current_y, box_left)
     
     safe_addstr(stdscr, current_y, box_left, border_bottom); current_y += 1
     current_y += 1  # Add some spacing
@@ -1341,11 +1335,8 @@ def display_function(stdscr, function, function_name, func_offset):
     safe_addstr(stdscr, current_y, box_left, "│ Code:".ljust(width - 1) + "│"); current_y += 1
     safe_addstr(stdscr, current_y, box_left, border_sep); current_y += 1
     
-    # Display code lines within the box
-    for line in code_lines:
-        # Only truncate if longer than available width
-        display_line = line[:width - 4] if len(line) > width - 4 else line
-        safe_addstr(stdscr, current_y, box_left, "│ " + display_line.ljust(width - 4) + " │"); current_y += 1
+    # Use helper to display code lines
+    current_y = display_code_lines_in_box(stdscr, code_lines, width, current_y, box_left)
     
     safe_addstr(stdscr, current_y, box_left, border_bottom); current_y += 1
     current_y += 1  # Add some spacing
@@ -1359,3 +1350,107 @@ def display_function(stdscr, function, function_name, func_offset):
     
     if is_key(key, 'QUIT') or is_key(key, 'LEFT'):
         return
+
+# Mapping of Pygments token types to curses color pairs
+PYGMENTS_TOKEN_TO_COLOR = {
+    Token.Keyword: 4,
+    Token.Name.Function: 5,
+    Token.Name.Class: 5,
+    Token.Name: 9,
+    Token.Literal.String: 10,
+    Token.Literal.Number: 5,
+    Token.Literal: 6,
+    Token.Operator: 7,
+    Token.Comment: 0,
+    Token.Text: 0,
+}
+
+PYGMENTS_COLOR_INIT = False
+
+def init_pygments_curses_colors():
+    global PYGMENTS_COLOR_INIT
+    if PYGMENTS_COLOR_INIT:
+        return
+    # Only initialize pairs 4-9 for syntax highlighting if supported
+    max_needed = 9
+    if hasattr(curses, 'COLOR_PAIRS') and curses.COLOR_PAIRS > max_needed:
+        for pair, color in [
+            (4, curses.COLOR_BLUE),
+            (5, curses.COLOR_YELLOW),
+            (6, curses.COLOR_CYAN),
+            (7, curses.COLOR_MAGENTA),
+            (8, curses.COLOR_WHITE),
+            (9, curses.COLOR_GREEN),
+            (10, curses.COLOR_RED),
+        ]:
+            try:
+                curses.init_pair(pair, color, curses.COLOR_BLACK)
+            except curses.error:
+                pass  # Skip if not supported
+    PYGMENTS_COLOR_INIT = True
+
+def display_code_lines_in_box(stdscr, code_lines, width, start_y, box_left):
+    """
+    Helper to display code lines inside a box, handling truncation and alignment, with syntax highlighting.
+    Args:
+        stdscr: The curses window object.
+        code_lines: List of code lines to display.
+        width: Width of the box.
+        start_y: Starting y position.
+        box_left: Starting x position (usually 0).
+    Returns:
+        The next y position after the last code line.
+    """
+    init_pygments_curses_colors()
+    current_y = start_y
+    lexer = PythonLexer()
+    max_code_width = width - 4
+    
+    code_na = True if code_lines[0] == 'Source code not available' else False
+    
+    in_tripple_quote = False
+    for line in code_lines:
+        tokens = list(pygments.lex(line, lexer))
+        x = box_left + 2  # Start after left border and space
+        safe_addstr(stdscr, current_y, box_left, "│ ")
+        chars_written = 0
+        
+        for ttype, value in tokens:
+            # print(f"Token: {ttype}, Value: '{value}'")  # Debugging output
+
+            # If we are in a tripple quote we want to treat as a string untill we see the next tripple
+            if '"""' in value or "'''" in value:
+                in_tripple_quote = not in_tripple_quote
+
+            # Truncate if line is too long
+            if chars_written >= max_code_width:
+                break
+            value = value[:max_code_width - chars_written]
+            color = 0
+            
+            if in_tripple_quote:
+                color = PYGMENTS_TOKEN_TO_COLOR.get(Token.Literal.String, 5)  # Default to string color
+            else:   
+                # Find the most specific color mapping
+                for token_type, color_pair in PYGMENTS_TOKEN_TO_COLOR.items():
+                    if ttype in token_type:
+                        color = color_pair
+                        break
+            try:
+                if code_na:
+                    color = PYGMENTS_TOKEN_TO_COLOR.get(Token.Literal.String, 10)
+                    stdscr.addstr(current_y, x, value, curses.color_pair(color))
+                if color > 0:
+                    stdscr.addstr(current_y, x, value, curses.color_pair(color))
+                else:
+                    stdscr.addstr(current_y, x, value)
+            except curses.error:
+                pass
+            x += len(value)
+            chars_written += len(value)
+        # Fill the rest of the line with spaces if needed
+        if chars_written < max_code_width:
+            safe_addstr(stdscr, current_y, box_left + 2 + chars_written, " " * (max_code_width - chars_written))
+        safe_addstr(stdscr, current_y, box_left + width - 2, " │")
+        current_y += 1
+    return current_y
