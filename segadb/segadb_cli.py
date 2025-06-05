@@ -411,30 +411,65 @@ def table_list(ctx: typer.Context):
 def table_create(
     ctx: typer.Context,
     table_name: str = typer.Argument(..., help="Name of the table to create."),
-    columns: str = typer.Argument(..., help="Comma-separated list of column names (e.g., 'id,name,email').")
+    columns: str = typer.Option(False, "--columns", "-c", help="Comma-separated list of column names (e.g., 'id,name,email'). Required if not using --csv."),
+    csv: str = typer.Option(False, "--csv", "-f", help="Path to a CSV file to import data from."),
+    headers: bool = typer.Option(True, "--headers", "-H", help="Indicate if the CSV file has a header row. Default is True."),
+    delim: str = typer.Option(",", "--delim", "-d", help="Delimiter used in the CSV file. Default is ','."),
+    col_types: Optional[str] = typer.Option(None, "--col-types", "-t", help="Optional column types for CSV import (e.g., 'int,str,str'). Must match column order in --columns.")
 ):
     """Create a new table."""
     conn, conn_type = get_connection(ctx)
-    column_list = [col.strip() for col in columns.split(',') if col.strip()]
-    if not column_list:
-        typer.secho("Error: No valid column names provided.", fg=typer.colors.RED)
-        raise typer.Exit(code=1)
-
-    typer.echo(f"Attempting to create table '{table_name}' with columns: {column_list}...")
+        
+    if columns != 'False':
+        column_list = [col.strip() for col in columns.split(',') if col.strip()]
+        if not column_list:
+            typer.secho("Error: No valid column names provided.", fg=typer.colors.RED)
+            raise typer.Exit(code=1)
+        typer.echo(f"Attempting to create table '{table_name}' with columns: {column_list}...")
 
     try:
         if conn_type == 'local':
             db = _ensure_local(ctx)
+            typer.secho(db.tables)
             if table_name in db.tables:
                  typer.secho(f"Error: Table '{table_name}' already exists.", fg=typer.colors.YELLOW)
                  raise typer.Exit(code=1)
-            db.create_table(table_name, column_list)
+            if csv != 'False':
+                db.create_table(table_name, column_list)
+            else:
+                typer.secho("DEBUG: In db.create_table_from_csv")
+                if not columns and not headers:
+                    typer.secho("Error: --columns must be specified if CSV does not have headers.", fg=typer.colors.RED)
+                    raise typer.Exit(code=1)
+                elif columns and headers:
+                    typer.secho("Warning: --columns overrides CSV headers. Headers will be ignored.", fg=typer.colors.YELLOW)
+                db.create_table_from_csv(
+                    table_name,
+                    dir=csv,
+                    headers=headers,
+                    delim=delim,
+                    column_names=column_list if columns != 'False' else None,
+                    col_types=col_types
+                )
+                typer.secho(db.get_table(table_name))  # Debug: show created table structure
+                
             _save_local_db(db) # Save changes
             typer.secho(f"Table '{table_name}' created locally and file saved.", fg=typer.colors.GREEN)
-        elif conn_type == 'remote':
+        elif conn_type == 'remote':            
             client = _ensure_remote(ctx)
-            params = {"table_name": table_name, "columns": column_list}
-            result = _send_authed_remote_command(client, "create_table", params) # Handles errors
+            if columns != 'False':
+                params = {"table_name": table_name, "columns": column_list}
+                result = _send_authed_remote_command(client, "create_table", params) # Handles errors
+            else:
+                params = {
+                    "table_name": table_name,
+                    "csv_file_path": csv,
+                    "headers": headers,
+                    "delim": delim,
+                    "col_types": col_types,
+                    "column_names": column_list if columns != 'False' else None
+                }
+                result = _send_authed_remote_command(client, "create_table_from_csv", params) # Handles errors
             typer.secho(f"Table '{table_name}' created successfully on server.", fg=typer.colors.GREEN)
 
     except typer.Exit:

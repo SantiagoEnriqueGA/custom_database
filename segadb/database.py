@@ -311,6 +311,7 @@ class Database:
                 - logout_user: Logs out a user using the session token.
             Table Management:
                 - create_table: Creates a new table.
+                - create_table_from_csv: Creates a table from a CSV file.
                 - drop_table: Drops an existing table.
                 - list_tables: Lists all tables in the database.
             Record Operations:
@@ -418,6 +419,29 @@ class Database:
                 if table_name and columns:
                     try:
                         self.create_table(table_name, columns, session_token)
+                        return json.dumps({"status": "success", "message": f"Table {table_name} created."})
+                    except PermissionError as e:
+                        return json.dumps({"status": "error", "message": str(e)})
+                return json.dumps({"status": "error", "message": "Invalid table creation parameters."})
+            
+            elif action == "create_table_from_csv":
+                table_name = params.get("table_name")
+                csv_file_path = params.get("csv_file_path")
+                headers = params.get("headers", True)
+                delim = params.get("delim", ",")
+                col_types = params.get("col_types", None)
+                column_names = params.get("column_names", None)
+
+                if table_name and csv_file_path:
+                    try:
+                        self.create_table_from_csv(
+                            dir = csv_file_path,
+                            table_name= table_name,
+                            headers = headers,
+                            delim = delim,
+                            col_types = col_types,
+                            column_names = column_names
+                        )
                         return json.dumps({"status": "success", "message": f"Table {table_name} created."})
                     except PermissionError as e:
                         return json.dumps({"status": "error", "message": str(e)})
@@ -647,7 +671,7 @@ def {procedure_name}(db, *args, **kwargs):
             elif action == "list_materialized_views":
                 return json.dumps({"status": "success", "data": list(self.materialized_views.keys())})
             else:
-                return json.dumps({"status": "error", "message": "Unknown action."})
+                return json.dumps({"status": "error", "message": f"Unknown action: {action}"})
             
         except Exception as e:
             return json.dumps({"status": "error", "message": str(e)})
