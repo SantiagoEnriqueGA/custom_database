@@ -415,7 +415,8 @@ def table_create(
     csv: str = typer.Option(False, "--csv", "-f", help="Path to a CSV file to import data from."),
     headers: bool = typer.Option(True, "--headers", "-H", help="Indicate if the CSV file has a header row. Default is True."),
     delim: str = typer.Option(",", "--delim", "-d", help="Delimiter used in the CSV file. Default is ','."),
-    col_types: Optional[str] = typer.Option(None, "--col-types", "-t", help="Optional column types for CSV import (e.g., 'int,str,str'). Must match column order in --columns.")
+    col_types: Optional[str] = typer.Option(None, "--col-types", "-t", help="Optional column types for CSV import (e.g., 'int,str,str'). Must match column order in --columns."),
+    force: bool = typer.Option(False, "--force", "-y", help="Force table creation even if it already exists. Use with caution.")
 ):
     """Create a new table."""
     conn, conn_type = get_connection(ctx)
@@ -431,7 +432,7 @@ def table_create(
         if conn_type == 'local':
             db = _ensure_local(ctx)
             typer.secho(db.tables)
-            if table_name in db.tables:
+            if table_name in db.tables and not force:
                  typer.secho(f"Error: Table '{table_name}' already exists.", fg=typer.colors.YELLOW)
                  raise typer.Exit(code=1)
             if csv != 'False':
@@ -457,6 +458,13 @@ def table_create(
             typer.secho(f"Table '{table_name}' created locally and file saved.", fg=typer.colors.GREEN)
         elif conn_type == 'remote':            
             client = _ensure_remote(ctx)
+            
+            # Get all tables to check for duplicates
+            existing_tables = _send_authed_remote_command(client, "list_tables").get("data", [])
+            if table_name in existing_tables and not force:
+                typer.secho(f"Error: Table '{table_name}' already exists on the server.", fg=typer.colors.RED)
+                raise typer.Exit(code=1)
+
             if columns != 'False':
                 params = {"table_name": table_name, "columns": column_list}
                 result = _send_authed_remote_command(client, "create_table", params) # Handles errors
